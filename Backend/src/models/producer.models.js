@@ -66,10 +66,6 @@ const producerSchema = new Schema(
         ref: "Partnership",
       },
     ],
-    wishlist: {
-      type: Schema.Types.ObjectId,
-      ref: "Wishlist",
-    },
     upcyclingTransactions: [
       {
         type: Schema.Types.ObjectId,
