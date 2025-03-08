@@ -1,0 +1,1 @@
+import { Partnership } from "../models/partnership.models.js";
