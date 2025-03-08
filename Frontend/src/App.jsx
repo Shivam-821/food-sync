@@ -1,7 +1,12 @@
 import React from "react";
+import Home from "./pages/Home";
 
 function App() {
-  return <div className="bg-red-900">App hai</div>;
+  return (
+    <>
+      <Home />
+    </>
+  );
 }
 
 export default App;
