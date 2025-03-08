@@ -1,0 +1,1 @@
+import { Consumer } from "../models/consumer.models.js";

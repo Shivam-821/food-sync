@@ -1,0 +1,1 @@
+import { UpcyclingIndustry } from "../models/upcyclingIndustry.models.js";

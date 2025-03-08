@@ -1,0 +1,1 @@
+import { CommunityPost } from "../models/communityPost.models.js";
