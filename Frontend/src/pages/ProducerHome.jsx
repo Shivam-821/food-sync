@@ -17,7 +17,7 @@ const ProducerHome = () => {
             <div><img className='h-20 w-20 rounded-4xl' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlrZqTCInyg6RfYC7Ape20o-EWP1EN_A8fOA&s" alt="" /></div>
         </div>
       <div className='p-7 '>
-      <h3 className='text-3xl mb-5'>Add Items</h3>
+      <h3 className='text-3xl mb-5'>Add</h3>
       <form className="border rounded-lg border-black p-4 bg-white w-full max-w-4xl mx-auto">
   <div className="flex flex-wrap gap-2 justify-start">
     
