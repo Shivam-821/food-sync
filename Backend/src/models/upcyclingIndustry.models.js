@@ -18,9 +18,13 @@ const upcyclingIndustrySchema = new Schema(
       type: String,
       required: [true, "password is required"],
     },
+    avatar: {
+      type: String,
+    },
     location: {
       lat: { type: Number },
       lng: { type: Number },
+      required: true,
     },
     upcyclingMethods: {
       type: [String],
@@ -33,6 +37,7 @@ const upcyclingIndustrySchema = new Schema(
         ref: "Item",
       },
     ],
+    refreshToken: { type: String },
     feedbacks: [
       {
         type: Schema.Types.ObjectId,

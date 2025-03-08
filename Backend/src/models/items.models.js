@@ -22,6 +22,10 @@ const itemSchema = new Schema(
       enum: ["kg", "liters", "pieces", "packets"],
       required: true,
     },
+    price:{
+      type: Number,
+      required: true,
+    },
     avatar: {
       type: String,
       required: true,
@@ -29,6 +33,10 @@ const itemSchema = new Schema(
     category: {
       type: String,
       enum: ["perishable", "non-perishable", "ready-to-eat"],
+      required: true,
+    },
+    mfDate:{
+      type: Date,
       required: true,
     },
     expiryDate: {
