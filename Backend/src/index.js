@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3005;
 connectDB()
   .then(() => {
     app.listen(PORT, () => {
-      console.log(chalk.green(`Server is listening at port ${PORT}`));
+      console.log(chalk.green("Server is listening at port ${PORT})"));
     });
   })
   .catch((err) => {
