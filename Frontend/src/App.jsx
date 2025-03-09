@@ -23,8 +23,7 @@ function App() {
       <Route path="/upcycle" element={<Upcycle />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/social" element={<Social />} />
-      
-
+      <Route path="/producerDetail" element={<ProducerDetail />} />
     </Routes>
   );
 }
