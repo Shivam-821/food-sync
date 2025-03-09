@@ -72,6 +72,18 @@ const producerSchema = new Schema(
         ref: "Upcycling",
       },
     ],
+    orders: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Order",
+      },
+    ],
+    upcyclingOrders: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "UpcyclingOrder",
+      },
+    ],
     blogs: [
       {
         type: Schema.Types.ObjectId,

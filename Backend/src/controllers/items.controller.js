@@ -250,6 +250,7 @@ const deleteItem = asyncHandler(async (req, res) => {
     await producer.save();
   }
 
+
   // Delete the item from the database
   await Item.findByIdAndDelete(itemId);
 

@@ -4,7 +4,7 @@ import bcrypt from "bcrypt"
 
 const upcyclingIndustrySchema = new Schema(
   {
-    username:{
+    username: {
       type: String,
       required: true,
       trim: true,
@@ -53,6 +53,12 @@ const upcyclingIndustrySchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         ref: "Partnership",
+      },
+    ],
+    upcyclingOrders: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "UpcyclingOrder",
       },
     ],
     blogs: [
