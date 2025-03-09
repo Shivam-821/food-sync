@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 
-const SocialNavbar = () => {
+const SocialNavbar = ({setActiveComponent,activeComponent}) => {
   
 
   return (
@@ -17,11 +17,17 @@ const SocialNavbar = () => {
           ].map((item, index) => (
             <li
               key={index}
-              onClick={() => setActiveComponent(item.component)}
-              className="hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group lg:block"
+              onClick={() =>setActiveComponent(item.component)}
+              className={`hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group lg:block ${
+                  activeComponent === item.component ? "text-blue-700 pb-2" : ""
+                } `}
             >
               {item.name}
-              <div className="absolute bottom-0 w-full h-1 bg-black hidden group-hover:block transition-all duration-200"></div>
+              <div
+                className={`absolute bottom-0 w-full h-1 bg-black transition-all duration-200 ${
+                  activeComponent === item.component ? "block bg-blue-700 p" : "hidden group-hover:block"
+                }`}
+              ></div>
             </li>
           ))}
         </ul>

@@ -10,15 +10,15 @@ import Recipe from "../../Components/Recipe/Recipe";
 
 const Social = () => {
 
-   const [heroCount, setHeroCount]= useState(1);
+   const [heroCount, setHeroCount]= useState(0);
   
     useEffect(()=>{
         setInterval(()=>{
           setHeroCount((count)=>{return count===1?0:count+1})
         }, 4000);
       },[])
-
-      const [activeComponent, setActiveComponent] = useState(null);
+ 
+      const [activeComponent, setActiveComponent] = useState("Blog");
 
   // Function to render the selected component
   const renderComponent = () => {
@@ -43,7 +43,7 @@ const Social = () => {
         <SoicalSlider heroCount={heroCount}  />
          <SocialDot heroCount={heroCount}
           setHeroCount={setHeroCount} />
-        <SocialNavbar setActiveComponent={setActiveComponent} />
+        <SocialNavbar activeComponent={activeComponent} setActiveComponent={setActiveComponent} />
         {/* Display the selected component */}
        <div className="mt-10">{renderComponent()}</div>
       </div>

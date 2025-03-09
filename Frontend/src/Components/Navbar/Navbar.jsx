@@ -26,7 +26,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className={`nav fixed top-0 left-0 w-full  ${scrolled ? "bg-sky-500/20 backdrop-blur-xs backdrop-brightness-90" : "backdrop-brightness-90"}  pl-5 pr-5 `}>
+    <div className={`nav z-10 fixed top-0 left-0 w-full  ${scrolled ? "bg-sky-500/30 backdrop-blur-sm backdrop-brightness-90" : "backdrop-brightness-90"}  pl-5 pr-5 `}>
       <div className="nav-logo">
         <a href="#">FoodSync</a>
       </div>
@@ -41,6 +41,10 @@ const Navbar = () => {
         </li>
         <li className=" hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group hidden lg:block">
           <a href="/SurplusProducer">Surplus Producer</a>
+          <div className="absolute bottom-0 w-full h-1 bg-black hidden group-hover:block  transition-all duration-200"></div>
+        </li>
+        <li className=" hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group hidden lg:block">
+          <a href="/social">Social</a>
           <div className="absolute bottom-0 w-full h-1 bg-black hidden group-hover:block  transition-all duration-200"></div>
         </li>
         <li className=" hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group hidden lg:block">
@@ -61,7 +65,7 @@ const Navbar = () => {
           ) : (
             <button
               onClick={handleAuthToggle}
-              className="flex cursor-pointer items-center border-2 border-gray-600 text-white hover:text-black py-1 px-3 rounded-[14px] hover:border-white hover:backdrop-brightness-200 transition duration-200"
+              className="flex cursor-pointer items-center border-2 border-gray-600 text-white hover:bg-gray-500/50 py-1 px-3 rounded-[14px] hover:border-white hover:backdrop-brightness-200 transition duration-200"
             >
               <a href="/signup">SignUp</a>
             </button>
