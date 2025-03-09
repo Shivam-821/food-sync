@@ -21,22 +21,22 @@ const Footer = () => {
           <h3 className="text-white font-semibold mb-3">Company</h3>
           <ul className="space-y-2">
             <li>
-              <a href="#" className="hover:text-yellow-400">
+              <a href="/about" className="hover:text-yellow-400">
                 About Us
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-yellow-400">
+              <a href="/recipe" className="hover:text-yellow-400">
                 Our Stories
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-yellow-400">
+              <a href="/home" className="hover:text-yellow-400">
                 Work With Us
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-yellow-400">
+              <a href="/home" className="hover:text-yellow-400">
                 User Testimonials
               </a>
             </li>
@@ -47,17 +47,17 @@ const Footer = () => {
           <h3 className="text-white font-semibold mb-3">Support</h3>
           <ul className="space-y-2">
             <li>
-              <a href="#" className="hover:text-yellow-400">
+              <a href="/home" className="hover:text-yellow-400">
                 FAQ
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-yellow-400">
+              <a href="/home" className="hover:text-yellow-400">
                 Membership
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-yellow-400">
+              <a href="/home" className="hover:text-yellow-400">
                 User Policy
               </a>
             </li>
