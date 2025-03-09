@@ -3,6 +3,8 @@ import Background from '../Components/Background/Background'
 import Navbar from '../Components/Navbar/Navbar';
 import Hero from '../Components/Hero/Hero';
 import Blocks from '../Components/blocks';
+import ScrollingText from '../Components/ScrollingText/ScrollingText';
+
 
 
 const Home = () => {
@@ -31,6 +33,7 @@ const Home = () => {
         setHeroCount={setHeroCount}
         playStatus={playStatus}
       ></Hero>
+      <ScrollingText />
       <Blocks></Blocks>
     </div>
   )

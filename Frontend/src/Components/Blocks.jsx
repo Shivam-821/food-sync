@@ -1,269 +1,86 @@
 import React from 'react'
+import f1 from '../assets/f1.jpg'
+import f2 from '../assets/f2.jpg'
+import f3 from '../assets/f3.jpg'
+import f4 from '../assets/f4.jpg'
+import f5 from '../assets/f5.jpeg'
+import f6 from '../assets/f6.webp'
 
 const Blocks = () => {
   return (
     <div>
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
-             {/* <!-- box1 --> */}
-             <div className="w-full min-h-[15rem] relative cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-200">
-               <img src="./images/payment-link-icon.svg" alt="" className="bg-blue-500 absolute right-3 top-3 w-12 h-12 rounded-full z-[8] transition-all duration-200"/>
-               {/* <!--box shape--> */}
-               <svg
-                viewBox="0 0 349.32501220703125 225"
-                xmlns="http://www.w3.org/2000/svg"
-                preserveAspectRatio="none"
-                className="stroke-1 stroke-[#818597] h-full w-full absolute z-[9] transition-all duration-200"
-                style={{ strokeOpacity: 0.15 }}  // Changed here
-              >
-                <path
-                  d="m 0 6 
-                    a 6 6 0 0 1 6 -6 
-                    h 250.32501220703125 
-                    a 16 16 0 0 1 11 5 
-                    l 77 77 
-                    a 16 16 0 0 1 5 11 
-                    v 126 
-                    a 6 6 0 0 1 -6 6 
-                    h -337.32501220703125 
-                    a 6 6 0 0 1 -6 -6 
-                    z"
-                  fill="#fff"
-                ></path>
-              </svg>
-     
-               {/* <!-- box content --> */}
-                <div className="z-[100] absolute w-full h-full flex flex-col justify-between pl-5 py-6 pr-8">
-                 {/* <!-- text content --> */}
-                 <div>
-                   <h3 className="font-mullish font-bold text-blue-950 leading-[1.2] text-[1.375rem]">Payment Links</h3>
-                   <p className="font-mullish text-gray-500 mt-6">Share payment link via an email, SMS, messenger, chatbot etc. and get paid immediately</p>
-                 </div>
-                 {/* <!-- hyperlink know more --> */}
-                 <div className="flex items-center cursor-pointer group">
-                   <a href="#" className="font-mullish font-bold text-blue-500 group-hover:text-gray-50 transition-all duration-200">Know More</a>
-                   <i data-feather="chevron-right" className="w-5 h-5 text-blue-500 group-hover:text-gray-50 transition-all duration-200"></i>
-                 </div>
-     
-     
-              </div>
-              </div>
-              {/* <!-- box2 --> */}
-              <div className="w-full min-h-[15rem] relative cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-200">
-               <img src="./images/payment-link-icon.svg" alt="" className="bg-blue-500 absolute right-3 top-3 w-12 h-12 rounded-full z-[8] transition-all duration-200"/>
-               {/* <!--box shape--> */}
-               <svg
-                viewBox="0 0 349.32501220703125 225"
-                xmlns="http://www.w3.org/2000/svg"
-                preserveAspectRatio="none"
-                className="stroke-1 stroke-[#818597] h-full w-full absolute z-[9] transition-all duration-200"
-                style={{ strokeOpacity: 0.15 }}  // Changed here
-              >
-                <path
-                  d="m 0 6 
-                    a 6 6 0 0 1 6 -6 
-                    h 250.32501220703125 
-                    a 16 16 0 0 1 11 5 
-                    l 77 77 
-                    a 16 16 0 0 1 5 11 
-                    v 126 
-                    a 6 6 0 0 1 -6 6 
-                    h -337.32501220703125 
-                    a 6 6 0 0 1 -6 -6 
-                    z"
-                  fill="#fff"
-                ></path>
-              </svg>
-     
-               {/* <!-- box content --> */}
-                <div className="z-[100] absolute w-full h-full flex flex-col justify-between pl-5 py-6 pr-8">
-                 {/* <!-- text content --> */}
-                 <div>
-                   <h3 className="font-mullish font-bold text-blue-950 leading-[1.2] text-[1.375rem]">Payment Links</h3>
-                   <p className="font-mullish text-gray-500 mt-6">Share payment link via an email, SMS, messenger, chatbot etc. and get paid immediately</p>
-                 </div>
-                 {/* <!-- hyperlink know more --> */}
-                 <div className="flex items-center cursor-pointer group">
-                   <a href="#" className="font-mullish font-bold text-blue-500 group-hover:text-gray-50 transition-all duration-200">Know More</a>
-                   <i data-feather="chevron-right" className="w-5 h-5 text-blue-500 group-hover:text-gray-50 transition-all duration-200"></i>
-                 </div>
-     
-     
-              </div>
-              </div>
-              {/* <!-- box3 --> */}
-              <div className="w-full min-h-[15rem] relative cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-200">
-               <img src="./images/payment-link-icon.svg" alt="" className="bg-blue-500 absolute right-3 top-3 w-12 h-12 rounded-full z-[8] transition-all duration-200"/>
-               {/* <!--box shape--> */}
-               <svg
-                viewBox="0 0 349.32501220703125 225"
-                xmlns="http://www.w3.org/2000/svg"
-                preserveAspectRatio="none"
-                className="stroke-1 stroke-[#818597] h-full w-full absolute z-[9] transition-all duration-200"
-                style={{ strokeOpacity: 0.15 }}  // Changed here
-              >
-                <path
-                  d="m 0 6 
-                    a 6 6 0 0 1 6 -6 
-                    h 250.32501220703125 
-                    a 16 16 0 0 1 11 5 
-                    l 77 77 
-                    a 16 16 0 0 1 5 11 
-                    v 126 
-                    a 6 6 0 0 1 -6 6 
-                    h -337.32501220703125 
-                    a 6 6 0 0 1 -6 -6 
-                    z"
-                  fill="#fff"
-                ></path>
-              </svg>
-     
-               {/* <!-- box content --> */}
-                <div className="z-[100] absolute w-full h-full flex flex-col justify-between pl-5 py-6 pr-8">
-                 {/* <!-- text content --> */}
-                 <div>
-                   <h3 className="font-mullish font-bold text-blue-950 leading-[1.2] text-[1.375rem]">Payment Links</h3>
-                   <p className="font-mullish text-gray-500 mt-6">Share payment link via an email, SMS, messenger, chatbot etc. and get paid immediately</p>
-                 </div>
-                 {/* <!-- hyperlink know more --> */}
-                 <div className="flex items-center cursor-pointer group">
-                   <a href="#" className="font-mullish font-bold text-blue-500 group-hover:text-gray-50 transition-all duration-200">Know More</a>
-                   <i data-feather="chevron-right" className="w-5 h-5 text-blue-500 group-hover:text-gray-50 transition-all duration-200"></i>
-                 </div>
-     
-     
-              </div>
-              </div>
-              {/* <!-- box4  --> */}
-              <div className="w-full min-h-[15rem] relative cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-200">
-               <img src="./images/payment-link-icon.svg" alt="" className="bg-blue-500 absolute right-3 top-3 w-12 h-12 rounded-full z-[8] transition-all duration-200"/>
-               {/* <!--box shape--> */}
-               <svg
-                viewBox="0 0 349.32501220703125 225"
-                xmlns="http://www.w3.org/2000/svg"
-                preserveAspectRatio="none"
-                className="stroke-1 stroke-[#818597] h-full w-full absolute z-[9] transition-all duration-200"
-                style={{ strokeOpacity: 0.15 }}  // Changed here
-              >
-                <path
-                  d="m 0 6 
-                    a 6 6 0 0 1 6 -6 
-                    h 250.32501220703125 
-                    a 16 16 0 0 1 11 5 
-                    l 77 77 
-                    a 16 16 0 0 1 5 11 
-                    v 126 
-                    a 6 6 0 0 1 -6 6 
-                    h -337.32501220703125 
-                    a 6 6 0 0 1 -6 -6 
-                    z"
-                  fill="#fff"
-                ></path>
-              </svg>
-     
-               {/* <!-- box content --> */}
-                <div className="z-[100] absolute w-full h-full flex flex-col justify-between pl-5 py-6 pr-8">
-                 {/* <!-- text content --> */}
-                 <div>
-                   <h3 className="font-mullish font-bold text-blue-950 leading-[1.2] text-[1.375rem]">Payment Links</h3>
-                   <p className="font-mullish text-gray-500 mt-6">Share payment link via an email, SMS, messenger, chatbot etc. and get paid immediately</p>
-                 </div>
-                 {/* <!-- hyperlink know more --> */}
-                 <div className="flex items-center cursor-pointer group">
-                   <a href="#" className="font-mullish font-bold text-blue-500 group-hover:text-gray-50 transition-all duration-200">Know More</a>
-                   <i data-feather="chevron-right" className="w-5 h-5 text-blue-500 group-hover:text-gray-50 transition-all duration-200"></i>
-                 </div>
-     
-     
-              </div>
-              </div>
-              {/* <!-- box5 --> */}
-              <div className="w-full min-h-[15rem] relative cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-200">
-               <img src="./images/payment-link-icon.svg" alt="" className="bg-blue-500 absolute right-3 top-3 w-12 h-12 rounded-full z-[8] transition-all duration-200"/>
-               {/* <!--box shape--> */}
-               <svg
-                viewBox="0 0 349.32501220703125 225"
-                xmlns="http://www.w3.org/2000/svg"
-                preserveAspectRatio="none"
-                className="stroke-1 stroke-[#818597] h-full w-full absolute z-[9] transition-all duration-200"
-                style={{ strokeOpacity: 0.15 }}  // Changed here
-              >
-                <path
-                  d="m 0 6 
-                    a 6 6 0 0 1 6 -6 
-                    h 250.32501220703125 
-                    a 16 16 0 0 1 11 5 
-                    l 77 77 
-                    a 16 16 0 0 1 5 11 
-                    v 126 
-                    a 6 6 0 0 1 -6 6 
-                    h -337.32501220703125 
-                    a 6 6 0 0 1 -6 -6 
-                    z"
-                  fill="#fff"
-                ></path>
-              </svg>
-     
-               {/* <!-- box content --> */}
-                <div className="z-[100] absolute w-full h-full flex flex-col justify-between pl-5 py-6 pr-8">
-                 {/* <!-- text content --> */}
-                 <div>
-                   <h3 className="font-mullish font-bold text-blue-950 leading-[1.2] text-[1.375rem]">Payment Links</h3>
-                   <p className="font-mullish text-gray-500 mt-6">Share payment link via an email, SMS, messenger, chatbot etc. and get paid immediately</p>
-                 </div>
-                 {/* <!-- hyperlink know more --> */}
-                 <div className="flex items-center cursor-pointer group">
-                   <a href="#" className="font-mullish font-bold text-blue-500 group-hover:text-gray-50 transition-all duration-200">Know More</a>
-                   <i data-feather="chevron-right" className="w-5 h-5 text-blue-500 group-hover:text-gray-50 transition-all duration-200"></i>
-                 </div>
-     
-     
-              </div>
-              </div>
-              {/* <!-- box6 --> */}
-              <div className="w-full min-h-[15rem] relative cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-200">
-               <img src="./images/payment-link-icon.svg" alt="" className="bg-blue-500 absolute right-3 top-3 w-12 h-12 rounded-full z-[8] transition-all duration-200"/>
-               {/* <!--box shape--> */}
-               <svg
-                viewBox="0 0 349.32501220703125 225"
-                xmlns="http://www.w3.org/2000/svg"
-                preserveAspectRatio="none"
-                className="stroke-1 stroke-[#818597] h-full w-full absolute z-[9] transition-all duration-200"
-                style={{ strokeOpacity: 0.15 }}  // Changed here
-              >
-                <path
-                  d="m 0 6 
-                    a 6 6 0 0 1 6 -6 
-                    h 250.32501220703125 
-                    a 16 16 0 0 1 11 5 
-                    l 77 77 
-                    a 16 16 0 0 1 5 11 
-                    v 126 
-                    a 6 6 0 0 1 -6 6 
-                    h -337.32501220703125 
-                    a 6 6 0 0 1 -6 -6 
-                    z"
-                  fill="#fff"
-                ></path>
-              </svg>
-     
-               {/* <!-- box content --> */}
-                <div className="z-[100] absolute w-full h-full flex flex-col justify-between pl-5 py-6 pr-8">
-                 {/* <!-- text content --> */}
-                 <div>
-                   <h3 className="font-mullish font-bold text-blue-950 leading-[1.2] text-[1.375rem]">Payment Links</h3>
-                   <p className="font-mullish text-gray-500 mt-6">Share payment link via an email, SMS, messenger, chatbot etc. and get paid immediately</p>
-                 </div>
-                 {/* <!-- hyperlink know more --> */}
-                 <div className="flex items-center cursor-pointer group">
-                   <a href="#" className="font-mullish font-bold text-blue-500 group-hover:text-gray-50 transition-all duration-200">Know More</a>
-                   <i data-feather="chevron-right" className="w-5 h-5 text-blue-500 group-hover:text-gray-50 transition-all duration-200"></i>
-                 </div>
-     
-     
-              </div>
-              </div>
-           </div >
-    </div>
+      <div className='text-center mt-10 text-5xl font-bold font-serif text-'>Food You Should Purchase</div>
+      <div className='text-center mt-4 text-5xl font-bold font-serif text-'>Before it Wastes</div>
+      <div className='ml-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-10'>
+        <div className="w-sm p-4">
+          <img className="w-full h-65 object-cover rounded-lg" src={f1} alt="Image 1" />
+          <div>
+            <h2 className="text-lg font-bold mt-4">Image 1</h2>
+            <p className="text-sm text-gray-600">This is a description of image 1</p>
+            <div className='flex justify-between'>
+              <div>₹200</div>
+              <div>5kg for 20 Person</div>
+            </div>
+          </div>
+        </div>
+        <div className="w-sm p-4">
+          <img className="w-full h-65 object-cover rounded-lg" src={f2} alt="Image 2" />
+          <div>
+            <h2 className="text-lg font-bold mt-4">Image 1</h2>
+            <p className="text-sm text-gray-600">This is a description of image 1</p>
+            <div className='flex justify-between'>
+              <div>₹200</div>
+              <div>5kg for 20 Person</div>
+            </div>
+          </div>
+        </div>
+        <div className="w-sm p-4">
+          <img className="w-full h-65 object-cover rounded-lg" src={f3} alt="Image 3" />
+          <div>
+            <h2 className="text-lg font-bold mt-4">Image 1</h2>
+            <p className="text-sm text-gray-600">This is a description of image 1</p>
+            <div className='flex justify-between'>
+              <div>₹200</div>
+              <div>5kg for 20 Person</div>
+            </div>
+          </div>
+        </div>
+        <div className="w-sm p-4">
+          <img className="w-full h-65 object-cover rounded-lg" src={f4} alt="Image 4" />
+          <div>
+            <h2 className="text-lg font-bold mt-4">Image 1</h2>
+            <p className="text-sm text-gray-600">This is a description of image 1</p>
+            <div className='flex justify-between'>
+              <div>₹200</div>
+              <div>5kg for 20 Person</div>
+            </div>
+          </div>
+        </div>
+        <div className="w-sm p-4">
+          <img className="w-full h-65 object-cover rounded-lg" src={f5} alt="Image 5" />
+          <div>
+            <h2 className="text-lg font-bold mt-4">Image 1</h2>
+            <p className="text-sm text-gray-600">This is a description of image 1</p>
+            <div className='flex justify-between'>
+              <div>₹200</div>
+              <div>5kg for 20 Person</div>
+            </div>
+          </div>
+        </div>
+        <div className="w-sm p-4">
+          <img className="w-full h-65 object-cover rounded-lg" src={f6} alt="Image 6" />
+          <div>
+            <h2 className="text-lg font-bold mt-4">Image 1</h2>
+            <p className="text-sm text-gray-600">This is a description of image 1</p>
+            <div className='flex justify-between'>
+              <div>₹200</div>
+              <div>5kg for 20 Person</div>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+   
   )
 }
 
