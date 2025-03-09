@@ -51,9 +51,8 @@ const producerSchema = new Schema(
       required: true,
     },
     location: {
-      lat: { type: Number, },
-      lng: { type: Number },
-      required: true,
+      lat: { type: Number, required: true },
+      lng: { type: Number, required: true },
     },
     feedbacks: [
       {

@@ -3,7 +3,7 @@ import { Producer } from "../models/producer.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 
-const verifyJWT = asyncHandler(async (req, res, next) => {
+const verifyToken = asyncHandler(async (req, res, next) => {
   const gettoken =
     req.cookies.accessToken || req.headers.authorization?.split(" ")[1];
   if (!gettoken) {
@@ -12,15 +12,15 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
 
   try {
     const decodedToken = jwt.verify(gettoken, process.env.ACCESS_TOKEN_SECRET);
-    const Producer = await Producer.findById(decodedToken?._id).select(
-      "username fullname avatar email"
+    const producer = await Producer.findById(decodedToken?._id).select(
+      "username email"
     );
 
-    if (!Producer) {
+    if (!producer) {
       throw new ApiError(401, "Unauthorized");
     }
 
-    req.Producer = Producer;
+    req.producer = producer;
     next();
   } catch (error) {
     throw new ApiError(401, error?.message || "Invalid access token");

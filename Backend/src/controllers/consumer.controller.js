@@ -17,7 +17,7 @@ const generateAccessAndRefreshToken = async (consumerId) => {
     const refreshToken = consumer.generateRefreshToken();
 
     consumer.refreshToken = refreshToken;
-    consumer.accessToken = accessToken;
+    await consumer.save();
 
     return { accessToken, refreshToken };
   } catch (error) {
@@ -80,6 +80,7 @@ const registerConsumer = asyncHandler(async (req, res) => {
     const options = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: "None",
     };
 
     return res
@@ -121,7 +122,7 @@ const loginConsumer = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Consumer not found");
   }
 
-  const isPasswordValid = await consumer.isPasswordValid(password);
+  const isPasswordValid = await consumer.isPasswordCorrect(password);
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid credentials");
   }
@@ -156,7 +157,7 @@ const loginConsumer = asyncHandler(async (req, res) => {
 });
 
 const logoutConsumer = asyncHandler(async (req, res) => {
-  await Consumer.findByIdAndUpdate(
+  const consumer = await Consumer.findByIdAndUpdate(
     req.consumer._id,
     {
       $unset: { refreshToken: "" },
@@ -167,13 +168,25 @@ const logoutConsumer = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production" ? true : false,
   };
+  console.log("reached here");
 
   return res
     .status(200)
     .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options);
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, "Consumer logout successfully"));
 });
 
-const consumerProfile = asyncHandler(async (req, res) => {});
+const consumerProfile = asyncHandler(async (req, res) => {
+  const consumer = await Consumer.findById(req.consumer._id).select("-password -refreshToken");
+
+  if (!consumer) {
+    throw new ApiError(404, "Consumer not found");
+  }
+
+  return res.status(200).json(new ApiResponse(200, consumer, "Consumer profile fetched successfully"));
+});
+
+// update profile will be added in future
 
 export { registerConsumer, loginConsumer, logoutConsumer, consumerProfile };
