@@ -1,8 +1,8 @@
 .animation {
-  width: 60vw; /* Use viewport width for better responsiveness */
-  max-width: 500px; /* Set a max width for large screens */
-  height: 50vh; /* Use viewport height instead of fixed rem */
-  max-height: 600px; /* Prevent it from being too large */
+  width: 60vw; 
+  max-width: 500px;
+  height: 60vh; 
+  max-height: 600px;
   border-radius: 1rem;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   background-size: cover;

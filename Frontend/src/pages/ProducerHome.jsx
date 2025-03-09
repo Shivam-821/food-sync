@@ -1,7 +1,11 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import female from "../assets/female.jpg";
+
 
 const ProducerHome = () => {
     const [image, setImage] = useState(null);
+    useNavigate();
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -11,15 +15,21 @@ const ProducerHome = () => {
   };
 
   return (
-    <div className="bg-gradient-to-tr from-[#3EECAC] to-[#EE74E1] h-screen" >
+    <div className=" h-full" >
         <div className='flex items-center justify-between p-6'>
             <div className='text-5xl font-bold'>FoodSync</div>
-            <div><img className='h-20 w-20 rounded-4xl' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlrZqTCInyg6RfYC7Ape20o-EWP1EN_A8fOA&s" alt="" /></div>
+            <Link  to='/producerDetail'>
+      <img
+        className="h-20 w-20 rounded-4xl"
+        src="https://imgs.search.brave.com/infROkE3qEnyLfNcO-cEkJfbiXqq4XtSkwzdwsCY_yU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/cGhvdG8vMjAyMC8w/NS8xNy8yMC8yMS9j/YXQtNTE4MzQyN182/NDAuanBn"
+        alt=""
+      />
+    </Link>
         </div>
       <div className='p-7 '>
-      <h3 className='text-3xl mb-5'>Add</h3>
-      <form className="border rounded-lg border-black p-4 bg-white w-full max-w-4xl mx-auto">
-  <div className="flex flex-wrap gap-2 justify-start">
+      <h3 className='text-2xl mb-5'>Add Items</h3>
+      <form className="border flex items-center flex-col rounded-lg border-black p-4 bg-white w-full max-w-4xl mx-auto">
+  <div className="flex flex-wrap gap-5 justify-evenly">
     
     
     <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
@@ -65,7 +75,59 @@ const ProducerHome = () => {
     </div>
 
   </div>
+  <button
+              className='bg-[#111] text-white font-semibold mb-3 rounded-lg px-4 py-2 w-1/4  mt-5 text-lg placeholder:text-base'
+            >Add Items</button>
 </form>
+
+
+<h3 className='text-2xl mt-5 mb-5'>Added Items</h3>
+
+<div className="flex flex-wrap gap-9">
+  <div className="flex flex-col items-center">
+    <img className="h-60 hover:scale-107 hover:shadow-2xl w-60 rounded-4xl" src="https://imgs.search.brave.com/CGjizhvSz9PL8P1qQZ7G9uDshmtbT2I5h1FHp6l-AWQ/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTI1/NjQ3Njk5My9waG90/by9mb29kLmpwZz9z/PTYxMng2MTImdz0w/Jms9MjAmYz1NLS1H/TDMwYTl0a0VEUUpW/SDBVSTA3VmUtUWdG/TTJ4NUpVejRUd3Y5/OUxnPQ" alt="" />
+    <h3 className="flex">Chiken</h3>
+    <p className="flex">5kg</p>
+
+  </div>
+
+  <div className="flex flex-col items-center">
+    <img className="h-60 w-60 hover:scale-107 hover:shadow-2xl rounded-4xl" src="https://imgs.search.brave.com/CGjizhvSz9PL8P1qQZ7G9uDshmtbT2I5h1FHp6l-AWQ/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTI1/NjQ3Njk5My9waG90/by9mb29kLmpwZz9z/PTYxMng2MTImdz0w/Jms9MjAmYz1NLS1H/TDMwYTl0a0VEUUpW/SDBVSTA3VmUtUWdG/TTJ4NUpVejRUd3Y5/OUxnPQ" alt="" />
+    <h3 className="flex">Chiken</h3>
+    <p className="flex">5kg</p>
+
+  </div>
+
+  <div className="flex flex-col items-center">
+    <img className="h-60 w-60 hover:scale-107 hover:shadow-2xl rounded-4xl" src="https://imgs.search.brave.com/CGjizhvSz9PL8P1qQZ7G9uDshmtbT2I5h1FHp6l-AWQ/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTI1/NjQ3Njk5My9waG90/by9mb29kLmpwZz9z/PTYxMng2MTImdz0w/Jms9MjAmYz1NLS1H/TDMwYTl0a0VEUUpW/SDBVSTA3VmUtUWdG/TTJ4NUpVejRUd3Y5/OUxnPQ" alt="" />
+    <h3 className="flex">Chiken</h3>
+    <p className="flex">5kg</p>
+
+  </div>
+
+  <div className="flex flex-col items-center">
+    <img className="h-60 w-60 hover:scale-107 hover:shadow-2xl rounded-4xl" src="https://imgs.search.brave.com/CGjizhvSz9PL8P1qQZ7G9uDshmtbT2I5h1FHp6l-AWQ/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTI1/NjQ3Njk5My9waG90/by9mb29kLmpwZz9z/PTYxMng2MTImdz0w/Jms9MjAmYz1NLS1H/TDMwYTl0a0VEUUpW/SDBVSTA3VmUtUWdG/TTJ4NUpVejRUd3Y5/OUxnPQ" alt="" />
+    <h3 className="flex">Chiken</h3>
+    <p className="flex">5kg</p>
+
+  </div>
+
+  <div className="flex flex-col items-center">
+    <img className="h-60 w-60 hover:scale-107 hover:shadow-2xl rounded-4xl" src="https://imgs.search.brave.com/CGjizhvSz9PL8P1qQZ7G9uDshmtbT2I5h1FHp6l-AWQ/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTI1/NjQ3Njk5My9waG90/by9mb29kLmpwZz9z/PTYxMng2MTImdz0w/Jms9MjAmYz1NLS1H/TDMwYTl0a0VEUUpW/SDBVSTA3VmUtUWdG/TTJ4NUpVejRUd3Y5/OUxnPQ" alt="" />
+    <h3 className="flex">Chiken</h3>
+    <p className="flex">5kg</p>
+
+  </div>
+  <div className="flex flex-col items-center">
+    <img className="h-60 w-60 hover:scale-107 hover:shadow-2xl rounded-4xl" src="https://imgs.search.brave.com/CGjizhvSz9PL8P1qQZ7G9uDshmtbT2I5h1FHp6l-AWQ/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTI1/NjQ3Njk5My9waG90/by9mb29kLmpwZz9z/PTYxMng2MTImdz0w/Jms9MjAmYz1NLS1H/TDMwYTl0a0VEUUpW/SDBVSTA3VmUtUWdG/TTJ4NUpVejRUd3Y5/OUxnPQ" alt="" />
+    <h3 className="flex">Chiken</h3>
+    <p className="flex">5kg</p>
+
+  </div>
+
+  
+</div>
+
 
       </div>
 
@@ -79,3 +141,5 @@ const ProducerHome = () => {
 }
 
 export default ProducerHome
+
+

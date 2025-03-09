@@ -62,12 +62,6 @@ const consumerSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Wishlist",
     },
-    upcyclingTransactions: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Upcycling",
-      },
-    ],
     blogs: [
       {
         type: Schema.Types.ObjectId,

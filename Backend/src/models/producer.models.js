@@ -51,8 +51,8 @@ const producerSchema = new Schema(
       required: true,
     },
     location: {
-      lat: { type: Number },
-      lng: { type: Number },
+      lat: { type: Number, required: true },
+      lng: { type: Number, required: true },
     },
     feedbacks: [
       {
@@ -66,10 +66,6 @@ const producerSchema = new Schema(
         ref: "Partnership",
       },
     ],
-    wishlist: {
-      type: Schema.Types.ObjectId,
-      ref: "Wishlist",
-    },
     upcyclingTransactions: [
       {
         type: Schema.Types.ObjectId,

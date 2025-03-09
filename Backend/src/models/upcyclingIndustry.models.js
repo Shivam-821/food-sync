@@ -4,6 +4,12 @@ import bcrypt from "bcrypt"
 
 const upcyclingIndustrySchema = new Schema(
   {
+    username:{
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+    },
     companyName: {
       type: String,
       required: true,
@@ -18,9 +24,12 @@ const upcyclingIndustrySchema = new Schema(
       type: String,
       required: [true, "password is required"],
     },
+    avatar: {
+      type: String,
+    },
     location: {
-      lat: { type: Number },
-      lng: { type: Number },
+      lat: { type: Number, required: true },
+      lng: { type: Number, required: true },
     },
     upcyclingMethods: {
       type: [String],
@@ -33,6 +42,7 @@ const upcyclingIndustrySchema = new Schema(
         ref: "Item",
       },
     ],
+    refreshToken: { type: String },
     feedbacks: [
       {
         type: Schema.Types.ObjectId,

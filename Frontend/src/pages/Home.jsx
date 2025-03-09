@@ -1,32 +1,33 @@
-import React, { useEffect, useState } from 'react'
-import Background from '../Components/Background/Background'
-import Navbar from '../Components/Navbar/Navbar';
-import Hero from '../Components/Hero/Hero';
-import Blocks from '../Components/blocks';
-import ScrollingText from '../Components/ScrollingText/ScrollingText';
-
-
+import React, { useEffect, useState } from "react";
+import Background from "../Components/Background/Background";
+import Navbar from "../Components/Navbar/Navbar";
+import Hero from "../Components/Hero/Hero";
+import Blocks from "../Components/blocks";
+import ScrollingText from "../Components/ScrollingText/ScrollingText";
+import Footer from "../Components/Footer/Footer";
 
 const Home = () => {
   let heroData = [
-    {text1:"UPCYCLED FOOD", text2:"A tred to sustain"},
-    {text1:"indulge", text2:"your passions"},
-    {text1:"Give in to", text2:"your passions"},
-  ]
-  const [heroCount, setHeroCount]= useState(2);
+    { text1: "UPCYCLED FOOD", text2: "A tred to sustain" },
+    { text1: "indulge", text2: "your passions" },
+    { text1: "Give in to", text2: "your passions" },
+  ];
+  const [heroCount, setHeroCount] = useState(2);
   const [playStatus, setPlayStatus] = useState(false);
 
-  useEffect(()=>{
-    setInterval(()=>{
-      setHeroCount((count)=>{return count===2?0:count+1})
+  useEffect(() => {
+    setInterval(() => {
+      setHeroCount((count) => {
+        return count === 2 ? 0 : count + 1;
+      });
     }, 3000);
-  },[])
+  }, []);
 
   return (
     <div>
       <Background playStatus={playStatus} heroCount={heroCount} />
       <Navbar />
-      <Hero 
+      <Hero
         setPlayStatus={setPlayStatus}
         heroData={heroData[heroCount]}
         heroCount={heroCount}
@@ -35,23 +36,9 @@ const Home = () => {
       ></Hero>
       <ScrollingText />
       <Blocks></Blocks>
+      <Footer />
     </div>
-  )
-    
-}
+  );
+};
 
 export default Home;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
