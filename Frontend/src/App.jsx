@@ -7,9 +7,11 @@ import About from "./Components/About/About";
 import Recipe from "./Components/Recipe/Recipe";
 import SurplusProducer from "./Components/SurplusProducer/SurplusProducer";
 import Upcycle from "./Components/Upcycle/Upcycle";
-import SignUp from "./pages/Signup/SignUp";
+import Ask from "./pages/Ask/Ask";
 import ProducerDetail from "./pages/ProducerDetail";
 import Social from "./pages/Social/Social";
+import SignUp from "./pages/Signup/SignUp";
+import Producer from "./pages/ProducerSignUp/producer";
 
 function App() {
   return (
@@ -21,9 +23,11 @@ function App() {
       <Route path="/recipe" element={<Recipe />} />
       <Route path="/surplusProducer" element={<SurplusProducer />} />
       <Route path="/upcycle" element={<Upcycle />} />
-      <Route path="/signup" element={<SignUp />} />
+      <Route path="/signup" element={<Ask />} />
       <Route path="/social" element={<Social />} />
       <Route path="/producerDetail" element={<ProducerDetail />} />
+      <Route path="/producer" element={<Producer />} />
+      <Route path="/consumer" element={<SignUp />} />
     </Routes>
   );
 }
