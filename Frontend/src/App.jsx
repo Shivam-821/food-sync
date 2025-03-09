@@ -7,7 +7,7 @@ import About from "./Components/About/About";
 import Recipe from "./Components/Recipe/Recipe";
 import SurplusProducer from "./Components/SurplusProducer/SurplusProducer";
 import Upcycle from "./Components/Upcycle/Upcycle";
-import SignUp from "./Components/Signup/SignUp";
+import SignUp from "./pages/Signup/SignUp";
 function App() {
   return (
     <Routes>
