@@ -4,7 +4,7 @@ import SoicalSlider from '../../Components/SocialSlider/SocialSlider'
 import SocialNavbar from '../../Components/SocialNavbar'
 import SocialDot from '../../Components/SocialDot'
 import Blog from "../../Components/Blog";
-import Community from "../../Components/Community";
+import Community from "../../Components/CommunityChat";
 import Guidelines from "../../Components/Guidelines";
 import Recipe from "../../Components/Recipe/Recipe";
 

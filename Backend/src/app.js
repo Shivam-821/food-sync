@@ -17,6 +17,10 @@ app.use(express.static("public"));
 
 app.use(cookieParser());
 
+app.get('/', (req, res) => {
+  res.send('Hello World');
+});
+
 import consumerRoute from "./routes/consumer.routes.js"
 import producerRoute from "./routes/producer.routes.js"
 import itemRoute from "./routes/items.routes.js"

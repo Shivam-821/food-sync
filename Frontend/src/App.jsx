@@ -10,6 +10,7 @@ import Upcycle from "./Components/Upcycle/Upcycle";
 import SignUp from "./pages/Signup/SignUp";
 import ProducerDetail from "./pages/ProducerDetail";
 import Social from "./pages/Social/Social";
+import Community from "./Components/CommunityChat";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/social" element={<Social />} />
       <Route path="/producerDetail" element={<ProducerDetail />} />
+      <Route path="/community" element={<Community />} />
     </Routes>
   );
 }
