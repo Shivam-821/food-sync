@@ -5,8 +5,12 @@ import SocialNavbar from '../../Components/SocialNavbar'
 import SocialDot from '../../Components/SocialDot'
 import Blog from "../../Components/Blog";
 import Community from "../../Components/Community";
-import Guidelines from "../../Components/Guidelines";
 import Recipe from "../../Components/Recipe/Recipe";
+import Footer from '../../Components/Footer/Footer'
+import UserGuidelines from '../../Components/Guidelines/UserGuidelines'
+import NgoGuidelines from '../../Components/Guidelines/NgoGuidelines'
+import ProducerGuidelines from '../../Components/Guidelines/ProducerGuidelines'
+import UpcyleingGuidelines from '../../Components/Guidelines/UpcyleingGuidelines'
 
 const Social = () => {
 
@@ -27,10 +31,18 @@ const Social = () => {
         return <Blog />;
       case "Community":
         return <Community />;
-      case "Guidelines":
-        return <Guidelines />;
       case "Recipe":
         return <Recipe />;
+      case "Guidelines":
+        return <UserGuidelines />;
+      case "Users":
+        return <UserGuidelines />;
+      case "NGOs":
+        return <NgoGuidelines />;
+      case "Producers":
+        return <ProducerGuidelines />;
+      case "Upcycling Industries":
+        return <UpcyleingGuidelines />;
       default:
         return <Blog />;
     }
@@ -47,6 +59,7 @@ const Social = () => {
         {/* Display the selected component */}
        <div className="mt-10">{renderComponent()}</div>
       </div>
+      <Footer />
       
     </div>
   )

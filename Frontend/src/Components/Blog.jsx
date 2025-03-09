@@ -89,6 +89,7 @@ const Blog = () => {
 
   return (
     <div>
+      
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-5'>
       {posts.map(post => (
         <div className="bg-white m-3 shadow-md rounded-lg p-4 border-2 border-gray-200  hover:shadow-lg hover:border-gray-400 hover:transition-transform hover:duration-500">
