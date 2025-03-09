@@ -1,0 +1,60 @@
+.animation {
+  width: 60vw; /* Use viewport width for better responsiveness */
+  max-width: 500px; /* Set a max width for large screens */
+  height: 50vh; /* Use viewport height instead of fixed rem */
+  max-height: 600px; /* Prevent it from being too large */
+  border-radius: 1rem;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  background-size: cover;
+  background-position: center;
+  animation: gallery 20s linear infinite;
+}
+
+/* Keyframe Animation */
+@keyframes gallery {
+  0% {
+    background-image: url(../../assets/img2.webp);
+  }
+  20% {
+    background-image: url(../../assets/img3.webp);
+  }
+  40% {
+    background-image: url(../../assets/img4.jpg);
+  }
+  60% {
+    background-image: url(../../assets/img1.jpg);
+  }
+  80% {
+    background-image: url(../../assets/img2.webp);
+  }
+  100% {
+    background-image: url(../../assets/img3.webp);
+  }
+}
+
+/* ✅ Responsive Design for Tablets */
+@media (max-width: 1024px) {
+  .animation {
+    width: 80vw; /* Increase width for better fit */
+    height: 40vh; /* Adjust height */
+    max-height: 500px;
+  }
+}
+
+/* ✅ Responsive Design for Mobile */
+@media (max-width: 768px) {
+  .animation {
+    width: 90vw; /* Make it take more space on mobile */
+    height: 35vh; /* Adjust height */
+    max-height: 400px;
+  }
+}
+
+/* ✅ Ultra-Small Screens (like small mobile devices) */
+@media (max-width: 480px) {
+  .animation {
+    width: 95vw;
+    height: 30vh;
+    max-height: 350px;
+  }
+}
