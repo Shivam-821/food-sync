@@ -9,6 +9,7 @@ import SurplusProducer from "./Components/SurplusProducer/SurplusProducer";
 import Upcycle from "./Components/Upcycle/Upcycle";
 import SignUp from "./Components/Signup/SignUp";
 import ProducerDetail from "./pages/ProducerDetail";
+import Social from "./pages/Social/Social";
 
 function App() {
   return (
