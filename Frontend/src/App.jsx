@@ -7,7 +7,10 @@ import About from "./Components/About/About";
 import Recipe from "./Components/Recipe/Recipe";
 import SurplusProducer from "./Components/SurplusProducer/SurplusProducer";
 import Upcycle from "./Components/Upcycle/Upcycle";
-import SignUp from "./Components/Signup/SignUp";
+import SignUp from "./pages/Signup/SignUp";
+import ProducerDetail from "./pages/ProducerDetail";
+import Social from "./pages/Social/Social";
+
 function App() {
   return (
     <Routes>
@@ -19,6 +22,8 @@ function App() {
       <Route path="/surplusProducer" element={<SurplusProducer />} />
       <Route path="/upcycle" element={<Upcycle />} />
       <Route path="/signup" element={<SignUp />} />
+      <Route path="/social" element={<Social />} />
+      <Route path="/producerDetail" element={<ProducerDetail />} />
     </Routes>
   );
 }
