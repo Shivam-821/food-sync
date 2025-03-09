@@ -12,21 +12,21 @@ const Navbar = () => {
   };
 
   return (
-    <div className='nav backdrop-blur-xs backdrop-brightness-90 pl-5 pr-5 '>
-      <div className='nav-logo'><a href='#'>FoodSync</a></div>
+    <div className='nav fixed top-0 left-0 w-full backdrop-blur-xs backdrop-brightness-90 pl-5 pr-5'>
+      <div className='nav-logo'><a className='text-black' href='#'>FoodSync</a></div>
       <ul className='nav-menu'>
-        <li className=' hover:pb-2 cursor-pointer transition-all duration-200 relative group hidden lg:block'><a href='#'>Donation</a><div className="absolute bottom-0 w-full h-1 bg-white hidden group-hover:block  transition-all duration-200"></div></li>
-        <li className=' hover:pb-2 cursor-pointer transition-all duration-200 relative group hidden lg:block'><a href='#'>Upcycle</a>
-        <div className="absolute bottom-0 w-full h-1 bg-white hidden group-hover:block  transition-all duration-200"></div>
+        <li className=' hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group hidden lg:block'><a href='#'>Donation</a><div className="absolute bottom-0 w-full h-1  bg-black hidden group-hover:block  transition-all duration-200"></div></li>
+        <li className=' hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group hidden lg:block'><a href='#'>Upcycle</a>
+        <div className="absolute bottom-0 w-full h-1 bg-black hidden group-hover:block  transition-all duration-200"></div>
         </li>
-        <li className=' hover:pb-2 cursor-pointer transition-all duration-200 relative group hidden lg:block'><a href='#'>Surplus Producer</a>
-        <div className="absolute bottom-0 w-full h-1 bg-white hidden group-hover:block  transition-all duration-200"></div>
+        <li className=' hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group hidden lg:block'><a href='#'>Surplus Producer</a>
+        <div className="absolute bottom-0 w-full h-1 bg-black hidden group-hover:block  transition-all duration-200"></div>
         </li>
-        <li className=' hover:pb-2 cursor-pointer transition-all duration-200 relative group hidden lg:block'><a href='#'>Recipe</a>
-        <div className="absolute bottom-0 w-full h-1 bg-white hidden group-hover:block  transition-all duration-200"></div>
+        <li className=' hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group hidden lg:block'><a href='#'>Recipe</a>
+        <div className="absolute bottom-0 w-full h-1 bg-black hidden group-hover:block  transition-all duration-200"></div>
         </li>
-        <li className=' hover:pb-2 cursor-pointer transition-all duration-200 relative group hidden lg:block'><a href='#'>About</a>
-        <div className="absolute bottom-0 w-full h-1 bg-white hidden group-hover:block  transition-all duration-200"></div>
+        <li className=' hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group hidden lg:block'><a href='#'>About</a>
+        <div className="absolute bottom-0 w-full h-1 bg-black hidden group-hover:block  transition-all duration-200"></div>
         </li>
         <li className='hover:text-blue-900 cursor-pointer'>
           {isLogin ? (
