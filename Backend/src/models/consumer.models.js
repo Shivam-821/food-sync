@@ -36,10 +36,17 @@ const consumerSchema = new Schema(
       lat: { type: Number },
       lng: { type: Number },
     },
+    orders: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Order",
+      },
+    ],
     donationsReceived: [
       {
         type: Schema.Types.ObjectId,
         ref: "Donation",
+        default: []
       },
     ],
     donationsMade: [
