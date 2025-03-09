@@ -1,18 +1,32 @@
 import "./Navbar.css";
 import profileMale from "../../assets/male.jpg";
 import profileFemale from "../../assets/female.jpg";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Navbar = () => {
   const [isLogin, setIsLogin] = useState(false);
   const [profile, setProfile] = useState("male");
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleAuthToggle = () => {
     setIsLogin(!isLogin); // Toggle login state
   };
 
   return (
-    <div className="nav fixed top-0 left-0 w-full backdrop-blur-xs backdrop-brightness-90 pl-5 pr-5 ">
+    <div className={`nav fixed top-0 left-0 w-full  ${scrolled ? "bg-sky-500/20 backdrop-blur-xs backdrop-brightness-90" : "backdrop-brightness-90"}  pl-5 pr-5 `}>
       <div className="nav-logo">
         <a href="#">FoodSync</a>
       </div>
@@ -47,7 +61,7 @@ const Navbar = () => {
           ) : (
             <button
               onClick={handleAuthToggle}
-              className="flex cursor-pointer items-center border-2 border-gray-600 text-white py-1 px-3 rounded-[14px] hover:border-white hover:backdrop-brightness-200 transition duration-200"
+              className="flex cursor-pointer items-center border-2 border-gray-600 text-white hover:text-black py-1 px-3 rounded-[14px] hover:border-white hover:backdrop-brightness-200 transition duration-200"
             >
               <a href="/signup">SignUp</a>
             </button>
