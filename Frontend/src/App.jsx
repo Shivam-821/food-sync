@@ -11,7 +11,7 @@ import Ask from "./pages/Ask/Ask";
 import ProducerDetail from "./pages/ProducerDetail";
 import Social from "./pages/Social/Social";
 import SignUp from "./pages/Signup/SignUp";
-import Producer from "./pages/ProducerSignUp/producer";
+import Producer from "./pages/ProducerSignUp/Producer";
 import CommunityChat from "./Components/CommunityChat";
 
 function App() {
