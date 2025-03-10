@@ -225,7 +225,6 @@ const RecipeSection = () => {
           </button>
         </div>
       </div>
-      <Footer />
     </>
   );
 };
