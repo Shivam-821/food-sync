@@ -4,6 +4,7 @@ import profileFemale from "../../assets/female.jpg";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Globe } from "lucide-react"; // Importing globe icon from lucide-react
+import ThemeToggle from "../../ThemeToggle";
 
 const Navbar = () => {
   const [isLogin, setIsLogin] = useState(false);
@@ -38,7 +39,7 @@ const Navbar = () => {
       } pl-5 pr-5 flex justify-between items-center`}
     >
       <div className="nav-logo">
-        <a href="#">FoodSync</a>
+        <a href="/">FoodSync</a>
       </div>
 
       <ul className="nav-menu flex items-center gap-1">
@@ -112,6 +113,9 @@ const Navbar = () => {
               <a href="/signup">{t("SignUp")}</a>
             </button>
           )}
+        </li>
+        <li>
+          <ThemeToggle />
         </li>
       </ul>
     </div>
