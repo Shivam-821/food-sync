@@ -12,13 +12,16 @@ const initializeSocket = (server) => {
   io.on("connection", (socket) => {
     console.log(chalk.blue(`User connected: ${socket.id}`));
 
-    
-    socket.on("message", (msg) => {
-      console.log(`Message received: ${msg}`);
-      io.emit("message", msg); 
+   
+    socket.on("message", (data) => {
+      if (!data.name || !data.message) return; 
+
+      console.log(chalk.green(`Message from ${data.name}: ${data.message}`));
+      
+      io.emit("message", { name: data.name, message: data.message }); 
     });
 
-    
+
     socket.on("disconnect", () => {
       console.log(chalk.red(`User disconnected: ${socket.id}`));
     });
@@ -28,4 +31,3 @@ const initializeSocket = (server) => {
 };
 
 export default initializeSocket;
-
