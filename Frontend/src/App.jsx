@@ -10,6 +10,7 @@ import Upcycle from "./Components/Upcycle/Upcycle";
 import SignUp from "./pages/Signup/SignUp";
 import ProducerDetail from "./pages/ProducerDetail";
 import Social from "./pages/Social/Social";
+import CommunityChat from "./Components/CommunityChat";
 
 function App() {
   return (
@@ -19,11 +20,12 @@ function App() {
       <Route path="/donation" element={<Donation />} />
       <Route path="/about" element={<About />} />
       <Route path="/recipe" element={<Recipe />} />
-      <Route path="/surplusProducer" element={<SurplusProducer />} />
+      <Route path="/surplusProducer" element={<ProducerHome />} />
       <Route path="/upcycle" element={<Upcycle />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/social" element={<Social />} />
       <Route path="/producerDetail" element={<ProducerDetail />} />
+      <Route path="/communityChat" element={<CommunityChat />} />
     </Routes>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import female from "../assets/female.jpg";
+import Navbar from "../Components/Navbar/Navbar";
+import Footer from "../Components/Footer/Footer";
 
 
 const ProducerHome = () => {
@@ -15,8 +16,9 @@ const ProducerHome = () => {
   };
 
   return (
-    <div className=" h-full" >
-        <div className='flex items-center justify-between p-6'>
+    <div className=" h-full bg-gray-200" >
+      <Navbar />
+        <div className='flex mt-16 items-center justify-between p-6'>
             <div className='text-5xl font-bold'>FoodSync</div>
             <Link  to='/producerDetail'>
       <img
@@ -136,6 +138,7 @@ const ProducerHome = () => {
       <div>
 
       </div>
+      <Footer/>
     </div>
   )
 }
