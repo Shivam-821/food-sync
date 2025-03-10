@@ -41,7 +41,7 @@ const Navbar = () => {
         <a href="#">FoodSync</a>
       </div>
 
-      <ul className="nav-menu flex items-center space-x-6">
+      <ul className="nav-menu flex items-center gap-1">
         <li className="hidden lg:block hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group">
           <a href="/donation">{t("Donation")}</a>
           <div className="absolute bottom-0 w-full h-1 bg-black hidden group-hover:block transition-all duration-200"></div>
@@ -67,7 +67,7 @@ const Navbar = () => {
         <li className="relative">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center text-black px-3 py-2 rounded-lg transition hover:bg-gray-400 focus:ring focus:ring-gray-300"
+            className="flex items-center text-black px-1 py-2 rounded-lg transition hover:bg-gray-400 focus:ring focus:ring-gray-300"
           >
             <Globe size={22} className="mr-1 text-gray-700" />
           </button>
