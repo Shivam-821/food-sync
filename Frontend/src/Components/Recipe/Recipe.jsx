@@ -153,7 +153,6 @@ const recipes = [
 ];
 
 const RecipeSection = () => {
-  const { t, i18n } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState("All Types");
 
   const filteredRecipes =
