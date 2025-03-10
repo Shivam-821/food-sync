@@ -12,6 +12,7 @@ import ProducerDetail from "./pages/ProducerDetail";
 import Social from "./pages/Social/Social";
 import SignUp from "./pages/Signup/SignUp";
 import Producer from "./pages/ProducerSignUp/producer";
+import CommunityChat from "./Components/CommunityChat";
 
 function App() {
   return (
