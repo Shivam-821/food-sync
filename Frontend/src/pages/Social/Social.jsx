@@ -5,7 +5,6 @@ import SocialNavbar from "../../Components/SocialNavbar";
 import SocialDot from "../../Components/SocialDot";
 import Blog from "../../Components/Blog";
 import Community from "../../Components/Community";
-import Guidelines from "../../Components/Guidelines";
 import Recipe from "../../Components/Recipe/Recipe";
 import Footer from "../../Components/Footer/Footer";
 import UserGuidelines from "../../Components/Guidelines/UserGuidelines";
