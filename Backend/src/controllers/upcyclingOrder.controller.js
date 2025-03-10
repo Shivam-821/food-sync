@@ -1,91 +1,88 @@
-import { UpcyclingOrder } from "../models/upcyclingOrder.models.js";
+import { UpcyclingOrder } from "../models/upcyclingOrder.model.js";
+import { Cart } from "../models/cart.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-const createUpcyclingOrder = asyncHandler(async (req, res) => {
-  const { producer, upcyclingIndustry, items } = req.body;
 
-  if (!producer || !upcyclingIndustry || !items?.length) {
-    throw new ApiError(400, "All fields are required");
+const placeUpcyclingOrderFromCart = asyncHandler( async (req, res) => {
+  try {
+    const { upcyclingIndustryId, deliveryAddress, deliveryLocation } = req.body;
+
+    const cart = await Cart.findOne({ 
+      buyer: upcyclingIndustryId,
+      buyerType: "UpcyclingIndustry",
+    });
+
+    if (!cart || cart.items.length === 0) {
+      throw new ApiError(400, "Cart is Empty")
+    }
+
+    const upcyclingOrder = new UpcyclingOrder({
+      upcyclingIndustry: upcyclingIndustryId,
+      items: cart.items,
+      totalAmount: cart.totalAmount,
+      deliveryAddress,
+      deliveryLocation,
+    });
+
+    await upcyclingOrder.save();
+
+    await Cart.deleteOne({
+      buyer: upcyclingIndustryId,
+      buyerType: "UpcyclingIndustry",
+    });
+
+    res
+      .status(201)
+      .json(201, upcyclingOrder, "Order Placed Successfully");
+  } catch (error) {
+    throw new ApiError(500, "Internal server Error")
   }
-
-  const order = await UpcyclingOrder.create({
-    producer,
-    upcyclingIndustry,
-    items,
-  });
-
-  return res
-    .status(201)
-    .json(new ApiResponse(201, order, "Upcycling order created successfully"));
 });
 
-// Get all upcycling orders for a producer
-const getProducerUpcyclingOrders = asyncHandler(async (req, res) => {
-  const { producerId } = req.params;
 
-  const orders = await UpcyclingOrder.find({ producer: producerId })
-    .populate("upcyclingIndustry")
-    .populate("items.item");
+const getUpcyclingOrder = asyncHandler( async (req, res) => {
+  try {
+    const { orderId } = req.params;
 
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        orders,
-        "Producer upcycling orders fetched successfully"
-      )
-    );
-});
+    const upcyclingOrder =
+      await UpcyclingOrder.findById(orderId).populate("items.item");
 
-// Get all upcycling orders for an upcycling industry
-const getUpcyclingIndustryOrders = asyncHandler(async (req, res) => {
-  const { upcyclingIndustryId } = req.params;
+    if (!upcyclingOrder)
+      throw new ApiError(404, "Order not found")
 
-  const orders = await UpcyclingOrder.find({
-    upcyclingIndustry: upcyclingIndustryId,
-  })
-    .populate("producer")
-    .populate("items.item");
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        orders,
-        "Upcycling industry orders fetched successfully"
-      )
-    );
-});
-
-// Update upcycling order status
-const updateUpcyclingOrderStatus = asyncHandler(async (req, res) => {
-  const { orderId } = req.params;
-  const { status } = req.body;
-
-  const order = await UpcyclingOrder.findByIdAndUpdate(
-    orderId,
-    { status },
-    { new: true }
-  );
-
-  if (!order) {
-    throw new ApiError(404, "Upcycling order not found");
+    return res
+      .status(200)
+      .json(200, upcyclingOrder);
+  } catch (error) {
+     throw new ApiError(500, "Intenal server Error")
   }
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, order, "Upcycling order status updated successfully")
-    );
 });
 
-export {
-  createUpcyclingOrder,
-  getProducerUpcyclingOrders,
-  getUpcyclingIndustryOrders,
-  updateUpcyclingOrderStatus,
-};
+
+const updateUpcyclingOrderStatus = asyncHandler( async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { status, paymentStatus } = req.body;
+
+    const upcyclingOrder = await UpcyclingOrder.findById(orderId);
+
+    if (!upcyclingOrder)
+      throw new ApiError(404, "Order not found")
+
+    if (status) upcyclingOrder.status = status;
+    if (paymentStatus) upcyclingOrder.paymentStatus = paymentStatus;
+
+    await upcyclingOrder.save();
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, upcyclingOrder, "Order updated succesfully"));
+  } catch (error) {
+    throw new ApiError(500, "Internal server Error")
+  }
+});
+
+
+export {placeUpcyclingOrderFromCart, updateUpcyclingOrderStatus, getUpcyclingOrder}

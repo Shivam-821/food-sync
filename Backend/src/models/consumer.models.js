@@ -4,14 +4,6 @@ import jwt from "jsonwebtoken";
 
 const consumerSchema = new Schema(
   {
-    username: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      index: true,
-      trim: true,
-    },
     fullname: {
       type: String,
       required: true,
@@ -21,6 +13,23 @@ const consumerSchema = new Schema(
       type: String,
       required: true,
       unique: true,
+      validate: {
+        validator: function (value) {
+          return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+        },
+        message: (props) => `${props.value} is not a valid email!`,
+      },
+    },
+    phone: {
+      type: Number,
+      required: true,
+      unique: true,
+      validate: {
+        validator: function (value) {
+          return /^[6-9]\d{9}$/.test(value.toString());
+        },
+        message: (props) => `${props.value} is not a valid mobile number!`,
+      },
     },
     avatar: { type: String },
     password: {
@@ -46,7 +55,7 @@ const consumerSchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         ref: "Donation",
-        default: []
+        default: [],
       },
     ],
     donationsMade: [
@@ -61,20 +70,14 @@ const consumerSchema = new Schema(
         ref: "Feedback",
       },
     ],
+    cart: {
+      type: Schema.Types.ObjectId,
+      ref: "Cart",
+    },
     gamification: {
       type: Schema.Types.ObjectId,
       ref: "Gamification",
     },
-    wishlist: {
-      type: Schema.Types.ObjectId,
-      ref: "Wishlist",
-    },
-    blogs: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Blog",
-      },
-    ],
     communityPosts: [
       {
         type: Schema.Types.ObjectId,
@@ -100,7 +103,7 @@ consumerSchema.methods.generateAccessToken = function () {
     {
       _id: this._id,
       email: this.email,
-      username: this.username,
+      phone: this.phone,
     },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }

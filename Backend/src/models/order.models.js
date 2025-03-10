@@ -1,16 +1,10 @@
 import mongoose, { Schema } from "mongoose";
-import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const orderSchema = new Schema(
   {
     consumer: {
       type: Schema.Types.ObjectId,
       ref: "Consumer",
-      required: true,
-    },
-    producer: {
-      type: Schema.Types.ObjectId,
-      ref: "Producer",
       required: true,
     },
     items: [
@@ -20,27 +14,30 @@ const orderSchema = new Schema(
           ref: "Item",
           required: true,
         },
+        producer: {
+          type: Schema.Types.ObjectId,
+          ref: "Producer",
+          required: true,
+        },
         quantity: {
           type: Number,
           required: true,
-          min: [1, "Quantity must be at least 1"],
+          min: 1,
         },
         price: {
           type: Number,
           required: true,
-          min: [0, "Price cannot be negative"],
         },
       },
     ],
     totalAmount: {
       type: Number,
-      required: true,
-      min: [0, "Total amount cannot be negative"],
+      default: 0,
     },
     status: {
       type: String,
-      enum: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
-      default: "pending",
+      enum: ["Pending", "Confirmed", "Shipped", "Delivered", "Cancelled"],
+      default: "Pending",
     },
     paymentStatus: {
       type: String,
@@ -62,26 +59,17 @@ const orderSchema = new Schema(
     deliveryDate: {
       type: Date,
     },
-    feedback: {
-      type: Schema.Types.ObjectId,
-      ref: "Feedback",
-    },
   },
   { timestamps: true }
 );
 
-// Pre-save hook to calculate the total amount
+// Pre-save hook to auto-calculate totalAmount
 orderSchema.pre("save", function (next) {
-  if (this.isModified("items")) {
-    this.totalAmount = this.items.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-  }
+  this.totalAmount = this.items.reduce(
+    (sum, item) => sum + item.quantity * item.price,
+    0
+  );
   next();
 });
-
-// Add aggregation pagination plugin
-orderSchema.plugin(mongooseAggregatePaginate);
 
 export const Order = mongoose.model("Order", orderSchema);

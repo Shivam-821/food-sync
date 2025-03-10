@@ -4,14 +4,6 @@ import jwt from "jsonwebtoken";
 
 const producerSchema = new Schema(
   {
-    username: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      index: true,
-      trim: true,
-    },
     fullname: {
       type: String,
       required: true,
@@ -21,6 +13,23 @@ const producerSchema = new Schema(
       type: String,
       required: true,
       unique: true,
+      validate: {
+        validator: function (value) {
+          return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+        },
+        message: (props) => `${props.value} is not a valid email!`,
+      },
+    },
+    phone: {
+      type: Number,
+      required: true,
+      unique: true,
+      validate: {
+        validator: function (value) {
+          return /^[6-9]\d{9}$/.test(value.toString()); 
+        },
+        message: (props) => `${props.value} is not a valid mobile number!`,
+      },
     },
     avatar: { type: String },
     password: {
@@ -115,7 +124,7 @@ producerSchema.methods.generateAccessToken = function () {
     {
       _id: this._id,
       email: this.email,
-      username: this.username,
+      phone: this.phone,
     },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }

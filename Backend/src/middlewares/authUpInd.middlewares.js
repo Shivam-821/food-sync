@@ -18,7 +18,7 @@ const verifyTok = asyncHandler(async (req, res, next) => {
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     const upcycledIndustry = await UpcyclingIndustry.findById(
       decodedToken._id
-    ).select("username companyName email");
+    ).select("phone companyName email");
 
     if (!upcycledIndustry) {
       throw new ApiError(401, "Unauthorized: Industry not found");

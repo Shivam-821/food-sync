@@ -1,13 +1,7 @@
 import mongoose, { Schema } from "mongoose";
-import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const upcyclingOrderSchema = new Schema(
   {
-    producer: {
-      type: Schema.Types.ObjectId,
-      ref: "Producer",
-      required: true,
-    },
     upcyclingIndustry: {
       type: Schema.Types.ObjectId,
       ref: "UpcyclingIndustry",
@@ -20,26 +14,28 @@ const upcyclingOrderSchema = new Schema(
           ref: "Item",
           required: true,
         },
+        producer: {
+          type: Schema.Types.ObjectId,
+          ref: "Producer",
+          required: true,
+        },
         quantity: {
           type: Number,
           required: true,
-          min: [1, "Quantity must be at least 1"],
         },
         price: {
           type: Number,
           required: true,
-          min: [0, "Price cannot be negative"],
         },
       },
     ],
     totalAmount: {
       type: Number,
       required: true,
-      min: [0, "Total amount cannot be negative"],
     },
     status: {
       type: String,
-      enum: ["pending", "processing", "completed", "cancelled"],
+      enum: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
       default: "pending",
     },
     paymentStatus: {
@@ -47,22 +43,25 @@ const upcyclingOrderSchema = new Schema(
       enum: ["pending", "paid", "failed"],
       default: "pending",
     },
-    transactionDate: {
+    deliveryAddress: {
+      type: String,
+      required: true,
+    },
+    deliveryLocation: {
+      lat: { type: Number, required: true },
+      lng: { type: Number, required: true },
+    },
+    orderDate: {
       type: Date,
       default: Date.now,
     },
-    completionDate: {
+    deliveryDate: {
       type: Date,
-    },
-    feedback: {
-      type: Schema.Types.ObjectId,
-      ref: "Feedback",
     },
   },
   { timestamps: true }
 );
 
-// Pre-save hook to calculate the total amount
 upcyclingOrderSchema.pre("save", function (next) {
   if (this.isModified("items")) {
     this.totalAmount = this.items.reduce(
@@ -72,9 +71,6 @@ upcyclingOrderSchema.pre("save", function (next) {
   }
   next();
 });
-
-// Add aggregation pagination plugin
-upcyclingOrderSchema.plugin(mongooseAggregatePaginate);
 
 export const UpcyclingOrder = mongoose.model(
   "UpcyclingOrder",

@@ -20,21 +20,21 @@ const verifyUnified = asyncHandler(async (req, res, next) => {
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
     let user = await Consumer.findById(decodedToken._id).select(
-      "username email"
+      "phone email"
     );
     if (user) {
       req.consumer = user;
       return next();
     }
 
-    user = await Producer.findById(decodedToken._id).select("username email");
+    user = await Producer.findById(decodedToken._id).select("phone email");
     if (user) {
       req.producer = user;
       return next();
     }
 
     user = await UpcyclingIndustry.findById(decodedToken._id).select(
-      "username companyName email"
+      "phone companyName email"
     );
     if (user) {
       req.upcycledIndustry = user;
