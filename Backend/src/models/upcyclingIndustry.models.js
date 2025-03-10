@@ -38,6 +38,9 @@ const upcyclingIndustrySchema = new Schema(
     avatar: {
       type: String,
     },
+    address:{
+      type: String,
+    },
     location: {
       lat: { type: Number, required: true },
       lng: { type: Number, required: true },

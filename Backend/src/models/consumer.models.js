@@ -41,6 +41,9 @@ const consumerSchema = new Schema(
       type: String,
       enum: ["ngo", "individual"],
     },
+    address:{
+      type: String,
+    },
     location: {
       lat: { type: Number },
       lng: { type: Number },
@@ -55,7 +58,6 @@ const consumerSchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         ref: "Donation",
-        default: [],
       },
     ],
     donationsMade: [

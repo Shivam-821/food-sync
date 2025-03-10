@@ -3,7 +3,8 @@ import { Consumer } from "../models/consumer.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import chalk from "chalk"
+import { Producer } from "../models/producer.models.js";
+import { Item } from "../models/items.models.js";
 
 
 const getBuyerAndType = async (req) => {
@@ -31,6 +32,31 @@ const addToCart = asyncHandler(async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
+    // Ensure quantity and price are valid numbers
+    const parsedQuantity = parseInt(quantity, 10);
+    const parsedPrice = parseFloat(price);
+
+    if (
+      isNaN(parsedQuantity) ||
+      isNaN(parsedPrice) ||
+      parsedQuantity <= 0 ||
+      parsedPrice <= 0
+    ) {
+      return res.status(400).json({ error: "Invalid quantity or price" });
+    }
+
+    // Fetch the item details to get the producer
+    const item = await Item.findById(itemId);
+    if (!item) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+
+    const producer = await Producer.findById(item.producer);
+    if (!producer) {
+      return res.status(404).json({ error: "Producer not found" });
+    }
+
+    // Fetch the buyer's cart
     let cart = await Cart.findOne({ buyer: buyerId, buyerType });
 
     if (!cart) {
@@ -38,22 +64,23 @@ const addToCart = asyncHandler(async (req, res) => {
       await cart.save();
     }
 
+    // Link the cart to the buyer if not already linked
     if (!buyer.cart) {
-      buyer.cart = cart._id; 
+      buyer.cart = cart._id;
       await buyer.save();
     }
 
-    const existingItem = cart.items.find(
-      (item) => item.item.toString() === itemId
-    );
+    // Check if the item already exists in the cart
+    const existingItem = cart.items.find((item) => item.item.equals(itemId));
 
     if (existingItem) {
-      existingItem.quantity += parseInt(quantity);
+      existingItem.quantity += parsedQuantity;
     } else {
       cart.items.push({
         item: itemId,
-        quantity: parseInt(quantity),
-        price: parseFloat(price),
+        quantity: parsedQuantity,
+        price: parsedPrice,
+        producer: producer._id,
       });
     }
 
@@ -71,6 +98,7 @@ const addToCart = asyncHandler(async (req, res) => {
       .json({ error: error.message || "Internal Server Error" });
   }
 });
+
 
 
 const removeItemFromCart = asyncHandler(async (req, res) => {

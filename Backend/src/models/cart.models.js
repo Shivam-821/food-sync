@@ -14,9 +14,24 @@ const cartSchema = new Schema(
     },
     items: [
       {
-        item: { type: Schema.Types.ObjectId, ref: "Item", required: true },
-        quantity: { type: Number, required: true, min: 1 },
-        price: { type: Number, required: true },
+        item: { 
+          type: Schema.Types.ObjectId, 
+          ref: "Item", 
+          required: true 
+        },
+        quantity: { 
+          type: Number, 
+          required: true, 
+          min: 1 
+        },
+        price: { 
+          type: Number, 
+          required: true 
+        },
+        producer:{
+          type: Schema.Types.ObjectId,
+          ref: "Producer"
+        },
       },
     ],
     totalAmount: { type: Number, default: 0 },

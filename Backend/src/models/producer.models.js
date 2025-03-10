@@ -59,6 +59,9 @@ const producerSchema = new Schema(
       enum: ["factory", "supermarket", "hotel", "restaurant", "farmer"],
       required: true,
     },
+    address:{
+      type: String,
+    },
     location: {
       lat: { type: Number, required: true },
       lng: { type: Number, required: true },
