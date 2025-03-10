@@ -86,10 +86,6 @@ const itemSchema = new Schema(
         message: "{VALUE} is not a valid upcycling option",
       },
     },
-    inWishlist: {
-      type: Boolean,
-      default: false,
-    },
   },
   { timestamps: true }
 );

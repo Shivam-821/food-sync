@@ -21,13 +21,14 @@ function App() {
       <Route path="/donation" element={<Donation />} />
       <Route path="/about" element={<About />} />
       <Route path="/recipe" element={<Recipe />} />
-      <Route path="/surplusProducer" element={<SurplusProducer />} />
+      <Route path="/surplusProducer" element={<ProducerHome />} />
       <Route path="/upcycle" element={<Upcycle />} />
       <Route path="/signup" element={<Ask />} />
       <Route path="/social" element={<Social />} />
       <Route path="/producerDetail" element={<ProducerDetail />} />
       <Route path="/producer" element={<Producer />} />
       <Route path="/consumer" element={<SignUp />} />
+      <Route path="/communityChat" element={<CommunityChat />} />
     </Routes>
   );
 }

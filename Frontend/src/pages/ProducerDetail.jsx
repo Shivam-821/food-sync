@@ -1,9 +1,12 @@
 import React from "react";
 import "remixicon/fonts/remixicon.css";
+import Navbar from "../Components/Navbar/Navbar";
+import Footer from "../Components/Footer/Footer";
 
 const ProducerDetail = () => {
   return (
     <div className="bg-gray-100 w-full">
+      <Navbar />
       <div className="h-screen flex flex-col  ">
         <div className="h-1/4 w-3/4  flex gap-55 ml-20 rounded-2xl p-5 mt-20 bg-yellow-600">
           <img
@@ -112,6 +115,7 @@ const ProducerDetail = () => {
             </div>
           </div>
         </div>
+        <Footer/>
     </div>
   );
 };

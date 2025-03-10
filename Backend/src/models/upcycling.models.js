@@ -1,4 +1,5 @@
-import mongoose, {Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const upcyclingSchema = new Schema(
   {
@@ -15,15 +16,21 @@ const upcyclingSchema = new Schema(
     processedBy: {
       type: Schema.Types.ObjectId,
       ref: "UpcyclingIndustry",
+      required: true,
     },
     consumer: {
       type: Schema.Types.ObjectId,
       ref: "Consumer",
     },
+    status: {
+      type: String,
+      enum: ["pending", "processing", "completed"],
+      default: "pending",
+    },
   },
   { timestamps: true }
 );
 
-blogSchema.plugin(mongooseAggregatePaginate);
+upcyclingSchema.plugin(mongooseAggregatePaginate);
 
 export const Upcycling = mongoose.model("Upcycling", upcyclingSchema);

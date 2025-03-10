@@ -4,12 +4,6 @@ import bcrypt from "bcrypt"
 
 const upcyclingIndustrySchema = new Schema(
   {
-    username:{
-      type: String,
-      required: true,
-      trim: true,
-      unique: true,
-    },
     companyName: {
       type: String,
       required: true,
@@ -19,6 +13,23 @@ const upcyclingIndustrySchema = new Schema(
       type: String,
       required: true,
       unique: true,
+      validate: {
+        validator: function (value) {
+          return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+        },
+        message: (props) => `${props.value} is not a valid email!`,
+      },
+    },
+    phone: {
+      type: Number,
+      required: true,
+      unique: true,
+      validate: {
+        validator: function (value) {
+          return /^[6-9]\d{9}$/.test(value.toString());
+        },
+        message: (props) => `${props.value} is not a valid mobile number!`,
+      },
     },
     password: {
       type: String,
@@ -49,10 +60,20 @@ const upcyclingIndustrySchema = new Schema(
         ref: "Feedback",
       },
     ],
+    cart:{
+      type: Schema.Types.ObjectId,
+      ref: "Cart",
+    }, 
     partnerships: [
       {
         type: Schema.Types.ObjectId,
         ref: "Partnership",
+      },
+    ],
+    upcyclingOrders: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "UpcyclingOrder",
       },
     ],
     blogs: [
@@ -87,6 +108,7 @@ upcyclingIndustrySchema.methods.generateAccessToken = function () {
       _id: this._id,
       email: this.email,
       companyName: this.companyName,
+      phone: this.phone
     },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
