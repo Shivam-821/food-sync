@@ -1,80 +1,76 @@
-import { Order } from "../models/order.models.js";
+import { Order } from "../models/order.model.js";
+import { Cart } from "../models/cart.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-// Create a new order
-const createOrder = asyncHandler(async (req, res) => {
-  const { consumer, producer, items, deliveryAddress, deliveryLocation } =
-    req.body;
+const placeOrderFromCart = asyncHandler(async (req, res) => {
+  try {
+    const { consumerId, deliveryAddress, deliveryLocation } = req.body;
 
-  if (
-    !consumer ||
-    !producer ||
-    !items?.length ||
-    !deliveryAddress ||
-    !deliveryLocation
-  ) {
-    throw new ApiError(400, "All fields are required");
+    const cart = await Cart.findOne({
+      buyer: consumerId,
+      buyerType: "Consumer",
+    });
+
+    if (!cart || cart.items.length === 0) {
+      throw new ApiError(404, "Cart is Empty");
+    }
+
+    const order = new Order({
+      consumer: consumerId,
+      items: cart.items,
+      totalAmount: cart.totalAmount,
+      deliveryAddress,
+      deliveryLocation,
+    });
+
+    await order.save();
+
+    await Cart.deleteOne({ buyer: consumerId, buyerType: "Consumer" });
+
+    return res.status(201).json(201, order, "Ordre placed successfully");
+  } catch (error) {
+    throw new ApiError(500, "Internal server Error");
   }
-
-  const order = await Order.create({
-    consumer,
-    producer,
-    items,
-    deliveryAddress,
-    deliveryLocation,
-  });
-
-  return res
-    .status(201)
-    .json(new ApiResponse(201, order, "Order created successfully"));
 });
 
-// Get all orders for a consumer
-const getConsumerOrders = asyncHandler(async (req, res) => {
-  const { consumerId } = req.params;
+const getOrder = asyncHandler(async (req, res) => {
+  try {
+    const { orderId } = req.params;
 
-  const orders = await Order.find({ consumer: consumerId })
-    .populate("producer")
-    .populate("items.item");
+    const order = await Order.findById(orderId).populate("items.item");
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, orders, "Consumer orders fetched successfully"));
+    if (!order) {
+      throw new ApiError(404, "Order not found");
+    }
+
+    return res.status(200).json(new ApiResponse(200, order));
+  } catch (error) {
+    throw new ApiError(500, "Internal server Error");
+  }
 });
 
-// Get all orders for a producer
-const getProducerOrders = asyncHandler(async (req, res) => {
-  const { producerId } = req.params;
-
-  const orders = await Order.find({ producer: producerId })
-    .populate("consumer")
-    .populate("items.item");
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, orders, "Producer orders fetched successfully"));
-});
-
-// Update order status
 const updateOrderStatus = asyncHandler(async (req, res) => {
-  const { orderId } = req.params;
-  const { status } = req.body;
+  try {
+    const { orderId } = req.params;
+    const { status, paymentStatus } = req.body;
 
-  const order = await Order.findByIdAndUpdate(
-    orderId,
-    { status },
-    { new: true }
-  );
+    const order = await Order.findById(orderId);
 
-  if (!order) {
-    throw new ApiError(404, "Order not found");
+    if (!order) {
+      throw new ApiError(404, "Order not found");
+    }
+
+    if (status) order.status = status;
+    if (paymentStatus) order.paymentStatus = paymentStatus;
+
+    await order.save();
+
+    return res.status(200).json(200, order, "Order updated successfully");
+  } catch (error) {
+    throw new ApiError(500, "Internal server Error");
   }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, order, "Order status updated successfully"));
 });
 
-export { createOrder, getConsumerOrders, getProducerOrders, updateOrderStatus };
+export { placeOrderFromCart, getOrder, updateOrderStatus };

@@ -17,7 +17,7 @@ const generateAccessAndRefreshToken = async (ProducerId) => {
     const refreshToken = producer.generateRefreshToken();
 
     producer.refreshToken = refreshToken;
-    await producer.save()
+    await producer.save();
 
     return { accessToken, refreshToken };
   } catch (error) {
@@ -27,9 +27,9 @@ const generateAccessAndRefreshToken = async (ProducerId) => {
 
 const registerProducer = asyncHandler(async (req, res) => {
   const {
-    username,
     fullname,
     email,
+    phone,
     password,
     companyName,
     producerType,
@@ -37,21 +37,22 @@ const registerProducer = asyncHandler(async (req, res) => {
   } = req.body;
 
   if (
-    [username, fullname, email, password, companyName, producerType].some(
+    [fullname, email, password, companyName, producerType].some(
       (field) => !field?.trim()
     ) ||
-    !location
+    !location ||
+    !phone
   ) {
     throw new ApiError(400, "All fields are required");
   }
 
   const existingProducer = await Producer.findOne({
-    $or: [{ email }, { username }],
+    $or: [{ email }, { phone }],
   });
   if (existingProducer) {
     throw new ApiError(
       409,
-      "Producer already exists with the same email or username"
+      "Producer already exists with the same email or phone"
     );
   }
 
@@ -68,10 +69,10 @@ const registerProducer = asyncHandler(async (req, res) => {
 
   try {
     const createProducer = await Producer.create({
-      username: username.toLowerCase(),
       fullname,
       avatar: avatar?.url || "",
       email,
+      phone,
       password,
       companyName,
       producerType,
@@ -96,6 +97,7 @@ const registerProducer = asyncHandler(async (req, res) => {
     const options = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
     };
 
     return res
@@ -118,16 +120,16 @@ const registerProducer = asyncHandler(async (req, res) => {
 
 // login
 const loginProducer = asyncHandler(async (req, res) => {
-  const { email, username, password } = req.body;
+  const { email, phone, password } = req.body;
 
-  if (!email && !username) {
-    throw new ApiError(400, "Email or username is required");
+  if (!email && !phone) {
+    throw new ApiError(400, "Email or phone is required");
   }
   if (!password) {
     throw new ApiError(400, "Password is required");
   }
 
-  const producer = await Producer.findOne({ $or: [{ username }, { email }] });
+  const producer = await Producer.findOne({ $or: [{ phone }, { email }] });
 
   if (!producer) {
     throw new ApiError(404, "Producer not found");
@@ -142,9 +144,11 @@ const loginProducer = asyncHandler(async (req, res) => {
     producer._id
   );
 
-  const loggedInProducer = await Producer.findById(producer._id).select(
-    "-password -refreshToken"
-  );
+  const loggedInProducer = await Producer.findById(producer._id)
+    .select("-password -refreshToken")
+    .populate("items")
+    .populate("feedbacks");
+
   if (!loggedInProducer) {
     throw new ApiError(404, "Producer not found");
   }
@@ -152,6 +156,7 @@ const loginProducer = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
   };
 
   return res
@@ -188,9 +193,10 @@ const logoutProducer = asyncHandler(async (req, res) => {
 });
 
 const producerProfile = asyncHandler(async (req, res) => {
-  const producer = await Producer.findById(req.producer._id).select(
-    "-password -refreshToken"
-  );
+  const producer = await Producer.findById(req.producer._id)
+    .select("-password -refreshToken")
+    .populate("items")
+    .populate("feedbacks");
 
   if (!producer) {
     throw new ApiError(404, "Producer not found");

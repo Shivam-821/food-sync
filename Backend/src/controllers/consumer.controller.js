@@ -27,19 +27,19 @@ const generateAccessAndRefreshToken = async (consumerId) => {
 
 // Register consumer
 const registerConsumer = asyncHandler(async (req, res) => {
-  const { username, fullname, email, password, consumerType, location } =
+  const { fullname, email, phone, password, consumerType, location } =
     req.body;
 
   if (
-    [username, fullname, email, password, consumerType].some(
-      (field) => !field?.trim()
+    [fullname, email, password, consumerType].some(
+      (field) => !field?.trim() || !phone
     )
   ) {
     throw new ApiError(400, "All fields are required");
   }
 
   const existingConsumer = await Consumer.findOne({
-    $or: [{ email }, { username }],
+    $or: [{ email }, {phone}],
   });
   if (existingConsumer) {
     throw new ApiError(
@@ -57,10 +57,10 @@ const registerConsumer = asyncHandler(async (req, res) => {
     }
 
     const createConsumer = await Consumer.create({
-      username: username.toLowerCase(),
       fullname,
       avatar: avatar?.url || "",
       email,
+      phone,
       password,
       location: location || "",
       consumerType,
@@ -105,18 +105,17 @@ const registerConsumer = asyncHandler(async (req, res) => {
 
 // Login consumer
 const loginConsumer = asyncHandler(async (req, res) => {
-  console.log("Incoming Request Body:", req.body);
 
-  const { email, username, password } = req.body;
+  const { email, phone, password } = req.body;
 
-  if (!email && !username) {
-    throw new ApiError(400, "Email or username is required");
+  if (!email && !phone) {
+    throw new ApiError(400, "Email or phone is required");
   }
   if (!password) {
     throw new ApiError(400, "Password is required");
   }
 
-  const consumer = await Consumer.findOne({ $or: [{ username }, { email }] });
+  const consumer = await Consumer.findOne({ $or: [{ phone }, { email }] });
 
   if (!consumer) {
     throw new ApiError(404, "Consumer not found");
@@ -132,8 +131,7 @@ const loginConsumer = asyncHandler(async (req, res) => {
   );
 
   const loggedInConsumer = await Consumer.findById(consumer._id).select(
-    "-password -refreshToken"
-  );
+    "-password -refreshToken").populate("feedbacks")
   if (!loggedInConsumer) {
     throw new ApiError(404, "Consumer not found");
   }
@@ -178,7 +176,7 @@ const logoutConsumer = asyncHandler(async (req, res) => {
 });
 
 const consumerProfile = asyncHandler(async (req, res) => {
-  const consumer = await Consumer.findById(req.consumer._id).select("-password -refreshToken");
+  const consumer = await Consumer.findById(req.consumer._id).select("-password -refreshToken").populate("feedbacks")
 
   if (!consumer) {
     throw new ApiError(404, "Consumer not found");

@@ -26,19 +26,19 @@ const generateAccessAndRefreshToken = async (upcycledId) => {
 };
 
 const registerUpcyclingIndustry = asyncHandler(async (req, res) => {
-  const { username, companyName, email, password, location, upcyclingMethods } =
+  const { companyName, email, phone, password, location, upcyclingMethods } =
     req.body;
 
   if (
-    [username, companyName, email, password].some((field) => !field?.trim()) ||
-    !location ||
-    !upcyclingMethods?.length
+    [companyName, email, password].some((field) => !field?.trim()) ||
+    !location || 
+    !upcyclingMethods?.length || !phone
   ) {
     throw new ApiError(400, "All fields are required");
   }
 
   const existingIndustry = await UpcyclingIndustry.findOne({
-    $or: [{ email }, { username }],
+    $or: [{ email }, {phone}],
   });
   if (existingIndustry) {
     throw new ApiError(
@@ -60,9 +60,9 @@ const registerUpcyclingIndustry = asyncHandler(async (req, res) => {
 
   try {
     const createIndustry = await UpcyclingIndustry.create({
-      username,
       companyName,
       email,
+      phone,
       password,
       location,
       upcyclingMethods,
@@ -110,7 +110,7 @@ const registerUpcyclingIndustry = asyncHandler(async (req, res) => {
 const loginUpcyclingIndustry = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
-  if (!email && !username) {
+  if (!email && !phone) {
     throw new ApiError(400, "Email or username is required");
   }
   if (!password) {
@@ -118,7 +118,7 @@ const loginUpcyclingIndustry = asyncHandler(async (req, res) => {
   }
 
   const upcycled = await UpcyclingIndustry.findOne({
-    $or: [{ username }, { email }],
+    $or: [{ username }, { email }, {phone}],
   });
 
   if (!upcycled) {
@@ -136,7 +136,7 @@ const loginUpcyclingIndustry = asyncHandler(async (req, res) => {
 
   const loggedInUpcycled = await UpcyclingIndustry.findById(
     upcycled._id
-  ).select("-password -refreshToken");
+  ).select("-password -refreshToken").populate("feedback")
   if (!loggedInUpcycled) {
     throw new ApiError(404, "Upcycling Industry not found");
   }
@@ -182,7 +182,7 @@ const logoutUpcycledIndustry = asyncHandler(async (req, res) => {
 const UpcycledIndustryProfile = asyncHandler(async (req, res) => {
   const upcycledIndustry = await UpcyclingIndustry.findById(
     req.upcycledIndustry._id
-  ).select("-password -refreshToken");
+  ).select("-password -refreshToken").populate("feedback")
 
   if (!upcycledIndustry) {
     throw new ApiError(404, "Upcycling Industry not found");

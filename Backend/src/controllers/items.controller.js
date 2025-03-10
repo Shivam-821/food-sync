@@ -76,9 +76,14 @@ const createItem = asyncHandler(async (req, res) => {
     producer.items.push(item._id);
     await producer.save();
 
+    const itemDetail = await Item.findOne({ _id: item._id }).populate({
+      path: "producer",
+      select: "location email phone fullname producerType companyName",
+    });
+
     return res
       .status(201)
-      .json(new ApiResponse(201, item, "Item created successfully"));
+      .json(new ApiResponse(201, itemDetail, "Item created successfully"));
   } catch (error) {
     if (avatar?.public_id) await deleteFromCloudinary(avatar.public_id);
     throw new ApiError(500, `Failed to create item: ${error.message}`);
@@ -92,13 +97,13 @@ const getAllItems = asyncHandler(async (req, res) => {
     status,
     minPrice,
     maxPrice,
-    sortBy = "createdAt",
-    sortOrder = "asc",
+    sortBy = "createdAt", 
+    sortOrder = "desc", 
     page = 1,
     limit = 10,
   } = req.query;
 
-  // Convert numerical values properly
+
   const minPriceNum = minPrice ? parseFloat(minPrice) : undefined;
   const maxPriceNum = maxPrice ? parseFloat(maxPrice) : undefined;
   const pageNum = parseInt(page);
@@ -112,59 +117,120 @@ const getAllItems = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Limit must be a valid number greater than 0");
   }
 
-  // Build the aggregation pipeline
-  const matchStage = {};
-  if (category) matchStage.category = category.toLowerCase();
-  if (status) matchStage.status = status.toLowerCase();
-  if (minPriceNum || maxPriceNum) {
-    matchStage.price = {};
-    if (minPriceNum) matchStage.price.$gte = minPriceNum;
-    if (maxPriceNum) matchStage.price.$lte = maxPriceNum;
+  // Validate price range
+  if (
+    minPriceNum !== undefined &&
+    maxPriceNum !== undefined &&
+    minPriceNum > maxPriceNum
+  ) {
+    throw new ApiError(400, "minPrice must be less than or equal to maxPrice");
   }
 
+  // Build the aggregation pipeline
+  const matchStage = {};
+  if (category) {
+    matchStage.category = { $eq: category.toLowerCase() };
+  }
+  if (status) {
+    matchStage.status = { $eq: status.toLowerCase() };
+  }
+  if (minPriceNum !== undefined || maxPriceNum !== undefined) {
+    matchStage.price = {};
+    if (minPriceNum !== undefined) matchStage.price.$gte = minPriceNum;
+    if (maxPriceNum !== undefined) matchStage.price.$lte = maxPriceNum;
+  }
+
+  // Handle sorting logic
   const sortStage = {};
-  sortStage[sortBy] = sortOrder === "desc" ? -1 : 1;
+  const allowedSortFields = ["price", "createdAt", "category", "status"];
+  if (allowedSortFields.includes(sortBy)) {
+    sortStage[sortBy] = sortOrder === "desc" ? -1 : 1; 
+  } else {
+    sortStage["createdAt"] = -1; 
+  }
 
-  // Use $facet to execute count and pagination in a single aggregation
-  const result = await Item.aggregate([
-    { $match: matchStage },
-    {
-      $facet: {
-        metadata: [{ $count: "totalItems" }],
-        data: [
-          { $sort: sortStage },
-          { $skip: (pageNum - 1) * limitNum },
-          { $limit: limitNum },
-        ],
-      },
-    },
-  ]);
+  try {
+    // Aggregation pipeline
+   const result = await Item.aggregate([
+     { $match: matchStage }, // Apply filters
+     {
+       $lookup: {
+         from: "producers",
+         localField: "producer",
+         foreignField: "_id",
+         as: "producerDetails",
+       },
+     },
+     { $unwind: "$producerDetails" }, // Flatten producerDetails array
+     { $sort: sortStage }, // Apply sorting
+     {
+       $project: {
+         // Include only the fields you want in the response
+         name: 1,
+         category: 1,
+         price: 1,
+         status: 1,
+         createdAt: 1,
+         updatedAt: 1,
+         quantity: 1,
+         unit: 1,
+         avatar: 1,
+         description: 1,
+         mfDate: 1,
+         expiryDate: 1,
+         upcyclingOptions: 1,
+         inWishlist: 1,
+         producer: {
+           fullname: "$producerDetails.fullname",
+           email: "$producerDetails.email",
+           location: "$producerDetails.location",
+           phone: "$producerDetails.phone",
+           companyName: "$producerDetails.companyName",
+           producerType: "$producerDetails.producerType",
+         },
+       },
+     },
+     {
+       $facet: {
+         metadata: [{ $count: "totalItems" }],
+         data: [{ $skip: (pageNum - 1) * limitNum }, { $limit: limitNum }],
+       },
+     },
+   ]);
 
-  // Extract results
-  const items = result[0]?.data || [];
-  const totalItems = result[0]?.metadata[0]?.totalItems || 0;
-  const totalPages = Math.max(1, Math.ceil(totalItems / limitNum));
+    // Extract results
+    const items = result[0]?.data || [];
+    const totalItems = result[0]?.metadata[0]?.totalItems || 0;
+    const totalPages = Math.max(1, Math.ceil(totalItems / limitNum));
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      {
-        items,
-        totalItems,
-        totalPages,
-        currentPage: pageNum,
-        limit: limitNum,
-      },
-      "Items fetched successfully"
-    )
-  );
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          items,
+          totalItems,
+          totalPages,
+          currentPage: pageNum,
+          limit: limitNum,
+        },
+        "Items fetched successfully"
+      )
+    );
+  } catch (error) {
+    throw new ApiError(500, "An error occurred while fetching items");
+  }
 });
+
+
 
 // Get a single item by ID
 const getItemById = asyncHandler(async (req, res) => {
   const { itemId } = req.params;
 
-  const item = await Item.findById(itemId);
+  const item = await Item.findById(itemId).populate({
+    path: "producer",
+    select: "location email phone fullname producerType companyName",
+  });
   if (!item) {
     throw new ApiError(404, "Item not found");
   }
@@ -213,7 +279,10 @@ const updateItem = asyncHandler(async (req, res) => {
   // Update the item
   const updatedItem = await Item.findByIdAndUpdate(itemId, updateFields, {
     new: true,
-  });
+  }).populate({
+    path: "producer",
+    select: "location email phone fullname producerType companyName"
+  })
 
   return res
     .status(200)
