@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
-import jwt from "jsonwebtoken"
-import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const upcyclingIndustrySchema = new Schema(
   {
@@ -38,7 +38,7 @@ const upcyclingIndustrySchema = new Schema(
     avatar: {
       type: String,
     },
-    address:{
+    address: {
       type: String,
     },
     location: {
@@ -63,14 +63,20 @@ const upcyclingIndustrySchema = new Schema(
         ref: "Feedback",
       },
     ],
-    cart:{
+    cart: {
       type: Schema.Types.ObjectId,
       ref: "Cart",
-    }, 
+    },
     partnerships: [
       {
         type: Schema.Types.ObjectId,
         ref: "Partnership",
+      },
+    ],
+    donationsMade: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Donation",
       },
     ],
     upcyclingOrders: [
@@ -111,7 +117,7 @@ upcyclingIndustrySchema.methods.generateAccessToken = function () {
       _id: this._id,
       email: this.email,
       companyName: this.companyName,
-      phone: this.phone
+      phone: this.phone,
     },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
