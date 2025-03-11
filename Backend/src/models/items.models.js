@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
+import { UpcyclingItem } from "./upcyclingItem.models.js";
 
 const itemSchema = new Schema(
   {
@@ -96,5 +97,22 @@ itemSchema.statics.itemExists = async function (itemId) {
   const item = await this.findById(itemId);
   return !!item;
 };
+
+itemSchema.pre("save", async function (next) {
+  if (!this.isModified("expiryDate")) return next();
+
+  if (this.expiryDate < new Date()) {
+    this.status = "expired";
+  }
+  next();
+});
+
+itemSchema.post("save", async function (doc, next) {
+  if (doc.status === "expired") {
+    await mongoose.model("UpcyclingItem").addExpiredItemsToUpcycling();
+  }
+  next();
+});
+
 
 export const Item = mongoose.model("Item", itemSchema);

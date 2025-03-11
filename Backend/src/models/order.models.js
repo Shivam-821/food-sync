@@ -14,10 +14,9 @@ const orderSchema = new Schema(
           ref: "Item",
           required: true,
         },
-        producer: {
+        producer:{
           type: Schema.Types.ObjectId,
-          ref: "Producer",
-          required: true,
+          ref: "Producer"
         },
         quantity: {
           type: Number,
@@ -34,6 +33,10 @@ const orderSchema = new Schema(
       type: Number,
       default: 0,
     },
+    paymentMethod: {
+      type: String,
+      enum: ["cod", "online"],
+    },
     status: {
       type: String,
       enum: ["Pending", "Confirmed", "Shipped", "Delivered", "Cancelled"],
@@ -41,8 +44,20 @@ const orderSchema = new Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "failed"],
+      enum: ["pending", "paid", "failed", "unpaid"],
       default: "pending",
+    },
+    razorpayOrderId: {
+      type: String,
+      default: null,
+    },
+    paymentReference: {
+      type: String,
+      default: null,
+    },
+    razorpaySignature: {
+      type: String,
+      default: null,
     },
     deliveryAddress: {
       type: String,

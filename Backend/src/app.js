@@ -27,7 +27,8 @@ import itemRoute from "./routes/items.routes.js"
 import upcycleIndRoute from "./routes/upcyclingIndustry.routes.js"
 import feedbacdRoute from "./routes/feedback.routes.js"
 import cartRoute from "./routes/cart.routes.js"
-
+import orderRoute from "./routes/order.routes.js"
+import upcyclingItemRoute from "./routes/upcyclingItem.routes.js"
 
 
 app.use("/api/v1/consumer", consumerRoute);
@@ -36,6 +37,8 @@ app.use("/api/v1/items/", itemRoute)
 app.use("/api/v1/upcyclingIndustry", upcycleIndRoute)
 app.use("/api/v1/feedback", feedbacdRoute)
 app.use("/api/v1/cart", cartRoute)
+app.use("/api/v1/order", orderRoute)
+app.use("/api/v1/upcyclingItem",upcyclingItemRoute)
 
 
 export { app };
