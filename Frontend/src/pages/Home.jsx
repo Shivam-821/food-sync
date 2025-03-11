@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Background from "../Components/Background/Background";
 import Navbar from "../Components/Navbar/Navbar";
 import Hero from "../Components/Hero/Hero";
-import Blocks from "../Components/blocks";
+import Blocks from "../Components/Blocks";
 import ScrollingText from "../Components/ScrollingText/ScrollingText";
 import Footer from "../Components/Footer/Footer";
 
