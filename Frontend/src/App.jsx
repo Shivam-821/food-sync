@@ -8,11 +8,11 @@ import Recipe from "./Components/Recipe/Recipe";
 import SurplusProducer from "./Components/SurplusProducer/SurplusProducer";
 import Upcycle from "./pages/Upcycle";
 import SignUp from "./pages/Signup/SignUp";
-import Upcycle from "./Components/Upcycle/Upcycle";
+//import Upcycle from "./Components/Upcycle/Upcycle";
 import Ask from "./pages/Ask/Ask";
 import ProducerDetail from "./pages/ProducerDetail";
 import Social from "./pages/Social/Social";
-import SignUp from "./pages/Signup/SignUp";
+//import SignUp from "./pages/Signup/SignUp";
 import Producer from "./pages/ProducerSignUp/Producer";
 import CommunityChat from "./Components/CommunityChat";
 
