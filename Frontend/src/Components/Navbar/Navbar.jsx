@@ -10,7 +10,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
+      if (window.scrollY > 20) {
         setScrolled(true);
       } else {
         setScrolled(false);
@@ -26,30 +26,30 @@ const Navbar = () => {
   };
 
   return (
-    <div className={`nav z-10 fixed top-0 left-0 w-full  ${scrolled ? "bg-sky-500/30 backdrop-blur-sm backdrop-brightness-90" : "backdrop-brightness-90"}  pl-5 pr-5 `}>
-      <div className="nav-logo">
-        <a href="#">FoodSync</a>
+    <div className={`nav z-10 fixed top-0 left-0 w-full  ${scrolled ? "bg-sky-500/40 backdrop-blur-sm backdrop-brightness-90" : "backdrop-brightness-50"}  pl-5 pr-5 `}>
+      <div className={`nav-logo ${scrolled ? "text-black " : "text-white"}`}>
+        <a href="/">FoodSync</a>
       </div>
       <ul className="nav-menu">
-        <li className=" hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group hidden lg:block">
+        <li className={` hover:pb-2 cursor-pointer font-serif  transition-all duration-200 relative group hidden lg:block ${scrolled ? "text-black " : "text-white"}  `}>
           <a href="/donation">Donation</a>
-          <div className="absolute bottom-0 w-full h-1 bg-black hidden group-hover:block  transition-all duration-200"></div>
+          <div className={`absolute bottom-0 w-full h-1 hidden group-hover:block  transition-all duration-200 ${scrolled ? "bg-black" : "bg-white"} `}></div>
         </li>
-        <li className=" hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group hidden lg:block">
+        <li className={`font-serif hover:pb-2 cursor-pointer transition-all duration-200 relative group hidden lg:block ${scrolled ? "text-black" : "text-white"}  `}>
           <a href="/upcycle">Upcycle</a>
-          <div className="absolute bottom-0 w-full h-1 bg-black hidden group-hover:block  transition-all duration-200"></div>
+          <div className={`absolute bottom-0 w-full h-1 hidden group-hover:block  transition-all duration-200 ${scrolled ? "bg-black" : "bg-white"} `}></div>
         </li>
-        <li className=" hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group hidden lg:block">
+        <li className={`font-serif hover:pb-2 cursor-pointer transition-all duration-200 relative group hidden lg:block ${scrolled ? "text-black" : "text-white"} `}>
           <a href="/SurplusProducer">Surplus Producer</a>
-          <div className="absolute bottom-0 w-full h-1 bg-black hidden group-hover:block  transition-all duration-200"></div>
+          <div className={`absolute bottom-0 w-full h-1 hidden group-hover:block  transition-all duration-200 ${scrolled ? "bg-black" : "bg-white"} `}></div>
         </li>
-        <li className=" hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group hidden lg:block">
+        <li className={` font-serif hover:pb-2 cursor-pointer  transition-all duration-200 relative group hidden lg:block ${scrolled ? "text-black" : "text-white"}  `}>
           <a href="/social">Social</a>
-          <div className="absolute bottom-0 w-full h-1 bg-black hidden group-hover:block  transition-all duration-200"></div>
+          <div className={`absolute bottom-0 w-full h-1 hidden group-hover:block  transition-all duration-200 ${scrolled ? "bg-black" : "bg-white"} `}></div>
         </li>
-        <li className=" hover:pb-2 cursor-pointer text-black transition-all duration-200 relative group hidden lg:block">
+        <li className={` font-serif hover:pb-2 cursor-pointer transition-all duration-200 relative group hidden lg:block ${scrolled ? "text-black" : "text-white"} `}>
           <a href="/about">About</a>
-          <div className="absolute bottom-0 w-full h-1 bg-black hidden group-hover:block  transition-all duration-200"></div>
+          <div className={`absolute bottom-0 w-full h-1 hidden group-hover:block  transition-all duration-200 ${scrolled ? "bg-black" : "bg-white"} `}></div>
         </li>
         <li className="hover:text-blue-900 cursor-pointer">
           {isLogin ? (

@@ -44,7 +44,7 @@ const SocialNavbar = ({setActiveComponent,activeComponent}) => {
                           e.stopPropagation(); // Prevents click from closing menu
                           setActiveComponent(dropdownItem);
                         }}
-                        className=" cursor-pointer w-full px-1 py-5 text-black hover:text-blue-700 text-sm transition-all duration-200"
+                        className=" cursor-pointer w-full px-1 py-5 text-black hover:scale-105 hover:text-blue-700 text-sm transition-all duration-200"
                       >
                         {dropdownItem}
                       </button>
