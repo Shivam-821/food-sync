@@ -1,71 +1,158 @@
 import React from "react";
+import { FaRegSquare } from "react-icons/fa";
 
-const producersGuidelines = [
+const guidelines = [
   {
-    title: "Track Food Inventory",
-    points: [
-      "Implement inventory management software to monitor food stock levels and prevent over-purchasing.",
-      "Use predictive analytics to anticipate demand and adjust production accordingly.",
-      "Reduce portion sizes where necessary to minimize food waste without compromising customer satisfaction.",
+    title: "Register Your Business",
+    contents: [
+      "Sign up with your business credentials.",
+      "Provide necessary verification documents.",
+      "Get approval from the FoodSync team."
     ],
+    icon: "✅"
   },
   {
-    title: "Offer Surplus at Discounts",
-    points: [
-      "Provide discounts on food that is nearing its expiry but still safe for consumption.",
-      "Partner with food delivery services and apps to sell surplus food at lower prices.",
-      "Promote special offers on slightly imperfect fruits, vegetables, and other perishable items.",
+    title: "Identifying Surplus Food",
+    contents: [
+      "Track surplus food items before they expire.",
+      "Categorize food based on type and condition.",
+      "Ensure that only safe-to-consume food is donated."
     ],
+    icon: "🔍"
   },
   {
-    title: "Partner with NGOs & Upcyclers",
-    points: [
-      "Establish regular donation schedules with local NGOs to redistribute surplus food efficiently.",
-      "Work with upcycling industries to turn organic waste into compost, animal feed, or biofuel.",
-      "Educate employees about the importance of food waste reduction and sustainability.",
+    title: "Listing Food for Donation",
+    contents: [
+      "Create detailed listings with descriptions and expiry dates.",
+      "Specify pickup/drop-off locations and available time slots.",
+      "Update availability in real-time to avoid confusion."
     ],
+    icon: "📋"
   },
   {
-    title: "Use Smart Packaging",
-    points: [
-      "Opt for biodegradable, compostable, or recyclable packaging to reduce environmental impact.",
-      "Introduce reusable containers and incentivize customers to bring their own packaging.",
-      "Clearly label expiration dates and storage instructions to help consumers reduce waste.",
+    title: "Ensuring Food Safety & Quality",
+    contents: [
+      "Follow hygiene standards while handling food.",
+      "Use proper storage and packaging before donation.",
+      "Only donate food that meets food safety regulations."
     ],
+    icon: "🛡️"
   },
   {
-    title: "Train Staff on Waste Management",
-    points: [
-      "Conduct regular training sessions for employees on food waste reduction practices.",
-      "Encourage kitchen staff to repurpose food scraps creatively in new dishes.",
-      "Implement a food waste tracking system to monitor and reduce daily wastage.",
+    title: "Coordinating Logistics with NGOs & Volunteers",
+    contents: [
+      "Plan efficient pickup schedules with NGOs.",
+      "Ensure smooth handovers during food transfers.",
+      "Use FoodSync's tracking system for better coordination."
     ],
+    icon: "🚚"
   },
+  {
+    title: "Reducing Food Waste at the Source",
+    contents: [
+      "Analyze sales patterns to minimize surplus generation.",
+      "Implement portion control strategies in restaurants.",
+      "Encourage staff to reduce kitchen waste."
+    ],
+    icon: "🌱"
+  },
+  {
+    title: "Engaging Employees in the Donation Process",
+    contents: [
+      "Encourage staff participation in food donation efforts.",
+      "Educate employees on the impact of food waste.",
+      "Foster a culture of sustainability within the workplace."
+    ],
+    icon: "🤝"
+  },
+  {
+    title: "Tracking & Reporting Donations",
+    contents: [
+      "Use the dashboard to track donated food quantities.",
+      "Monitor impact metrics like meals served and waste reduced.",
+      "Generate reports to measure social and environmental impact."
+    ],
+    icon: "📊"
+  },
+  {
+    title: "Legal & Compliance Guidelines",
+    contents: [
+      "Ensure compliance with local food donation laws.",
+      "Follow tax benefits and incentives for surplus donation.",
+      "Maintain transparency in food donation records."
+    ],
+    icon: "⚖️"
+  },
+  {
+    title: "Building Partnerships with NGOs",
+    contents: [
+      "Establish long-term relationships with NGOs and food banks.",
+      "Work together to improve donation efficiency.",
+      "Collaborate on community outreach programs."
+    ],
+    icon: "🏢"
+  },
+  {
+    title: "Receiving Feedback & Continuous Improvement",
+    contents: [
+      "Encourage NGOs and receivers to provide feedback.",
+      "Improve donation processes based on feedback.",
+      "Adapt donation strategies to maximize impact."
+    ],
+    icon: "💡"
+  },
+  {
+    title: "Promoting Your Sustainability Efforts",
+    contents: [
+      "Share donation milestones on social media.",
+      "Highlight your efforts in corporate sustainability reports.",
+      "Encourage other businesses to join the initiative."
+    ],
+    icon: "📢"
+  }
 ];
+
 
 const ProducersGuidelines = () => {
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold text-center text-red-700 mb-6">
-        Guidelines for Producers (Restaurants, Hotels, Farmers, etc.)
-      </h2>
-
-      {/* Mapping through producersGuidelines */}
-      {producersGuidelines.map((guideline, index) => (
-        <div key={index} className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-800">{guideline.title}</h3>
-          <ul className="list-disc list-inside text-gray-600 mt-2">
-            {guideline.points.map((point, i) => (
-              <li key={i} className="mt-1">{point}</li>
-            ))}
-          </ul>
-        </div>
-      ))}
+    <div className="container mx-auto px-4 py-10 pt-4">
+      <h2 className="text-4xl font-bold text-center text-red-700 mb-12">
+           Guidelines for Producers
+         </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {guidelines.map((guideline, index) => (
+          <GuidelineCard key={index} {...guideline} />
+        ))}
+      </div>
     </div>
   );
 };
 
 export default ProducersGuidelines;
+
+const GuidelineCard = ({ title, contents, icon }) => {
+  return (
+    <div className="bg-white shadow-sm rounded-2xl p-6 border border-gray-200 relative m-2 hover:shadow-lg group hover:border-gray-300">
+      <div className="flex items-center space-x-3 mb-4">
+        <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
+        <span className="text-3xl absolute ml-80 mb-20 scale-200 group-hover:scale-210 transition-all duration-200">{icon}</span>
+      </div>
+      <ul className=" pl-5 text-gray-600 ">
+        {contents.map((item, index) => (
+          <li key={index} className="mb-1 ">
+            <div className="flex items-baseline ">
+              <div className="scale-115 pr-2">
+                <FaRegSquare />
+              </div>
+              {item}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
 
 
 

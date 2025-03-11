@@ -1,0 +1,60 @@
+.animation {
+  width: 60vw; 
+  max-width: 500px;
+  height: 60vh; 
+  max-height: 600px;
+  border-radius: 1rem;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  background-size: cover;
+  background-position: center;
+  animation: gallery 20s linear infinite;
+}
+
+/* Keyframe Animation */
+@keyframes gallery {
+  0% {
+    background-image: url(../../assets/img2.webp);
+  }
+  20% {
+    background-image: url(../../assets/img3.webp);
+  }
+  40% {
+    background-image: url(../../assets/img4.jpg);
+  }
+  60% {
+    background-image: url(../../assets/img1.jpg);
+  }
+  80% {
+    background-image: url(../../assets/img2.webp);
+  }
+  100% {
+    background-image: url(../../assets/img3.webp);
+  }
+}
+
+
+@media (max-width: 1024px) {
+  .animation {
+    width: 80vw;
+    height: 40vh; 
+    max-height: 500px;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .animation {
+    width: 90vw;
+    height: 35vh;
+    max-height: 400px;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .animation {
+    width: 95vw;
+    height: 30vh;
+    max-height: 350px;
+  }
+}
