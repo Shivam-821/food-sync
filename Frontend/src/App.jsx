@@ -21,14 +21,7 @@ import Feedback from "./Components/Feedback";
 function App() {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <ConsumerProtectWrapper>
-            <Home />
-          </ConsumerProtectWrapper>
-        }
-      />
+      <Route path="/" element={<Home />} />
       <Route path="/producerHome" element={<ProducerHome />} />
       <Route path="/donation" element={<Donation />} />
       <Route path="/about" element={<About />} />
