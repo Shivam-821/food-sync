@@ -6,7 +6,6 @@ import { ApiError } from "../utils/ApiError.js";
 const verifyJWT =asyncHandler( async (req, res, next) => {
   const gettoken =
     req.cookies.accessToken || req.headers.authorization?.split(" ")[1];
-  console.log("Received Token:", gettoken); 
   if (!gettoken || gettoken.split(".").length !== 3) {
     throw new ApiError(402, "Unauthorized: No token provided");
   }

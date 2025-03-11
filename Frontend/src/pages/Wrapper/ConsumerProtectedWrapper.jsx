@@ -14,7 +14,6 @@ const ConsumerProtectWrapper = ({
     children
 }) => {
     const token = localStorage.getItem('accessToken')
-    console.log(token);
     const navigate = useNavigate()
     const { consumer, setConsumer } = useContext(ConsumerDataContext)
     const [ isLoading, setIsLoading ] = useState(true)

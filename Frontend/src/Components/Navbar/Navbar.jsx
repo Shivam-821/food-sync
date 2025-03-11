@@ -25,9 +25,12 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleAuthToggle = () => {
-    setIsLogin(!isLogin); // Toggle login state
-  };
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      setIsLogin(true);
+    }
+}, []);
 
   const handleLanguageChange = (lng) => {
     i18n.changeLanguage(lng);
@@ -150,7 +153,6 @@ const Navbar = () => {
             />
           ) : (
             <button
-              onClick={handleAuthToggle}
               className="flex items-center border-2 border-gray-600 text-white hover:bg-gray-500/50 py-1 px-3 rounded-[14px] hover:border-white hover:backdrop-brightness-200 transition duration-200"
             >
               <a href="/signup">{t("SignUp")}</a>

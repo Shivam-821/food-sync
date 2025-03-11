@@ -61,8 +61,7 @@ const SignUp = () => {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/consumer/register`, newUser);
 
       if (response.status === 201) {
-        console.log(response.data.accessToken)
-        const token = response.data.accessToken; // Make sure your backend sends the token in response
+        const token = response.data.data.accessToken; // Make sure your backend sends the token in response
         if (token) {
             localStorage.setItem("accessToken", token);
         }
