@@ -146,7 +146,7 @@ const loginProducer = asyncHandler(async (req, res) => {
 
   const loggedInProducer = await Producer.findById(producer._id)
     .select("-password -refreshToken")
-    .populate("items")
+    .populate("items expiredItems")
     .populate("feedbacks");
 
   if (!loggedInProducer) {
@@ -195,7 +195,7 @@ const logoutProducer = asyncHandler(async (req, res) => {
 const producerProfile = asyncHandler(async (req, res) => {
   const producer = await Producer.findById(req.producer._id)
     .select("-password -refreshToken")
-    .populate("items")
+    .populate("items expiredItems")
     .populate("feedbacks");
 
   if (!producer) {

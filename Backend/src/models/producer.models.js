@@ -48,6 +48,12 @@ const producerSchema = new Schema(
         ref: "Item",
       },
     ],
+    expiredItems: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "UpcyclingItem"
+      }
+    ],
     donationsMade: [
       {
         type: Schema.Types.ObjectId,
@@ -82,12 +88,6 @@ const producerSchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         ref: "Upcycling",
-      },
-    ],
-    orders: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Order",
       },
     ],
     upcyclingOrders: [
