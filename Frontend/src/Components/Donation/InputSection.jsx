@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Spline from '@splinetool/react-spline';
+import axios from 'axios';
 
 const InputSection = () => {
   const [foodItems, setFoodItems] = useState([
