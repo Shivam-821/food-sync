@@ -13,16 +13,14 @@ const donationSchema = new Schema(
       enum: ["Consumer", "Producer", "UpcyclingIndustry"],
       required: true,
     },
-    recipient: {
-      type: Schema.Types.ObjectId,
-      ref: "Consumer",
-      required: true,
-    },
     items: [
       {
-        item: {
-          type: Schema.Types.ObjectId,
-          ref: "Item",
+        name: {
+          type: String,
+          required: true,
+        },
+        image: {
+          type: String,
           required: true,
         },
         quantity: {
@@ -40,17 +38,10 @@ const donationSchema = new Schema(
       lat: { type: Number },
       lng: { type: Number },
     },
-    deliveryLocation: {
-      lat: { type: Number },
-      lng: { type: Number },
-    },
-    donationTime: {
-      type: Date,
-      default: Date.now,
-    },
-    deliveredAt: {
-      type: Date,
-    },
+    credit:{
+      type: Number,
+      default: 0
+    }
   },
   { timestamps: true }
 );
