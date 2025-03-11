@@ -6,10 +6,10 @@ import { ApiError } from "../utils/ApiError.js";
 const verifyToken = asyncHandler(async (req, res, next) => {
   const gettoken =
     req.cookies.accessToken || req.headers.authorization?.split(" ")[1];
-  if (!gettoken) {
+  if (!gettoken || gettoken.split(".").length !== 3) {
     throw new ApiError(402, "Unauthorized: No token provided");
   }
-
+ 
   try {
     const decodedToken = jwt.verify(gettoken, process.env.ACCESS_TOKEN_SECRET);
     const producer = await Producer.findById(decodedToken?._id).select(

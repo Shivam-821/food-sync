@@ -69,8 +69,15 @@ const producerSchema = new Schema(
       type: String,
     },
     location: {
-      lat: { type: Number, required: true },
-      lng: { type: Number, required: true },
+      type: {
+          type: String,
+          enum: ['Point'],
+          required: true
+      },
+      coordinates: {
+          type: [Number],
+          required: true
+      }
     },
     feedbacks: [
       {
@@ -143,5 +150,34 @@ producerSchema.methods.generateRefreshToken = function () {
     { expiresIn: process.env.REFERESH_TOKEN_EXPIRY }
   );
 };
+
+// Method to update captain's location
+producerSchema.methods.updateLocation = async function(lng, lat) {
+  this.location = {
+      type: 'Point',
+      coordinates: [lng, lat]
+  };
+  await this.save();
+}
+
+// Create 2dsphere index for geospatial queries
+producerSchema.index({ location: '2dsphere' });
+
+// Function to start periodic location updates
+function startLocationUpdates(captain, updateInterval = 10000) {
+  if (navigator.geolocation) {
+      const intervalId = setInterval(async () => {
+          navigator.geolocation.getCurrentPosition(async (position) => {
+              await captain.updateLocation(
+                  position.coords.longitude,
+                  position.coords.latitude
+              );
+          });
+      }, updateInterval);
+
+      return intervalId;
+  }
+  return null;
+}
 
 export const Producer = mongoose.model("Producer", producerSchema);
