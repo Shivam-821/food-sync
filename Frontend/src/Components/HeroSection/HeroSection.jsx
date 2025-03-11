@@ -7,7 +7,7 @@ import "swiper/css/navigation";
 const slides = [
   {
     id: 1,
-    image: "https://source.unsplash.com/1600x600/?food,healthy",
+    image: "https://source.unsplash.com/1600x600/?food,cuisine",
     title: "Explore",
     highlight: "Culinary",
     subtitle: "Insights",
