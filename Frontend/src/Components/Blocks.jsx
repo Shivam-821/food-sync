@@ -17,7 +17,8 @@ const products = [
     price: 200,
     quantity: "5kg",
     type: "Perishable",
-    expiryDate: "2024-03-15",
+    expiryDate: "2025-05-20",
+    discount: 10,
   },
   {
     id: 2,
@@ -26,7 +27,8 @@ const products = [
     price: 300,
     quantity: "10kg",
     type: "Non-Perishable",
-    expiryDate: "2025-06-30",
+    expiryDate: "2025-05-20",
+    discount: 13,
   },
   {
     id: 3,
@@ -35,7 +37,8 @@ const products = [
     price: 100,
     quantity: "2L",
     type: "Perishable",
-    expiryDate: "2024-03-10",
+    expiryDate: "2025-05-20",
+    discount: 15,
   },
   {
     id: 4,
@@ -44,7 +47,7 @@ const products = [
     price: 150,
     quantity: "4kg",
     type: "Perishable",
-    expiryDate: "2024-03-08",
+    expiryDate: "2025-05-20",
   },
   {
     id: 5,
@@ -62,7 +65,7 @@ const products = [
     price: 180,
     quantity: "6kg",
     type: "Perishable",
-    expiryDate: "2024-04-15",
+    expiryDate: "2025-05-20",
   },
   {
     id: 6,
@@ -71,7 +74,7 @@ const products = [
     price: 180,
     quantity: "6kg",
     type: "Perishable",
-    expiryDate: "2024-04-15",
+    expiryDate: "2025-05-20",
   },
   {
     id: 7,
@@ -80,7 +83,7 @@ const products = [
     price: 120,
     quantity: "3kg",
     type: "Perishable",
-    expiryDate: "2024-03-12",
+    expiryDate: "2025-05-20",
   },
   {
     id: 8,
@@ -98,7 +101,7 @@ const products = [
     price: 350,
     quantity: "1kg",
     type: "Perishable",
-    expiryDate: "2024-03-18",
+    expiryDate: "2025-05-20",
   },
   {
     id: 10,
@@ -107,7 +110,7 @@ const products = [
     price: 90,
     quantity: "2kg",
     type: "Perishable",
-    expiryDate: "2024-03-10",
+    expiryDate: "2025-05-20",
   },
   {
     id: 11,
@@ -233,7 +236,7 @@ const Blocks = ({ addToCart }) => {
               <div className="text-red-600 font-bold mt-2">Expired</div>
             ) : (
               <div className="text-green-600 font-bold mt-2">
-                Offer: {Math.floor(Math.random() * 20 + 5)}% Off
+                Offer: {product.discount}% Off
               </div>
             )}
 
