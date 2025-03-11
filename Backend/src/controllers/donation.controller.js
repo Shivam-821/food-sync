@@ -2,7 +2,13 @@ import { Donation } from "../models/donation.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import {
+  uploadOnCloudinary,
+  deleteFromCloudinary,
+} from "../utils/cloudinary.js";
+import { Consumer } from "../models/consumer.models.js";
+import { Producer } from "../models/producer.models.js";
+import { UpcyclingIndustry } from "../models/upcyclingIndustry.models.js";
 
 const getDonorAndType = async (req) => {
   if (req.consumer)
@@ -15,15 +21,16 @@ const getDonorAndType = async (req) => {
       donor: await Producer.findById(req.producer._id),
       donorType: "Producer",
     };
-  if (req.upcyclingIndustry)
+  if (req.upcycledIndustry)
     return {
-      donor: await UpcyclingIndustry.findById(req.upcyclingIndustry._id),
+      donor: await UpcyclingIndustry.findById(req.upcycledIndustry._id),
       donorType: "UpcyclingIndustry",
     };
   return { donor: null, donorType: null };
 };
 
 const createDonation = asyncHandler(async (req, res) => {
+  let image;
   try {
     const { donor, donorType } = await getDonorAndType(req);
     const { items, pickupLocation } = req.body;
@@ -34,18 +41,27 @@ const createDonation = asyncHandler(async (req, res) => {
 
     const processedItems = await Promise.all(
       items.map(async (item) => {
-        if (!item.image && !req.file?.path) {
-          throw new ApiError(400, "Each item requires an image");
+        if (item.image) {
+          image = { url: item.image };
+        } else if (req.file?.path) {
+          try {
+            image = await uploadOnCloudinary(req.file.path);
+          } catch (error) {
+            throw new ApiError(
+              500,
+              `Failed to upload item image: ${error.message}`
+            );
+          }
         }
-
-        const uploadedImage = item.image
-          ? { url: item.image }
-          : await uploadOnCloudinary(req.file.path);
+        // If neither image URL nor file is provided, throw error
+        else {
+          throw new ApiError(400, "Image is required for each item");
+        }
 
         return {
           name: item.name,
           quantity: item.quantity,
-          image: uploadedImage.url,
+          image: image.url, 
         };
       })
     );
@@ -64,65 +80,83 @@ const createDonation = asyncHandler(async (req, res) => {
       throw new ApiError(500, "Failed to create donation");
     }
 
+    const createdDonation = await Donation.findById(donation._id).populate({
+      path: "donor",
+      select: "email phone location fullname doationsMade",
+    });
+
+    donor.donationsMade.push(donation._id);
+    await donor.save();
+
     return res
       .status(201)
       .json(
-        new ApiResponse(201, donation, "Thanks for being part of our campaign")
-      );
+        new ApiResponse(201, createdDonation, "Thanks for being part of our campaign"));
+
   } catch (error) {
     throw new ApiError(500, `Failed to create donation: ${error.message}`);
+    if (image?.public_id) {
+      await deleteFromCloudinary(image.public_id);
+    }
   }
 });
 
-
-const getAllDonations = asyncHandler( async (req, res) => {
+const getAllDonations = asyncHandler(async (req, res) => {
   try {
-    const {donor, donorType } = await getDonorAndType(req)
-    if(!donor || !donorType){
-        throw new ApiError(400, "Donor not found")
+    const { donor, donorType } = await getDonorAndType(req);
+    if (!donor || !donorType) {
+      throw new ApiError(400, "Donor not found");
     }
 
-    const donations = await Donation.find().populate("donor");
-    return res.status(200).json(donations);
+    const donations = await Donation.find({ donor: donor._id })
+      .populate({
+        path: "donor",
+        select: "email phone fullname",
+      })
+      .select("-pickupLocation");
+    return res.status(200).json(new ApiResponse(200, donations, "All donations of the Donor"));
   } catch (error) {
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 });
 
-
-const getDonationById = asyncHandler( async (req, res) => {
+const getDonationById = asyncHandler(async (req, res) => {
   try {
     const donation = await Donation.findById(req.params.id).populate("donor");
-    if (!donation) return res.status(404).json({ message: "Donation not found" });
+    if (!donation)
+      return res.status(404).json({ message: "Donation not found" });
 
     return res.status(200).json(donation);
   } catch (error) {
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 });
 
-
-const updateDonationStatus = asyncHandler( async (req, res) => {
+const getUniversalDonations = asyncHandler(async (req, res) => {
   try {
-    const { status } = req.body;
-    if (!["pending", "in-transit", "delivered", "canceled"].includes(status)) {
-      return res.status(400).json({ message: "Invalid status" });
-    }
+    const donations = await Donation.find()
+      .populate({
+        path: "donor",
+        select: "email phone fullname",
+      })
+      .select("-pickupLocation"); 
 
-    const donation = await Donation.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true }
-    );
-
-    if (!donation) return res.status(404).json({ message: "Donation not found" });
-
-    return res.status(200).json({ message: "Status updated", donation });
+    return res
+      .status(200)
+      .json(new ApiResponse(200, donations, "All donations in the system"));
   } catch (error) {
-    return res.status(500).json({ message: "Server error", error: error.message });
+    throw new ApiError(500, "Failed to get donations")
   }
 });
 
 
-
-export {createDonation, getAllDonations, updateDonationStatus, getDonationById}
+export {
+  createDonation,
+  getAllDonations,
+  getDonationById,
+  getUniversalDonations,
+};

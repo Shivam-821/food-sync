@@ -80,7 +80,7 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
       );
     }
 
-    upcyclingIndustry.orders.push(upcyclingOrder._id);
+    upcyclingIndustry.upcyclingOrders.push(upcyclingOrder._id);
     await upcyclingIndustry.save();
     
     await Cart.deleteOne({
