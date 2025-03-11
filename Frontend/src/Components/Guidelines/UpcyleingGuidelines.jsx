@@ -1,70 +1,156 @@
 import React from "react";
+import { FaRegSquare } from "react-icons/fa";
 
-const upcyclingGuidelines = [
+const guidelines = [
   {
-    title: "Utilize Food Scraps Efficiently",
-    points: [
-      "Convert food waste into high-quality compost that can be used for agricultural purposes.",
-      "Develop new food products using upcycled ingredients, such as fruit peels for jams or surplus grains for energy bars.",
-      "Invest in technology to extract nutrients from food waste for use in supplements or pet food.",
+    title: "Register as an Upcycling Industry",
+    contents: [
+      "Sign up with your company’s credentials.",
+      "Provide business verification documents.",
+      "Specify the type of upcycling services you offer."
     ],
+    icon: "✅"
   },
   {
-    title: "Collaborate with Producers & NGOs",
-    points: [
-      "Build strong partnerships with restaurants, farms, and food distributors to collect organic waste.",
-      "Set up collection centers where businesses can easily drop off their food waste.",
-      "Work with NGOs to repurpose any food that is still edible but not fit for retail sale.",
+    title: "Identifying Suitable Surplus Food",
+    contents: [
+      "Analyze surplus food for upcycling potential.",
+      "Ensure only non-consumable but safe food is used.",
+      "Sort food into categories like compost, animal feed, or processing."
     ],
+    icon: "🔍"
   },
   {
-    title: "Maintain Hygiene & Safety Standards",
-    points: [
-      "Ensure that all upcycled food products meet health and safety regulations.",
-      "Use proper sterilization and processing techniques to eliminate contamination risks.",
-      "Educate suppliers about the importance of delivering clean and uncontaminated food waste.",
+    title: "Collaborating with Food Donors",
+    contents: [
+      "Partner with restaurants, grocery stores, and food manufacturers.",
+      "Establish pickup schedules for collecting surplus food.",
+      "Maintain quality control for upcycling purposes."
     ],
+    icon: "🤝"
   },
   {
-    title: "Promote Circular Economy",
-    points: [
-      "Raise awareness about the benefits of upcycling food waste and how it contributes to sustainability.",
-      "Launch educational campaigns to encourage consumers and businesses to participate in food waste reduction.",
-      "Develop innovative ways to reuse food waste in new industries, such as biodegradable packaging or biofuel production.",
+    title: "Ensuring Safe Processing Practices",
+    contents: [
+      "Follow food safety and handling regulations.",
+      "Implement hygiene standards for food transformation.",
+      "Use eco-friendly methods in processing and packaging."
     ],
+    icon: "🛡️"
   },
   {
-    title: "Innovate & Scale",
-    points: [
-      "Invest in research to discover new methods for upcycling food waste.",
-      "Expand operations by collaborating with international organizations and sustainability initiatives.",
-      "Encourage startups and entrepreneurs to explore new business models based on food waste reduction.",
+    title: "Upcycling into Useful Products",
+    contents: [
+      "Convert surplus food into compost or biofuel.",
+      "Use food waste for animal feed or fertilizers.",
+      "Develop innovative food-based products (e.g., dried fruits, sauces)."
     ],
+    icon: "🔄"
   },
+  {
+    title: "Sustainable Packaging & Distribution",
+    contents: [
+      "Use biodegradable or reusable packaging for upcycled products.",
+      "Minimize carbon footprint in transportation.",
+      "Distribute upcycled products to relevant industries or communities."
+    ],
+    icon: "🌍"
+  },
+  {
+    title: "Tracking & Reporting Impact",
+    contents: [
+      "Monitor the amount of food waste repurposed.",
+      "Generate reports on environmental impact.",
+      "Showcase sustainability achievements to stakeholders."
+    ],
+    icon: "📊"
+  },
+  {
+    title: "Compliance with Legal & Environmental Policies",
+    contents: [
+      "Follow local waste management and recycling laws.",
+      "Ensure ethical sourcing and disposal methods.",
+      "Maintain transparency in waste transformation processes."
+    ],
+    icon: "⚖️"
+  },
+  {
+    title: "Engaging the Community",
+    contents: [
+      "Educate businesses on the benefits of food upcycling.",
+      "Conduct workshops on sustainable waste management.",
+      "Encourage local participation in upcycling programs."
+    ],
+    icon: "🏢"
+  },
+  {
+    title: "Innovating for Better Sustainability",
+    contents: [
+      "Invest in research for better upcycling techniques.",
+      "Explore AI and automation for waste sorting.",
+      "Develop partnerships for large-scale sustainability projects."
+    ],
+    icon: "💡"
+  },
+  {
+    title: "Receiving Feedback & Continuous Improvement",
+    contents: [
+      "Encourage suppliers and industries to provide feedback.",
+      "Improve processes based on insights and suggestions.",
+      "Adapt upcycling strategies for greater efficiency."
+    ],
+    icon: "📢"
+  },
+  {
+    title: "Promoting Circular Economy Initiatives",
+    contents: [
+      "Contribute to a zero-waste food system.",
+      "Support policies that encourage food upcycling.",
+      "Collaborate with governments and NGOs for sustainable solutions."
+    ],
+    icon: "♻️"
+  }
 ];
+
 
 const UpcyclingGuidelines = () => {
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold text-center text-purple-700 mb-6">
-        Guidelines for Upcycling Industries
-      </h2>
-
-      {/* Mapping through upcyclingGuidelines */}
-      {upcyclingGuidelines.map((guideline, index) => (
-        <div key={index} className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-800">{guideline.title}</h3>
-          <ul className="list-disc list-inside text-gray-600 mt-2">
-            {guideline.points.map((point, i) => (
-              <li key={i} className="mt-1">{point}</li>
-            ))}
-          </ul>
-        </div>
-      ))}
+    <div className="container mx-auto px-4 py-10 pt-4">
+      <h2 className="text-4xl font-bold text-center text-purple-700 mb-12">
+           Guidelines for Producers
+         </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {guidelines.map((guideline, index) => (
+          <GuidelineCard key={index} {...guideline} />
+        ))}
+      </div>
     </div>
   );
 };
 
 export default UpcyclingGuidelines;
+
+const GuidelineCard = ({ title, contents, icon }) => {
+  return (
+    <div className="bg-white shadow-sm rounded-2xl p-6 border border-gray-200 relative m-2 hover:shadow-lg group hover:border-gray-300">
+      <div className="flex items-center space-x-3 mb-4">
+        <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
+        <span className="text-3xl absolute ml-80 mb-20 scale-200 group-hover:scale-210 transition-all duration-200">{icon}</span>
+      </div>
+      <ul className=" pl-5 text-gray-600 ">
+        {contents.map((item, index) => (
+          <li key={index} className="mb-1 ">
+            <div className="flex items-baseline ">
+              <div className="scale-115 pr-2">
+                <FaRegSquare />
+              </div>
+              {item}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 
