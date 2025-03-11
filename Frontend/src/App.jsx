@@ -20,11 +20,7 @@ import ConsumerProtectWrapper from "./pages/Wrapper/ConsumerProtectedWrapper";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={
-        <ConsumerProtectWrapper> 
-          <Home /> 
-        </ConsumerProtectWrapper>} 
-      />
+      <Route path="/" element={ <Home /> } />
       <Route path="/producerHome" element={<ProducerHome />} />
       <Route path="/donation" element={<Donation />} />
       <Route path="/about" element={<About />} />
