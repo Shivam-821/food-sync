@@ -33,10 +33,19 @@ const createDonation = asyncHandler(async (req, res) => {
   let image;
   try {
     const { donor, donorType } = await getDonorAndType(req);
-    const { items, pickupLocation } = req.body;
+    let { items, pickupLocation } = req.body;
+    console.log(req.body);
+console.log(req.files);
+console.log(req.file);
 
-    if (!donor || !donorType || !items || !items.length) {
-      throw new ApiError(400, "Donor and items are required");
+
+    // Parse items if it's a string
+    if (typeof items === "string") {
+      items = JSON.parse(items);
+    }
+    console.log("kya")
+    if (!Array.isArray(items)) {
+      throw new ApiError(400, "Invalid items format, expected an array.");
     }
 
     const processedItems = await Promise.all(
@@ -47,14 +56,9 @@ const createDonation = asyncHandler(async (req, res) => {
           try {
             image = await uploadOnCloudinary(req.file.path);
           } catch (error) {
-            throw new ApiError(
-              500,
-              `Failed to upload item image: ${error.message}`
-            );
+            throw new ApiError(500, `Failed to upload item image: ${error.message}`);
           }
-        }
-        
-        else {
+        } else {
           throw new ApiError(400, "Image is required for each item");
         }
 
@@ -90,7 +94,7 @@ const createDonation = asyncHandler(async (req, res) => {
 
     const createdDonation = await Donation.findById(donation._id).populate({
       path: "donor",
-      select: "email phone location fullname doationsMade",
+      select: "email phone location fullname donationsMade",
     });
 
     donor.donationsMade.push(donation._id);
@@ -98,14 +102,13 @@ const createDonation = asyncHandler(async (req, res) => {
 
     return res
       .status(201)
-      .json(
-        new ApiResponse(201, createdDonation, "Thanks for being part of our campaign"));
+      .json(new ApiResponse(201, createdDonation, "Thanks for being part of our campaign"));
 
   } catch (error) {
-    throw new ApiError(500, `Failed to create donation: ${error.message}`);
     if (image?.public_id) {
       await deleteFromCloudinary(image.public_id);
     }
+    throw new ApiError(500, `Failed to create donation: ${error.message}`);
   }
 });
 
