@@ -69,7 +69,6 @@ const SignUp = () => {
         const data= response.data
       
         setConsumer(data.user)
-        localStorage.setItem('token', data.token)
 
         alert("Registration successful!");
         navigate("/");

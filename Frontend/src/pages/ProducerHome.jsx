@@ -20,6 +20,7 @@ const ProducerHome = () => {
   const [status, setStatus] = useState("");
   const [upcyclingOption, setUpcyclingOption] = useState("");
   const [description, setDescription] = useState("");
+  const [price, serPrice] = useState("");
   const [addedItems, setAddedItems] = useState([]);
 
   const handleImageChange = (event) => {
@@ -32,39 +33,50 @@ const ProducerHome = () => {
   const handleAddItem = async (event) => {
     event.preventDefault();
     
-    if (!itemName || !quantity || !unit || !category || !description || !expiryDate || !manufacturingDate || !status || (status === "Upcycled" && !upcyclingOption)) {
-      alert("Please fill in all required fields!");
+    const token = localStorage.getItem("accessToken");
+    console.log("Token being sent:", token);
+    
+    if (!token) {
+      alert("Unauthorized: No token found. Please log in again.");
       return;
     }
   
-    const newItem = { 
-      name: itemName, 
-      quantity, 
-      unit, 
-      category, 
-      expiryDate, 
-      manufacturingDate, 
-      status, 
-      upcyclingOption, 
-      description, 
-      image 
-    };
+    const formData = new FormData();
+    formData.append("name", itemName);
+    formData.append("quantity", quantity);
+    formData.append("unit", unit);
+    formData.append("price", price);
+    formData.append("category", category);
+    formData.append("expiryDate", expiryDate);
+    formData.append("mfDate", manufacturingDate);
+    formData.append("status", status);
+    formData.append("upcyclingOptions", upcyclingOption);
+    formData.append("description", description);
+    
+    if (image) {
+      formData.append("avatar", image); // ✅ Ensure correct file key
+    }
   
     try {
-      const token = localStorage.getItem("accessToken");
-      console.log(token)
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/items/create`, newItem,{
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/items/create`, formData, {
         headers: {
-          'Authorization': `Bearer ${token}`, // Add the token
-          'Content-Type': 'multipart/form-data', // Important: specify multipart form data
-        }
+          Authorization: `Bearer ${token}`, // ✅ Token sent in headers
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
       });
-      alert("Item added successfully!");
+
       
+      
+  
+      alert("Item added successfully!");
+      setAddedItems([...addedItems, response.data]);
+  
       // Clear form inputs
       setItemName("");
       setQuantity("");
       setUnit("");
+      serPrice("");
       setCategory("");
       setExpiryDate("");
       setManufacturingDate("");
@@ -72,15 +84,14 @@ const ProducerHome = () => {
       setUpcyclingOption("");
       setDescription("");
       setImage(null);
-  
-      // Optionally, update the added items list
-      setAddedItems([...addedItems, response.data]);
-  
     } catch (error) {
       console.error("Error adding item:", error);
-      alert("Failed to add item, please try again.");
+      alert(error.response?.data?.message || "Failed to add item");
     }
   };
+  
+  
+  
   
 
   return (
@@ -129,15 +140,20 @@ const ProducerHome = () => {
                 <label className="block text-lg font-medium text-gray-700">Unit</label>
                 <input required className="w-full p-3 border rounded-lg bg-gray-200" type="text" placeholder="e.g., kg, liters" value={unit} onChange={(e) => setUnit(e.target.value)} />
               </div>
+
+              <div>
+                <label className="block text-lg font-medium text-gray-700">Price</label>
+                <input required className="w-full p-3 border rounded-lg bg-gray-200" type="text" placeholder="" value={price} onChange={(e) => serPrice(e.target.value)} />
+              </div>
   
               
               <div>
                 <label className="block text-lg font-medium text-gray-700">Category</label>
                 <select required className="w-full p-3 border rounded-lg bg-gray-200" value={category} onChange={(e) => setCategory(e.target.value)}>
                   <option value="">Select Category</option>
-                  <option value="Perishable">Perishable</option>
-                  <option value="Non-Perishable">Non-Perishable</option>
-                  <option value="Ready-to-Eat">Ready-to-Eat</option>
+                  <option value="perishable">Perishable</option>
+                  <option value="non-perishable">Non-Perishable</option>
+                  <option value="ready-to-eat">Ready-to-Eat</option>
                 </select>
               </div>
   
@@ -163,22 +179,22 @@ const ProducerHome = () => {
                 <label className="block text-lg font-medium text-gray-700">Status</label>
                 <select required className="w-full p-3 border rounded-lg bg-gray-200" value={status} onChange={(e) => setStatus(e.target.value)}>
                   <option value="">Select Status</option>
-                  <option value="Available">Available</option>
-                  <option value="Expired">Expired</option>
-                  <option value="Upcycled">Upcycled</option>
+                  <option value="available">Available</option>
+                  <option value="expired">Expired</option>
+                  <option value="upcycled">Upcycled</option>
                 </select>
               </div>
   
               
-              {status === "Upcycled" && (
+              {status === "upcycled" && (
                 <div>
                   <label className="block text-lg font-medium text-gray-700">Upcycling Option</label>
                   <select required className="w-full p-3 border rounded-lg bg-gray-200" value={upcyclingOption} onChange={(e) => setUpcyclingOption(e.target.value)}>
                     <option value="">Select Upcycling Option</option>
-                    <option value="Biogas">Biogas</option>
-                    <option value="Compost">Compost</option>
-                    <option value="Fertilizer">Fertilizer</option>
-                    <option value="Cosmetics">Cosmetics</option>
+                    <option value="biogas">Biogas</option>
+                    <option value="compost">Compost</option>
+                    <option value="fertilizer">Fertilizer</option>
+                    <option value="cosmetics">Cosmetics</option>
                   </select>
                 </div>
               )}
