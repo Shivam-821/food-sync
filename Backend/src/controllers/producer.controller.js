@@ -24,7 +24,7 @@ const generateAccessAndRefreshToken = async (ProducerId) => {
     throw new ApiError(500, `Token generation error: ${error.message}`);
   }
 };
-
+  
 const registerProducer = asyncHandler(async (req, res) => {
   const {
     fullname,
@@ -35,12 +35,11 @@ const registerProducer = asyncHandler(async (req, res) => {
     producerType,
     location,
   } = req.body;
-
+  console.log(req.body)
   if (
     [fullname, email, password, companyName, producerType].some(
       (field) => !field?.trim()
     ) ||
-    !location ||
     !phone
   ) {
     throw new ApiError(400, "All fields are required");

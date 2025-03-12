@@ -17,7 +17,7 @@ const SignUp = () => {
     password: "",
     confirmPassword: "",
   });
-
+ 
   const { consumer , setConsumer } = useContext(ConsumerDataContext);
 
   const [errors, setErrors] = useState({});

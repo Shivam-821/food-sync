@@ -17,9 +17,9 @@ const getUserAndType = async (req) => {
       user: await Producer.findById(req.producer._id),
       userType: "Producer",
     };
-  if (req.upcyclingIndustry)
+  if (req.upcycledIndustry)
     return {
-      user: await UpcyclingIndustry.findById(req.upcyclingIndustry._id),
+      user: await UpcyclingIndustry.findById(req.upcycledIndustry._id),
       userType: "UpcyclingIndustry",
     };
   return { user: null, userType: null };

@@ -172,7 +172,7 @@ const InputSection = () => {
             ))}
 
             {/* Address Field */}
-            <div className="relative mb-4">
+            <div className="relative mb-4 ml-40 mr-40">
               <input
                 type="text"
                 value={address}

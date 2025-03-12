@@ -1,3 +1,57 @@
+.blocks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.cart-button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.cart-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #d97706;
+  transition: all 0.3s ease;
+}
+
+.cart-button:hover {
+  background-color: #b45309;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cart-icon {
+  font-size: 16px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 24px;
+}
+
+/* Responsive grid */
+@media (min-width: 640px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 /* App styles */
 .app {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;

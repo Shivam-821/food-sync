@@ -1,21 +1,48 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Navbar/Navbar";
 import "./producer.css";
+import { ProducerDataContext } from '../../Context/ProducerContext'
+import axios from "axios";
 
 const ProducerSignUp = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     fullName: "",
+    phone:"",
     email: "",
     password: "",
     confirmPassword: "",
     companyName: "",
     producerType: "",
-    location: "",
+    address:""
   });
+
+  const [ location, setLocation ] = useState(null)
+  const [ locationError, setLocationError ] = useState('')
+
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            type: 'Point',
+            coordinates: [position.coords.longitude, position.coords.latitude]
+          })
+          setLocationError('')
+        },
+        (error) => {
+          setLocationError('Unable to retrieve your location. Please enable location services.')
+        }
+      )
+    } else {
+      setLocationError('Geolocation is not supported by your browser.')
+    }
+  }
+
+  const {producer , setProducer} = useContext(ProducerDataContext)
 
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
@@ -38,7 +65,7 @@ const ProducerSignUp = () => {
       newErrors.companyName = "Company name is required.";
     if (!formData.producerType)
       newErrors.producerType = "Select a producer type.";
-    if (!formData.location.trim()) newErrors.location = "Location is required.";
+    // if (!formData.location.trim()) newErrors.location = "Location is required.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -46,20 +73,30 @@ const ProducerSignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+    if (!location) {
+      setLocationError('Please get your location before signing up')
+      return
+    }
+
+    const ProducerData = {
+      fullname: formData.fullName,
+      email: formData.email,
+      phone:formData.phone,
+      password: formData.password,
+      companyName: formData.companyName,
+      producerType: formData.producerType,
+      location
+    }
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/producer/signup",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        }
-      );
-
-      if (response.ok) {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/producer/register`, ProducerData)
+      console.log(response.data)
+      if (response.status === 200) {
+        const data = response.data
+        setProducer(data.producer)
+        localStorage.setItem('token', data.token)
         alert("Registration successful!");
-        navigate("/login");
+        navigate("/surplusProducer");
       } else {
         alert("Error during signup. Please try again.");
       }
@@ -114,6 +151,18 @@ const ProducerSignUp = () => {
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.email && <p className="text-red-500">{errors.email}</p>}
+              
+              {/* UTKARSH SINGH - ADDED THIS LINE */}
+              <input
+                type="tel"  // 'tel' type ensures only numbers are entered
+                name="phone"
+                placeholder="Mobile Number"
+                value={formData.phone}
+                onChange={handleChange}
+                pattern="[6-9]\d{9}"  // Ensures only 10-digit Indian numbers
+                title="Mobile Number"
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
 
               {/* Company Name */}
               <input
@@ -135,7 +184,7 @@ const ProducerSignUp = () => {
                 onChange={handleChange}
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">Select Producer Type</option>
+                <option value="" >Select Producer Type</option>
                 <option value="factory">Factory</option>
                 <option value="supermarket">Supermarket</option>
                 <option value="hotel">Hotel</option>
@@ -149,9 +198,9 @@ const ProducerSignUp = () => {
               {/* Location Input */}
               <input
                 type="text"
-                name="location"
+                name="address"
                 placeholder="Location"
-                value={formData.location}
+                value={formData.address}
                 onChange={handleChange}
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -202,6 +251,24 @@ const ProducerSignUp = () => {
               {errors.confirmPassword && (
                 <p className="text-red-500">{errors.confirmPassword}</p>
               )}
+                {/* UTKARSH BABU ADDED LOCATION */}
+              <div className="mb-4">
+                <button
+                  type="button"
+                  onClick={getLocation}
+                  className="bg-blue-500 text-white font-semibold mb-2 rounded-lg px-4 py-2 w-full text-lg"
+                >
+                  Get My Location
+                </button>
+                {locationError && (
+                  <p className="text-red-500 text-sm mb-2">{locationError}</p>
+                )}
+                {location && (
+                  <p className="text-sm text-gray-600">
+                    Location captured: {location.coordinates[1].toFixed(4)}, {location.coordinates[0].toFixed(4)}
+                  </p>
+                )}
+              </div>
 
               <button
                 type="submit"

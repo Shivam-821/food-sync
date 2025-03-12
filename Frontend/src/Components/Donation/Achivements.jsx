@@ -16,19 +16,16 @@ export default Achivements
 const DonationsList = ({ donations }) => {
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
-        Our Food Donations
-      </h2>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {donations.map((donation, index) => (
           <div
             key={index}
-            className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-2xl border border-gray-300 transition-all duration-200"
+            className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-2xl border border-gray-300 transition-all duration-200 group"
           >
             <img
               src={donation.image}
               alt={donation.ngo}
-              className="w-full h-40 object-cover"
+              className="w-full h-40 object-cover group-hover:scale-102 transition-all duration-200"
             />
             <div className="p-4">
               <h3 className="text-xl font-semibold text-gray-900">
