@@ -34,7 +34,7 @@ import donationRoute from "./routes/donation.routes.js"
 
 app.use("/api/v1/consumer", consumerRoute);
 app.use("/api/v1/producer", producerRoute)
-app.use("/api/v1/items/", itemRoute)
+app.use("/api/v1/items", itemRoute)
 app.use("/api/v1/upcyclingIndustry", upcycleIndRoute)
 app.use("/api/v1/feedback", feedbacdRoute)
 app.use("/api/v1/cart", cartRoute)
