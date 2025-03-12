@@ -10,7 +10,14 @@ import {upload } from "../middlewares/multer.middlewares.js"
 
 const router = Router()
 
-router.route("/create-donation").post(upload.single("image"), verifyUnified, createDonation);
+router.route("/create-donation").post(
+  upload.array("image", 10), // ✅ Ensure it matches frontend
+  verifyUnified,
+  createDonation
+);
+
+
+
 router.route("/get-donations").get(verifyUnified, getAllDonations);
 router.route("/get-universal-donations").get(getUniversalDonations);
 

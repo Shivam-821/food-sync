@@ -21,7 +21,6 @@ const donationSchema = new Schema(
         },
         image: {
           type: String,
-          required: true,
         },
         quantity: {
           type: Number,
@@ -29,14 +28,8 @@ const donationSchema = new Schema(
         },
       },
     ],
-    status: {
-      type: String,
-      enum: ["pending", "in-transit", "delivered", "canceled"],
-      default: "pending",
-    },
     pickupLocation: {
-      lat: { type: Number },
-      lng: { type: Number },
+      type: String
     },
     credit:{
       type: Number,
