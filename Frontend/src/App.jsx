@@ -15,7 +15,7 @@ import Social from "./pages/Social/Social";
 //import SignUp from "./pages/Signup/SignUp";
 import Producer from "./pages/ProducerSignUp/Producer";
 import CommunityChat from "./Components/CommunityChat";
-import { Pay } from "./Components/Pay";
+import { Pay } from "./Components/pay";
 import ConsumerProtectWrapper from "./pages/Wrapper/ConsumerProtectedWrapper";
 import Feedback from "./Components/Feedback";
 import UserProfile from "./Components/UserProfile";
