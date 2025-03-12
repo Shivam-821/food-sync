@@ -9,6 +9,16 @@ import {
 import { Consumer } from "../models/consumer.models.js";
 import { Producer } from "../models/producer.models.js";
 import { UpcyclingIndustry } from "../models/upcyclingIndustry.models.js";
+import { Gamification } from "../models/gamification.models.js";
+
+const getBadge = (points) => {
+  if (points >= 151) return "Legend";
+  if (points >= 101) return "Champion";
+  if (points >= 61) return "Achiever";
+  if (points >= 21) return "Contributor";
+  return "Beginner";
+};
+
 
 const getDonorAndType = async (req) => {
   if (req.consumer)
@@ -34,16 +44,10 @@ const createDonation = asyncHandler(async (req, res) => {
   try {
     const { donor, donorType } = await getDonorAndType(req);
     let { items, pickupLocation } = req.body;
-    console.log(req.body);
-console.log(req.files);
-console.log(req.file);
 
-
-    // Parse items if it's a string
     if (typeof items === "string") {
       items = JSON.parse(items);
     }
-    console.log("kya")
     if (!Array.isArray(items)) {
       throw new ApiError(400, "Invalid items format, expected an array.");
     }
@@ -76,8 +80,7 @@ console.log(req.file);
     ]);
 
     const previousCredit = totalCredits.length
-      ? totalCredits[0].totalCredits
-      : 0;
+      ? totalCredits[0].totalCredits : 0;
     const newCredit = previousCredit + processedItems.length * 2;
 
     const donation = await Donation.create({
@@ -85,12 +88,27 @@ console.log(req.file);
       donorType,
       items: processedItems,
       pickupLocation,
-      newCredit,
+      credit: newCredit,
     });
 
     if (!donation) {
       throw new ApiError(500, "Failed to create donation");
     }
+
+     let gamification = await Gamification.findOne({ user: donor._id });
+
+     if (gamification) {
+       gamification.points += newCredit;
+       gamification.badges = getBadge(gamification.points);
+       await gamification.save();
+     } else {
+       gamification = await Gamification.create({
+         user: donor._id,
+         userType: donorType,
+         points: newCredit,
+         badges: getBadge(newCredit),
+       });
+     }
 
     const createdDonation = await Donation.findById(donation._id).populate({
       path: "donor",
@@ -102,7 +120,7 @@ console.log(req.file);
 
     return res
       .status(201)
-      .json(new ApiResponse(201, createdDonation, "Thanks for being part of our campaign"));
+      .json(new ApiResponse(201, {createdDonation, gamification}, "Thanks for being part of our campaign"));
 
   } catch (error) {
     if (image?.public_id) {

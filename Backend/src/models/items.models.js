@@ -72,14 +72,6 @@ const itemSchema = new Schema(
         message: "Expiry date must be after the manufacturing date",
       },
     },
-    status: {
-      type: String,
-      enum: {
-        values: ["available", "donated", "expired", "upcycled"],
-        message: "{VALUE} is not a valid status",
-      },
-      default: "available",
-    },
     upcyclingOptions: {
       type: [String],
       enum: {
