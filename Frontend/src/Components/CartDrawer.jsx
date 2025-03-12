@@ -1,0 +1,164 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import "./CartDrawer.css";
+import { FaShoppingCart, FaTimes, FaTrash } from "react-icons/fa";
+import { Link } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+function CartDrawer({
+  isOpen,
+  setIsOpen,
+  cartItems,
+  removeFromCart,
+  updateQuantity,
+}) {
+  const [isVisible, setIsVisible] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsVisible(true);
+      // Prevent body scrolling when drawer is open
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isOpen]);
+
+  const handleClose = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      setIsOpen(false);
+    }, 300);
+  };
+
+  const totalPrice = cartItems.reduce(
+    (total, item) => total + item.price * item.cartQuantity,
+    0
+  );
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className={`cart-drawer-overlay ${isVisible ? "visible" : ""}`}
+      onClick={handleClose}
+    >
+      <div
+        className={`cart-drawer ${isVisible ? "visible" : ""}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="cart-drawer-header">
+          <h2 className="cart-drawer-title">
+            <FaShoppingCart className="cart-icon" />
+            Your Cart
+          </h2>
+          <button className="close-button" onClick={handleClose}>
+            <FaTimes />
+          </button>
+        </div>
+
+        {cartItems.length === 0 ? (
+          <div className="empty-cart">
+            <FaShoppingCart className="empty-cart-icon animate-bounce" />
+            <h3 className="empty-cart-title">Your cart is empty</h3>
+            <p className="empty-cart-message">
+              Looks like you haven't added any products to your cart yet.
+            </p>
+            <button className="btn btn-primary" onClick={handleClose}>
+              Continue Shopping
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="cart-items">
+              {cartItems.map((item) => (
+                <div key={item.id} className="cart-item">
+                  <div
+                    className="cart-item-image-container"
+                    style={{ backgroundColor: item.color + "33" }}
+                  >
+                    <img
+                      src={item.image || "/placeholder.svg"}
+                      alt={item.name}
+                      className="cart-item-image"
+                    />
+                  </div>
+                  <div className="cart-item-details">
+                    <div className="cart-item-header">
+                      <h3 className="cart-item-title">{item.name}</h3>
+                      <button
+                        className="remove-item-button"
+                        onClick={() => removeFromCart(item.id)}
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                    <div className="cart-item-price">
+                      ₹{item.price.toFixed(2)} × {item.cartQuantity}
+                    </div>
+                    <div className="cart-item-quantity">
+                      <button
+                        className="btn btn-outline btn-icon quantity-btn"
+                        onClick={() =>
+                          updateQuantity(
+                            item.id,
+                            Math.max(1, item.cartQuantity - 1)
+                          )
+                        }
+                      >
+                        -
+                      </button>
+                      <input
+                        type="number"
+                        min="1"
+                        value={item.cartQuantity}
+                        onChange={(e) =>
+                          updateQuantity(
+                            item.id,
+                            Number.parseInt(e.target.value) || 1
+                          )
+                        }
+                        className="input input-number"
+                      />
+                      <button
+                        className="btn btn-outline btn-icon quantity-btn"
+                        onClick={() =>
+                          updateQuantity(item.id, item.cartQuantity + 1)
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="cart-footer">
+              <div className="cart-total">
+                <span>Total:</span>
+                <span>₹{totalPrice.toFixed(2)}</span>
+              </div>
+              <button
+                className="btn btn-primary btn-full checkout-btn"
+                onClick={() =>
+                  navigate("/pay", { state: { totalAmount: totalPrice } })
+                }
+              >
+                Proceed to Checkout
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default CartDrawer;
