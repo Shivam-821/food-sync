@@ -7,7 +7,7 @@ const ConsumerContext = ({children}) => {
   const [consumer, setConsumer] = useState({
     fullname:''
   })
-
+ 
   return (
       <ConsumerDataContext.Provider value={{ consumer, setConsumer }}>
         {children}

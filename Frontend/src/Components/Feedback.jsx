@@ -1,14 +1,11 @@
 import React, { useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { motion } from "framer-motion";
-
+ 
 const Feedback = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    userType: "",
     rating: 0,
-    feedback: "",
+    comment: "",
   });
   const [hover, setHover] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -24,20 +21,28 @@ const Feedback = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.userType || !formData.feedback) {
+    if (!formData.rating || !formData.comment) {
       alert("Please fill in all fields.");
       return;
     }
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8004/api/feedback", {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/feedback/givefeedback`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Authorization": `Bearer ${token}`, // Attach token
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(formData),
       });
       if (response.ok) {
         setSubmitted(true);
-        setFormData({ name: "", email: "", userType: "", rating: 0, feedback: "" });
+        setFormData({rating: 0, comment: "" });
       } else {
         alert("Failed to submit feedback.");
       }
@@ -69,38 +74,6 @@ const Feedback = () => {
           </motion.p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
-            <motion.input
-              whileFocus={{ scale: 1.05 }}
-              type="text"
-              name="name"
-              placeholder="Your Name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-            />
-            <motion.input
-              whileFocus={{ scale: 1.05 }}
-              type="email"
-              name="email"
-              placeholder="Your Email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-            />
-
-            {/* New Dropdown for User Type */}
-            <motion.select
-              whileFocus={{ scale: 1.05 }}
-              name="userType"
-              value={formData.userType}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
-            >
-              <option value="">Select User Type</option>
-              <option value="Consumer">Consumer</option>
-              <option value="Producer">Producer</option>
-              <option value="Upcycling Industry">Upcycling Industry</option>
-            </motion.select>
 
             <div className="flex justify-center space-x-2">
               {[...Array(5)].map((_, index) => {
@@ -124,10 +97,10 @@ const Feedback = () => {
 
             <motion.textarea
               whileFocus={{ scale: 1.05 }}
-              name="feedback"
+              name="comment"
               placeholder="Your Feedback"
               rows="4"
-              value={formData.feedback}
+              value={formData.comment}
               onChange={handleChange}
               className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
             ></motion.textarea>
