@@ -22,8 +22,7 @@ const DonationsList = () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/donation/get-universal-donations`);
         const data = await response.json();
-        console.log(response)
-        setDonations(data.data || []); // Ensure it's an array
+        setDonations(data.data || []);
       } catch (err) {
         console.error("Error fetching data:", err);
       }
@@ -58,7 +57,7 @@ const DonationsList = () => {
                   />
                   <div>
                     <p className="text-gray-800 font-medium">{item.name}</p>
-                    <p className="text-gray-600 text-sm">Quantity: {item.quantity}</p>
+                    <p className="text-gray-600 text-sm">Quantity: {item.quantity}Kg</p>
                   </div>
                 </div>
               ))}
