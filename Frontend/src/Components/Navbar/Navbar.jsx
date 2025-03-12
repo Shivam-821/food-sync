@@ -3,8 +3,9 @@ import profileMale from "../../assets/male.jpg";
 import profileFemale from "../../assets/female.jpg";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Globe } from "lucide-react"; // Importing globe icon from lucide-react
+import { Globe } from "lucide-react"; 
 import ThemeToggle from "../../ThemeToggle";
+import UserProfile from "../UserProfile";
 
 const Navbar = () => {
   const [isLogin, setIsLogin] = useState(false);
@@ -25,13 +26,16 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleAuthToggle = () => {
-    setIsLogin(!isLogin); // Toggle login state
-  };
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      setIsLogin(true);
+    }
+}, []);
 
   const handleLanguageChange = (lng) => {
     i18n.changeLanguage(lng);
-    setIsDropdownOpen(false); // Close dropdown after selecting
+    setIsDropdownOpen(false); 
   };
 
   return (
@@ -142,21 +146,23 @@ const Navbar = () => {
 
         {/* Profile or Sign Up */}
         <li className="hover:text-blue-900 cursor-pointer">
-          {isLogin ? (
-            <img
-              className="rounded-full hover:border-white size-12 hover:border-2 min-w-12 cursor-pointer transition duration-200"
-              src={profile === "male" ? profileMale : profileFemale}
-              alt="Profile"
-            />
-          ) : (
-            <button
-              onClick={handleAuthToggle}
-              className="flex items-center border-2 border-gray-600 text-white hover:bg-gray-500/50 py-1 px-3 rounded-[14px] hover:border-white hover:backdrop-brightness-200 transition duration-200"
-            >
-              <a href="/signup">{t("SignUp")}</a>
-            </button>
-          )}
-        </li>
+  {isLogin ? (
+    <a href="/userProfile"> {/* Wrap the image with an anchor tag */}
+      <img
+        className="rounded-full hover:border-white size-12 hover:border-2 min-w-12 cursor-pointer transition duration-200"
+        src={profile === "male" ? profileMale : profileFemale}
+        alt="Profile"
+      />
+    </a>
+  ) : (
+    <button
+      className="flex items-center border-2 border-gray-600 text-white hover:bg-gray-500/50 py-1 px-3 rounded-[14px] hover:border-white hover:backdrop-brightness-200 transition duration-200"
+    >
+      <a href="/signup">{t("SignUp")}</a>
+    </button>
+  )}
+</li>
+
         <li>
           <ThemeToggle />
         </li>

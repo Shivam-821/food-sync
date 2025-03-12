@@ -49,15 +49,11 @@ const communityPostSchema = new Schema(
         },
       },
     ],
-    isPinned: {
-      type: Boolean,
-      default: false,
-    },
   },
   { timestamps: true }
 );
 
-blogSchema.plugin(mongooseAggregatePaginate);
+communityPostSchema.plugin(mongooseAggregatePaginate);
 
 export const CommunityPost = mongoose.model(
   "CommunityPost",

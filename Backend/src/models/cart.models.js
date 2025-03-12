@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, {Schema} from "mongoose"
 
 const cartSchema = new Schema(
   {
@@ -14,9 +14,29 @@ const cartSchema = new Schema(
     },
     items: [
       {
-        item: { type: Schema.Types.ObjectId, ref: "Item", required: true },
-        quantity: { type: Number, required: true, min: 1 },
-        price: { type: Number, required: true },
+        item: {
+          type: Schema.Types.ObjectId,
+          refPath: "items.itemType",
+          required: true,
+        },
+        itemType: {
+          type: String,
+          enum: ["Item", "UpcyclingItem"],
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+          min: 1,
+        },
+        price: {
+          type: Number,
+          required: true,
+        },
+        producer: {
+          type: Schema.Types.ObjectId,
+          ref: "Producer",
+        },
       },
     ],
     totalAmount: { type: Number, default: 0 },
@@ -24,7 +44,6 @@ const cartSchema = new Schema(
   { timestamps: true }
 );
 
-// Pre-save hook to auto-calculate totalAmount
 cartSchema.pre("save", function (next) {
   this.totalAmount = this.items.reduce(
     (sum, item) => sum + item.quantity * item.price,

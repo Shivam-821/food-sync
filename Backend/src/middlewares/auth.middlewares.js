@@ -3,10 +3,10 @@ import { Consumer } from "../models/consumer.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 
-const verifyJWT = asyncHandler(async (req, res, next) => {
+const verifyJWT =asyncHandler( async (req, res, next) => {
   const gettoken =
     req.cookies.accessToken || req.headers.authorization?.split(" ")[1];
-  if (!gettoken) {
+  if (!gettoken || gettoken.split(".").length !== 3) {
     throw new ApiError(402, "Unauthorized: No token provided");
   }
 
@@ -15,7 +15,7 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
     const consumer = await Consumer.findById(decodedToken?._id).select(
       "phone email"
     );
-
+ 
     if (!consumer) {
       throw new ApiError(401, "Unauthorized");
     }

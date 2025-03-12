@@ -17,9 +17,9 @@ const getUserAndType = async (req) => {
       user: await Producer.findById(req.producer._id),
       userType: "Producer",
     };
-  if (req.upcyclingIndustry)
+  if (req.upcycledIndustry)
     return {
-      user: await UpcyclingIndustry.findById(req.upcyclingIndustry._id),
+      user: await UpcyclingIndustry.findById(req.upcycledIndustry._id),
       userType: "UpcyclingIndustry",
     };
   return { user: null, userType: null };
@@ -104,7 +104,18 @@ const deleteFeedback = asyncHandler(async (req, res) => {
 });
 
 const getAllFeedback = asyncHandler(async (req, res) => {
-  // will be added later.
+  try {
+    const feedbacks = await Feedback.find().populate({
+      path: "user",
+      select: "email phone fullname companyName"
+    }).populate("userType")
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, feedbacks, "All feedbacks in the system"))
+  } catch (error) {
+    throw new ApiError(500, `Failed to get feedbacks: ${error.message}`)
+  }
 })
 
-export { createFeedback, updateFeedback, deleteFeedback };
+export { createFeedback, updateFeedback, deleteFeedback, getAllFeedback };

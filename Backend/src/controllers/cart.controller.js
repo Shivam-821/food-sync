@@ -3,8 +3,11 @@ import { Consumer } from "../models/consumer.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import chalk from "chalk"
-
+import { Producer } from "../models/producer.models.js";
+import { Item } from "../models/items.models.js";
+import { UpcyclingIndustry } from "../models/upcyclingIndustry.models.js";
+import { UpcyclingItem } from "../models/upcyclingItem.models.js";
+import chalk from "chalk";
 
 const getBuyerAndType = async (req) => {
   if (req.consumer)
@@ -13,10 +16,10 @@ const getBuyerAndType = async (req) => {
       buyerId: req.consumer._id,
       buyerType: "Consumer",
     };
-  if (req.upcyclingIndustry)
+  if (req.upcycledIndustry)
     return {
-      buyer: await UpcyclingIndustry.findById(req.upcyclingIndustry._id),
-      buyerId: req.upcyclingIndustry._id,
+      buyer: await UpcyclingIndustry.findById(req.upcycledIndustry._id),
+      buyerId: req.upcycledIndustry._id,
       buyerType: "UpcyclingIndustry",
     };
   return { buyer: null, buyerId: null, buyerType: null };
@@ -28,7 +31,38 @@ const addToCart = asyncHandler(async (req, res) => {
     const { itemId, quantity, price } = req.query;
 
     if (!buyerId || !buyerType || !itemId || !quantity || !price) {
-      return res.status(400).json({ error: "Missing required fields" });
+      console.log(chalk.red("Addto cart: Missing required fields"));
+      throw new ApiError(400, "missing required fields");
+    }
+
+    const parsedQuantity = parseInt(quantity, 10);
+    const parsedPrice = parseFloat(price);
+
+    if (
+      isNaN(parsedQuantity) ||
+      isNaN(parsedPrice) ||
+      parsedQuantity <= 0 ||
+      parsedPrice <= 0
+    ) {
+      return res.status(400).json({ error: "Invalid quantity or price" });
+    }
+
+    let item, itemType;
+    if (buyerType === "Consumer") {
+      item = await Item.findById(itemId);
+      itemType = "Item";
+    } else if (buyerType === "UpcyclingIndustry") {
+      item = await UpcyclingItem.findById(itemId);
+      itemType = "UpcyclingItem";
+    }
+
+    if (!item) {
+      throw new ApiError(404, "Item not found");
+    }
+
+    const producer = await Producer.findById(item.producer);
+    if (!producer) {
+      return res.status(404).json({ error: "Producer not found" });
     }
 
     let cart = await Cart.findOne({ buyer: buyerId, buyerType });
@@ -39,21 +73,23 @@ const addToCart = asyncHandler(async (req, res) => {
     }
 
     if (!buyer.cart) {
-      buyer.cart = cart._id; 
+      buyer.cart = cart._id;
       await buyer.save();
     }
 
-    const existingItem = cart.items.find(
-      (item) => item.item.toString() === itemId
+    const existingItem = cart.items.find((cartItem) =>
+      cartItem.item.equals(itemId)
     );
 
     if (existingItem) {
-      existingItem.quantity += parseInt(quantity);
+      existingItem.quantity += parsedQuantity;
     } else {
       cart.items.push({
         item: itemId,
-        quantity: parseInt(quantity),
-        price: parseFloat(price),
+        itemType,
+        quantity: parsedQuantity,
+        price: parsedPrice,
+        producer: producer._id,
       });
     }
 
@@ -72,13 +108,12 @@ const addToCart = asyncHandler(async (req, res) => {
   }
 });
 
-
 const removeItemFromCart = asyncHandler(async (req, res) => {
   try {
-    const {buyer, buyerId, buyerType} = await getBuyerAndType(req);
-    const {itemId} = req.query; 
+    const { buyer, buyerId, buyerType } = await getBuyerAndType(req);
+    const { itemId } = req.query;
 
-    if (!buyer, !buyerId || !buyerType || !itemId) {
+    if (!buyer || !buyerId || !buyerType || !itemId) {
       throw new ApiError(400, "Missing required fields");
     }
 
@@ -103,8 +138,8 @@ const removeItemFromCart = asyncHandler(async (req, res) => {
           new ApiResponse(200, {}, "Cart is now empty and has been deleted")
         );
     }
-
     await cart.save();
+
     return res
       .status(200)
       .json(new ApiResponse(200, cart, "Item removed from cart"));
@@ -116,31 +151,42 @@ const removeItemFromCart = asyncHandler(async (req, res) => {
   }
 });
 
-
 const getCart = asyncHandler(async (req, res) => {
   try {
-    const {buyer, buyerId, buyerType} = await getBuyerAndType(req)
+    const { buyer, buyerId, buyerType } = await getBuyerAndType(req);
 
-    if(!buyer || !buyerId || !buyerType){
-      throw new ApiError(404, "Buyer not found")
+    if (!buyer || !buyerId || !buyerType) {
+      throw new ApiError(404, "Buyer not found");
+    }
+
+    let populateOptions = {
+      path: "items.item",
+      select: "name producer",
+    };
+
+    if (buyerType === "Consumer") {
+      populateOptions.path = "items.item";
+      populateOptions.model = "Item";
+    } else if (buyerType === "UpcyclingIndustry") {
+      populateOptions.path = "items.item";
+      populateOptions.model = "UpcyclingItem";
     }
 
     const cart = await Cart.findOne({ buyer: buyerId, buyerType })
+      .populate(populateOptions)
       .populate({
-        path: "items.item",
-        select: "name producer"
-      })
-      .populate("items.quantity")
-      .populate("items.price")
+        path: "items.producer",
+        select: "location email phone fullname producerType companyName",
+      });
 
     if (!cart) {
-      throw new ApiError(404, "cart not found")
+      throw new ApiError(404, "Cart not found");
     }
 
     res.status(200).json(new ApiResponse(200, cart));
   } catch (error) {
-    console.error(`Error During getCart: ${error}`)
-    throw new ApiError(500, "Internal server error")
+    console.error(`Error During getCart: ${error}`);
+    throw new ApiError(500, "Internal server error");
   }
 });
 

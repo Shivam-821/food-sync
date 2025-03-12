@@ -79,7 +79,7 @@ const registerConsumer = asyncHandler(async (req, res) => {
 
     const options = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production" ? true : false,
       sameSite: "None",
     };
 
@@ -131,7 +131,7 @@ const loginConsumer = asyncHandler(async (req, res) => {
   );
 
   const loggedInConsumer = await Consumer.findById(consumer._id).select(
-    "-password -refreshToken").populate("feedbacks")
+    "-password -refreshToken").populate("feedbacks donationsMade orders")
   if (!loggedInConsumer) {
     throw new ApiError(404, "Consumer not found");
   }
@@ -139,6 +139,7 @@ const loginConsumer = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    sameSite: "None"
   };
 
   return res

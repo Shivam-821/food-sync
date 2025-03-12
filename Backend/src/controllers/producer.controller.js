@@ -24,7 +24,7 @@ const generateAccessAndRefreshToken = async (ProducerId) => {
     throw new ApiError(500, `Token generation error: ${error.message}`);
   }
 };
-
+  
 const registerProducer = asyncHandler(async (req, res) => {
   const {
     fullname,
@@ -35,12 +35,11 @@ const registerProducer = asyncHandler(async (req, res) => {
     producerType,
     location,
   } = req.body;
-
+  console.log(req.body)
   if (
     [fullname, email, password, companyName, producerType].some(
       (field) => !field?.trim()
     ) ||
-    !location ||
     !phone
   ) {
     throw new ApiError(400, "All fields are required");
@@ -146,7 +145,7 @@ const loginProducer = asyncHandler(async (req, res) => {
 
   const loggedInProducer = await Producer.findById(producer._id)
     .select("-password -refreshToken")
-    .populate("items")
+    .populate("items expiredItems")
     .populate("feedbacks");
 
   if (!loggedInProducer) {
@@ -195,7 +194,7 @@ const logoutProducer = asyncHandler(async (req, res) => {
 const producerProfile = asyncHandler(async (req, res) => {
   const producer = await Producer.findById(req.producer._id)
     .select("-password -refreshToken")
-    .populate("items")
+    .populate("items expiredItems")
     .populate("feedbacks");
 
   if (!producer) {

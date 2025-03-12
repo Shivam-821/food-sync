@@ -4,11 +4,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-// Create a new partnership
 const createPartnership = asyncHandler(async (req, res) => {
   const { organization, type, partners } = req.body;
 
-  // Validate required fields
   if (!organization || !type || !partners || partners.length === 0) {
     throw new ApiError(400, "Organization, type, and partners are required");
   }
@@ -19,7 +17,6 @@ const createPartnership = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Producer not found");
   }
 
-  // Create the partnership
   try {
     const partnership = await Partnership.create({
       organization,
@@ -27,7 +24,6 @@ const createPartnership = asyncHandler(async (req, res) => {
       partners,
     });
 
-    // Add the partnership to the producer's partnerships list
     producer.partnerships.push(partnership._id);
     await producer.save();
 
@@ -41,7 +37,7 @@ const createPartnership = asyncHandler(async (req, res) => {
   }
 });
 
-// Get all partnerships
+
 const getAllPartnerships = asyncHandler(async (req, res) => {
   const partnerships = await Partnership.find().populate("partners");
 
@@ -56,7 +52,7 @@ const getAllPartnerships = asyncHandler(async (req, res) => {
     );
 });
 
-// Get a single partnership by ID
+
 const getPartnershipById = asyncHandler(async (req, res) => {
   const { partnershipId } = req.params;
 
@@ -83,7 +79,6 @@ const updatePartnership = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Partnership not found");
   }
 
-  // Check if the producer is part of the partnership
   const producer = await Producer.findById(req.producer._id);
   if (!partnership.partners.includes(producer._id)) {
     throw new ApiError(
@@ -92,7 +87,6 @@ const updatePartnership = asyncHandler(async (req, res) => {
     );
   }
 
-  // Update the partnership
   const updatedPartnership = await Partnership.findByIdAndUpdate(
     partnershipId,
     updateFields,
@@ -119,7 +113,6 @@ const deletePartnership = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Partnership not found");
   }
 
-  // Check if the producer is part of the partnership
   const producer = await Producer.findById(req.producer._id);
   if (!partnership.partners.includes(producer._id)) {
     throw new ApiError(
@@ -128,13 +121,11 @@ const deletePartnership = asyncHandler(async (req, res) => {
     );
   }
 
-  // Remove the partnership from the producer's partnerships list
   producer.partnerships = producer.partnerships.filter(
     (id) => id.toString() !== partnershipId.toString()
   );
   await producer.save();
 
-  // Delete the partnership
   await Partnership.findByIdAndDelete(partnershipId);
 
   return res
