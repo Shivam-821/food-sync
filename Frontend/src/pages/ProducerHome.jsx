@@ -6,6 +6,7 @@ import image1 from "./../assets/producer1.jpeg"
 import image2 from "./../assets/producer2.jpeg"
 import image3 from "./../assets/producer3.jpeg"
 import image4 from "./../assets/producer4.jpeg"
+import axios from "axios";
 
 
 const ProducerHome = () => {
@@ -18,6 +19,7 @@ const ProducerHome = () => {
   const [manufacturingDate, setManufacturingDate] = useState("");
   const [status, setStatus] = useState("");
   const [upcyclingOption, setUpcyclingOption] = useState("");
+  const [description, setDescription] = useState("");
   const [addedItems, setAddedItems] = useState([]);
 
   const handleImageChange = (event) => {
@@ -27,27 +29,59 @@ const ProducerHome = () => {
     }
   };
 
-  const handleAddItem = (event) => {
+  const handleAddItem = async (event) => {
     event.preventDefault();
-    if (!itemName || !quantity || !unit || !category || !expiryDate || !manufacturingDate || !status || (status === "Upcycled" && !upcyclingOption)) {
+    
+    if (!itemName || !quantity || !unit || !category || !description || !expiryDate || !manufacturingDate || !status || (status === "Upcycled" && !upcyclingOption)) {
       alert("Please fill in all required fields!");
       return;
     }
-
-    const newItem = { name: itemName, quantity, unit, category, expiryDate, manufacturingDate, status, upcyclingOption, image };
-    setAddedItems([...addedItems, newItem]);
-
-    // Clear form inputs
-    setItemName("");
-    setQuantity("");
-    setUnit("");
-    setCategory("");
-    setExpiryDate("");
-    setManufacturingDate("");
-    setStatus("");
-    setUpcyclingOption("");
-    setImage(null);
+  
+    const newItem = { 
+      name: itemName, 
+      quantity, 
+      unit, 
+      category, 
+      expiryDate, 
+      manufacturingDate, 
+      status, 
+      upcyclingOption, 
+      description, 
+      image 
+    };
+  
+    try {
+      const token = localStorage.getItem("accessToken");
+      console.log(token)
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/items/create`, newItem,{
+        headers: {
+          'Authorization': `Bearer ${token}`, // Add the token
+          'Content-Type': 'multipart/form-data', // Important: specify multipart form data
+        }
+      });
+      alert("Item added successfully!");
+      
+      // Clear form inputs
+      setItemName("");
+      setQuantity("");
+      setUnit("");
+      setCategory("");
+      setExpiryDate("");
+      setManufacturingDate("");
+      setStatus("");
+      setUpcyclingOption("");
+      setDescription("");
+      setImage(null);
+  
+      // Optionally, update the added items list
+      setAddedItems([...addedItems, response.data]);
+  
+    } catch (error) {
+      console.error("Error adding item:", error);
+      alert("Failed to add item, please try again.");
+    }
   };
+  
 
   return (
   
@@ -112,6 +146,11 @@ const ProducerHome = () => {
                 <label className="block text-lg font-medium text-gray-700">Manufacturing Date</label>
                 <input required className="w-full p-3 border rounded-lg bg-gray-200" type="date" value={manufacturingDate} onChange={(e) => setManufacturingDate(e.target.value)} />
               </div>
+
+              <div>
+                <label className="block text-lg font-medium text-gray-700">Description</label>
+                <textarea required className="w-full p-3 border rounded-lg bg-gray-200" placeholder="Item description" value={description} onChange={(e) => setDescription(e.target.value)} />
+              </div>
   
               
               <div>
@@ -125,7 +164,6 @@ const ProducerHome = () => {
                 <select required className="w-full p-3 border rounded-lg bg-gray-200" value={status} onChange={(e) => setStatus(e.target.value)}>
                   <option value="">Select Status</option>
                   <option value="Available">Available</option>
-                  <option value="Donated">Donated</option>
                   <option value="Expired">Expired</option>
                   <option value="Upcycled">Upcycled</option>
                 </select>
