@@ -67,7 +67,7 @@ const itemSchema = new Schema(
       required: [true, "Expiry date is required"],
       validate: {
         validator: function (value) {
-          return value > this.get("mfDate"); // Properly access the mfDate field
+          return value > this.get("mfDate");
         },
         message: "Expiry date must be after the manufacturing date",
       },
@@ -83,7 +83,7 @@ const itemSchema = new Schema(
     upcyclingOptions: {
       type: [String],
       enum: {
-        values: ["biogas", "compost", "fertilizer", "cosmetics"],
+        values: ["biogas", "compost", "fertilizer", "cosmetics", "smoothies", "beverage", "animal feed", "flour", "others"],
         message: "{VALUE} is not a valid upcycling option",
       },
     },

@@ -3,12 +3,9 @@ import { Producer } from "../models/producer.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import {
-  uploadOnCloudinary,
-  deleteFromCloudinary,
-} from "../utils/cloudinary.js";
+import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 
-// Create a new item
+
 const createItem = asyncHandler(async (req, res) => {
   const {
     name,
@@ -90,140 +87,153 @@ const createItem = asyncHandler(async (req, res) => {
   }
 });
 
-// all items
-const getAllItems = asyncHandler(async (req, res) => {
-  const {
-    category,
-    status,
-    minPrice,
-    maxPrice,
-    sortBy = "createdAt", 
-    sortOrder = "desc", 
-    page = 1,
-    limit = 10,
-  } = req.query;
+// // all items
+// const getAllItems = asyncHandler(async (req, res) => {
+//   const {
+//     category,
+//     status,
+//     minPrice,
+//     maxPrice,
+//     sortBy = "createdAt",
+//     sortOrder = "desc",
+//     page = 1,
+//     limit = 10,
+//   } = req.query;
 
+//   const minPriceNum = minPrice ? parseFloat(minPrice) : undefined;
+//   const maxPriceNum = maxPrice ? parseFloat(maxPrice) : undefined;
+//   const pageNum = parseInt(page);
+//   const limitNum = parseInt(limit);
 
-  const minPriceNum = minPrice ? parseFloat(minPrice) : undefined;
-  const maxPriceNum = maxPrice ? parseFloat(maxPrice) : undefined;
-  const pageNum = parseInt(page);
-  const limitNum = parseInt(limit);
+//   // Validate pagination values
+//   if (isNaN(pageNum) || pageNum < 1) {
+//     throw new ApiError(400, "Page must be a valid number greater than 0");
+//   }
+//   if (isNaN(limitNum) || limitNum < 1) {
+//     throw new ApiError(400, "Limit must be a valid number greater than 0");
+//   }
 
-  // Validate pagination values
-  if (isNaN(pageNum) || pageNum < 1) {
-    throw new ApiError(400, "Page must be a valid number greater than 0");
-  }
-  if (isNaN(limitNum) || limitNum < 1) {
-    throw new ApiError(400, "Limit must be a valid number greater than 0");
-  }
+//   // Validate price range
+//   if (
+//     minPriceNum !== undefined &&
+//     maxPriceNum !== undefined &&
+//     minPriceNum > maxPriceNum
+//   ) {
+//     throw new ApiError(400, "minPrice must be less than or equal to maxPrice");
+//   }
 
-  // Validate price range
-  if (
-    minPriceNum !== undefined &&
-    maxPriceNum !== undefined &&
-    minPriceNum > maxPriceNum
-  ) {
-    throw new ApiError(400, "minPrice must be less than or equal to maxPrice");
-  }
+//   // Build the aggregation pipeline
+//   const matchStage = {};
+//   if (category) {
+//     matchStage.category = { $eq: category.toLowerCase() };
+//   }
+//   if (status) {
+//     matchStage.status = { $eq: status.toLowerCase() };
+//   }
+//   if (minPriceNum !== undefined || maxPriceNum !== undefined) {
+//     matchStage.price = {};
+//     if (minPriceNum !== undefined) matchStage.price.$gte = minPriceNum;
+//     if (maxPriceNum !== undefined) matchStage.price.$lte = maxPriceNum;
+//   }
 
-  // Build the aggregation pipeline
-  const matchStage = {};
-  if (category) {
-    matchStage.category = { $eq: category.toLowerCase() };
-  }
-  if (status) {
-    matchStage.status = { $eq: status.toLowerCase() };
-  }
-  if (minPriceNum !== undefined || maxPriceNum !== undefined) {
-    matchStage.price = {};
-    if (minPriceNum !== undefined) matchStage.price.$gte = minPriceNum;
-    if (maxPriceNum !== undefined) matchStage.price.$lte = maxPriceNum;
-  }
+//   // Handle sorting logic
+//   const sortStage = {};
+//   const allowedSortFields = ["price", "createdAt", "category", "status"];
+//   if (allowedSortFields.includes(sortBy)) {
+//     sortStage[sortBy] = sortOrder === "desc" ? -1 : 1;
+//   } else {
+//     sortStage["createdAt"] = -1;
+//   }
 
-  // Handle sorting logic
-  const sortStage = {};
-  const allowedSortFields = ["price", "createdAt", "category", "status"];
-  if (allowedSortFields.includes(sortBy)) {
-    sortStage[sortBy] = sortOrder === "desc" ? -1 : 1; 
-  } else {
-    sortStage["createdAt"] = -1; 
-  }
+//   try {
+//     // Aggregation pipeline
+//    const result = await Item.aggregate([
+//      { $match: matchStage }, // Apply filters
+//      {
+//        $lookup: {
+//          from: "producers",
+//          localField: "producer",
+//          foreignField: "_id",
+//          as: "producerDetails",
+//        },
+//      },
+//      { $unwind: "$producerDetails" }, // Flatten producerDetails array
+//      { $sort: sortStage }, // Apply sorting
+//      {
+//        $project: {
+//          // Include only the fields you want in the response
+//          name: 1,
+//          category: 1,
+//          price: 1,
+//          status: 1,
+//          createdAt: 1,
+//          updatedAt: 1,
+//          quantity: 1,
+//          unit: 1,
+//          avatar: 1,
+//          description: 1,
+//          mfDate: 1,
+//          expiryDate: 1,
+//          upcyclingOptions: 1,
+//          inWishlist: 1,
+//          producer: {
+//            fullname: "$producerDetails.fullname",
+//            email: "$producerDetails.email",
+//            location: "$producerDetails.location",
+//            phone: "$producerDetails.phone",
+//            companyName: "$producerDetails.companyName",
+//            producerType: "$producerDetails.producerType",
+//          },
+//        },
+//      },
+//      {
+//        $facet: {
+//          metadata: [{ $count: "totalItems" }],
+//          data: [{ $skip: (pageNum - 1) * limitNum }, { $limit: limitNum }],
+//        },
+//      },
+//    ]);
 
-  try {
-    // Aggregation pipeline
-   const result = await Item.aggregate([
-     { $match: matchStage }, // Apply filters
-     {
-       $lookup: {
-         from: "producers",
-         localField: "producer",
-         foreignField: "_id",
-         as: "producerDetails",
-       },
-     },
-     { $unwind: "$producerDetails" }, // Flatten producerDetails array
-     { $sort: sortStage }, // Apply sorting
-     {
-       $project: {
-         // Include only the fields you want in the response
-         name: 1,
-         category: 1,
-         price: 1,
-         status: 1,
-         createdAt: 1,
-         updatedAt: 1,
-         quantity: 1,
-         unit: 1,
-         avatar: 1,
-         description: 1,
-         mfDate: 1,
-         expiryDate: 1,
-         upcyclingOptions: 1,
-         inWishlist: 1,
-         producer: {
-           fullname: "$producerDetails.fullname",
-           email: "$producerDetails.email",
-           location: "$producerDetails.location",
-           phone: "$producerDetails.phone",
-           companyName: "$producerDetails.companyName",
-           producerType: "$producerDetails.producerType",
-         },
-       },
-     },
-     {
-       $facet: {
-         metadata: [{ $count: "totalItems" }],
-         data: [{ $skip: (pageNum - 1) * limitNum }, { $limit: limitNum }],
-       },
-     },
-   ]);
+//     // Extract results
+//     const items = result[0]?.data || [];
+//     const totalItems = result[0]?.metadata[0]?.totalItems || 0;
+//     const totalPages = Math.max(1, Math.ceil(totalItems / limitNum));
 
-    // Extract results
-    const items = result[0]?.data || [];
-    const totalItems = result[0]?.metadata[0]?.totalItems || 0;
-    const totalPages = Math.max(1, Math.ceil(totalItems / limitNum));
-
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        {
-          items,
-          totalItems,
-          totalPages,
-          currentPage: pageNum,
-          limit: limitNum,
-        },
-        "Items fetched successfully"
-      )
-    );
-  } catch (error) {
-    throw new ApiError(500, "An error occurred while fetching items");
-  }
-});
-
-
+//     return res.status(200).json(
+//       new ApiResponse(
+//         200,
+//         {
+//           items,
+//           totalItems,
+//           totalPages,
+//           currentPage: pageNum,
+//           limit: limitNum,
+//         },
+//         "Items fetched successfully"
+//       )
+//     );
+//   } catch (error) {
+//     throw new ApiError(500, "An error occurred while fetching items");
+//   }
+// });
 
 // Get a single item by ID
+
+const getAllItems = asyncHandler(async (req, res) => {
+  const items = await Item.find().sort({ expiryDate: 1 }).populate({
+    path: "producer",
+    select: "fullname email phone companyName location",
+  });
+
+  if(!items){
+    throw new ApiError(404, "Items not found")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, items, "Items fetched successfully"));
+});
+
 const getItemById = asyncHandler(async (req, res) => {
   const { itemId } = req.params;
 
@@ -281,14 +291,13 @@ const updateItem = asyncHandler(async (req, res) => {
     new: true,
   }).populate({
     path: "producer",
-    select: "location email phone fullname producerType companyName"
-  })
+    select: "location email phone fullname producerType companyName",
+  });
 
   return res
     .status(200)
     .json(new ApiResponse(200, updatedItem, "Item updated successfully"));
 });
-
 
 // Delete an item
 const deleteItem = asyncHandler(async (req, res) => {
@@ -319,7 +328,6 @@ const deleteItem = asyncHandler(async (req, res) => {
     await producer.save();
   }
 
-
   // Delete the item from the database
   await Item.findByIdAndDelete(itemId);
 
@@ -327,6 +335,5 @@ const deleteItem = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, null, "Item deleted successfully"));
 });
-
 
 export { createItem, getAllItems, getItemById, updateItem, deleteItem };

@@ -53,7 +53,7 @@ const createDonation = asyncHandler(async (req, res) => {
             );
           }
         }
-        // If neither image URL nor file is provided, throw error
+        
         else {
           throw new ApiError(400, "Image is required for each item");
         }
@@ -66,14 +66,22 @@ const createDonation = asyncHandler(async (req, res) => {
       })
     );
 
-    const credit = processedItems.length * 5;
+    const totalCredits = await Donation.aggregate([
+      { $match: { donor: donor._id } },
+      { $group: { _id: null, totalCredits: { $sum: "$credit" } } },
+    ]);
+
+    const previousCredit = totalCredits.length
+      ? totalCredits[0].totalCredits
+      : 0;
+    const newCredit = previousCredit + processedItems.length * 2;
 
     const donation = await Donation.create({
       donor: donor._id,
       donorType,
       items: processedItems,
       pickupLocation,
-      credit,
+      newCredit,
     });
 
     if (!donation) {
