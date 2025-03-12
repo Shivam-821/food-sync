@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import axios from "axios";
 import Navbar from "./Navbar/Navbar";
 import Footer from "./Footer/Footer";
 
@@ -11,8 +12,29 @@ function CommunityChat() {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    const storedName = localStorage.getItem("chatName") || "";
-    setName(storedName);
+
+    const token = localStorage.getItem("accessToken"); // Ensure the token is stored
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+
+    const fetchUserName = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/community/communityName`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`, // Attach token
+            "Content-Type": "application/json",
+          },
+        });
+        setName(response.data.name); // Assuming the API returns { name: "User Name" }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserName();
 
     socket.on("message", (data) => {
       setMessages((prevMessages) => [...prevMessages, data]); 
@@ -24,6 +46,12 @@ function CommunityChat() {
   }, []);
 
   const sendMessage = () => {
+
+    if (!message || !name) {
+      console.error("Message or name is undefined");
+      return;
+    }
+
     if (message.trim() === "" || name.trim() === "") return; 
     
     const msgData = { name, message };
@@ -40,19 +68,6 @@ function CommunityChat() {
 
       <Navbar />
       <h1 className="text-3xl font-semibold text-center mt-20 mb-6">Community Chat</h1>
-
-      <div className="flex flex-col items-center gap-4">
-        <input 
-          className="bg-gray-200 rounded-lg px-4 py-2 border text-lg w-3/4 sm:w-1/3 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          type="text" 
-          value={name} 
-          onChange={(e) => {
-            setName(e.target.value);
-            localStorage.setItem("chatName", e.target.value);
-          }} 
-          placeholder="Enter your name..."
-        />
-      </div>
 
       <div className="border border-gray-400 m-5 p-4 h-96 bg-white/80 overflow-y-auto mb-6 rounded-lg shadow-lg">
         {messages.map((msg, index) => (
