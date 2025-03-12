@@ -1,8 +1,6 @@
-"use client";
-
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "./Pay.css";
+import "./pay.css";
 
 export function Pay() {
   const location = useLocation();
@@ -10,9 +8,22 @@ export function Pay() {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [animateIn, setAnimateIn] = useState(false);
 
   // Get the total amount from location state
   const totalAmount = location.state?.totalAmount || 0;
+
+  useEffect(() => {
+    // Trigger entrance animation
+    setTimeout(() => {
+      setAnimateIn(true);
+    }, 100);
+
+    // Add confetti effect when order is placed
+    if (orderPlaced) {
+      createConfetti();
+    }
+  }, [orderPlaced]);
 
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
@@ -57,21 +68,83 @@ export function Pay() {
   };
 
   const handleBackToHome = () => {
-    navigate("/");
+    setAnimateIn(false);
+    setTimeout(() => {
+      navigate("/");
+    }, 500);
+  };
+
+  // Function to create confetti effect
+  const createConfetti = () => {
+    const confettiContainer = document.querySelector(".confetti-container");
+    if (!confettiContainer) return;
+
+    const colors = ["#FCD34D", "#F59E0B", "#D97706", "#92400E", "#FBBF24"];
+
+    for (let i = 0; i < 100; i++) {
+      const confetti = document.createElement("div");
+      confetti.className = "confetti";
+      confetti.style.left = Math.random() * 100 + "vw";
+      confetti.style.animationDelay = Math.random() * 3 + "s";
+      confetti.style.backgroundColor =
+        colors[Math.floor(Math.random() * colors.length)];
+
+      confettiContainer.appendChild(confetti);
+
+      // Remove confetti after animation completes
+      setTimeout(() => {
+        confetti.remove();
+      }, 6000);
+    }
   };
 
   return (
-    <div className="payment-page">
+    <div className={`payment-page ${animateIn ? "animate-in" : "animate-out"}`}>
+      <div className="confetti-container"></div>
+
       <div className="payment-container">
-        <h1>Checkout</h1>
+        <div className="payment-header">
+          <h1>Complete Your Order</h1>
+          <div className="food-icon-container">
+            <div className="food-icon burger"></div>
+            <div className="food-icon pizza"></div>
+            <div className="food-icon fries"></div>
+          </div>
+        </div>
 
         {orderPlaced ? (
           <div className="order-success">
-            <div className="success-icon">✓</div>
+            <div className="success-icon-container">
+              <div className="success-icon">
+                <div className="checkmark"></div>
+              </div>
+              <div className="success-rays"></div>
+            </div>
             <h2>Order Placed Successfully!</h2>
-            <p>Thank you for your purchase.</p>
+            <p>
+              Thank you for your purchase. Your delicious food is on its way!
+            </p>
+            <div className="order-details">
+              <div className="order-detail-item">
+                <span>Order Amount:</span>
+                <span className="amount">₹{totalAmount.toFixed(2)}</span>
+              </div>
+              <div className="order-detail-item">
+                <span>Payment Method:</span>
+                <span>
+                  {paymentMethod === "cod"
+                    ? "Cash on Delivery"
+                    : "Online Payment"}
+                </span>
+              </div>
+              <div className="order-detail-item">
+                <span>Estimated Delivery:</span>
+                <span>30-45 minutes</span>
+              </div>
+            </div>
             <button className="back-to-home-btn" onClick={handleBackToHome}>
-              Back to Home
+              <span className="btn-icon">🏠</span>
+              <span>Back to Home</span>
             </button>
           </div>
         ) : (
@@ -79,8 +152,27 @@ export function Pay() {
             <div className="order-summary">
               <h2>Order Summary</h2>
               <div className="amount-row">
-                <span>Total Amount:</span>
+                <div className="amount-label">
+                  <span className="amount-icon">🛒</span>
+                  <span>Total Amount:</span>
+                </div>
                 <span className="amount">₹{totalAmount.toFixed(2)}</span>
+              </div>
+              <div className="payment-progress">
+                <div className="progress-step completed">
+                  <div className="step-number">1</div>
+                  <div className="step-label">Cart</div>
+                </div>
+                <div className="progress-line"></div>
+                <div className="progress-step active">
+                  <div className="step-number">2</div>
+                  <div className="step-label">Payment</div>
+                </div>
+                <div className="progress-line"></div>
+                <div className="progress-step">
+                  <div className="step-number">3</div>
+                  <div className="step-label">Confirmation</div>
+                </div>
               </div>
             </div>
 
@@ -102,9 +194,13 @@ export function Pay() {
                     ></div>
                   </div>
                   <div className="option-details">
-                    <h3>Cash on Delivery</h3>
-                    <p>Pay when your order is delivered</p>
+                    <div className="option-icon cod-icon">💵</div>
+                    <div className="option-text">
+                      <h3>Cash on Delivery</h3>
+                      <p>Pay when your order is delivered</p>
+                    </div>
                   </div>
+                  <div className="option-badge">Popular</div>
                 </div>
 
                 <div
@@ -121,18 +217,39 @@ export function Pay() {
                     ></div>
                   </div>
                   <div className="option-details">
-                    <h3>Online Payment</h3>
-                    <p>Pay securely with Razorpay</p>
+                    <div className="option-icon razorpay-icon">💳</div>
+                    <div className="option-text">
+                      <h3>Online Payment</h3>
+                      <p>Pay securely with Razorpay</p>
+                    </div>
                   </div>
+                  <div className="option-badge secure">Secure</div>
                 </div>
+              </div>
+
+              <div className="secure-payment-note">
+                <div className="secure-icon">🔒</div>
+                <p>All payments are secure and encrypted</p>
               </div>
 
               <button
                 type="submit"
-                className="place-order-btn"
+                className={`place-order-btn ${
+                  isProcessing ? "processing" : ""
+                }`}
                 disabled={isProcessing || !paymentMethod}
               >
-                {isProcessing ? "Processing..." : "Place Order"}
+                {isProcessing ? (
+                  <>
+                    <div className="spinner"></div>
+                    <span>Processing...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="btn-icon">🚀</span>
+                    <span>Place Order Now</span>
+                  </>
+                )}
               </button>
             </form>
           </>
