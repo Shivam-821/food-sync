@@ -15,9 +15,11 @@ import Social from "./pages/Social/Social";
 //import SignUp from "./pages/Signup/SignUp";
 import Producer from "./pages/ProducerSignUp/Producer";
 import CommunityChat from "./Components/CommunityChat";
+import { Pay } from "./Components/pay";
 import ConsumerProtectWrapper from "./pages/Wrapper/ConsumerProtectedWrapper";
 import Feedback from "./Components/Feedback";
 import UserProfile from "./Components/UserProfile";
+import Login from "./Components/Login/Login";
 
 function App() {
   return (
@@ -35,8 +37,10 @@ function App() {
       <Route path="/producer" element={<Producer />} />
       <Route path="/consumer" element={<SignUp />} />
       <Route path="/communityChat" element={<CommunityChat />} />
+      <Route path="/pay" element={<Pay />} />
       <Route path="/feedback" element={<Feedback />} />
       <Route path="/userProfile" element={<UserProfile />} />
+      <Route path="/login" element={<Login />} />
     </Routes>
   );
 }

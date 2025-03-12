@@ -33,6 +33,7 @@ import upcyclingItemRoute from "./routes/upcyclingItem.routes.js"
 import mapsRoutes from './routes/maps.routes.js'
 import donationRoute from "./routes/donation.routes.js"
 import communityRoute from './routes/communityPost.routes.js'
+import visionRoute from './routes/vision.routes.js'
 
 
 app.use("/api/v1/consumer", consumerRoute);
@@ -46,6 +47,8 @@ app.use("/api/v1/upcyclingItem",upcyclingItemRoute)
 app.use('/api/v1/maps',mapsRoutes);
 app.use("/api/v1/donation", donationRoute)
 app.use("/api/v1/community", communityRoute)
+// app.use("/api/v1/vision", visionRoute)
+
 
 
 export { app };
