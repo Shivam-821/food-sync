@@ -20,6 +20,10 @@ const gamificationSchema = new Schema(
       type: String,
       enum: ["Beginner", "Contributor", "Achiever", "Champion", "Legend"],
     },
+    contribution: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

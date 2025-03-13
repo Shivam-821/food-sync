@@ -55,7 +55,7 @@ const registerConsumer = asyncHandler(async (req, res) => {
     if (avatarLocalPath) {
       avatar = await uploadOnCloudinary(avatarLocalPath);
     }
-
+ 
     const createConsumer = await Consumer.create({
       fullname,
       avatar: avatar?.url || "",

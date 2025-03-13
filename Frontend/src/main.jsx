@@ -7,9 +7,11 @@ import "./i18n"; // Import i18n configuration
 import ConsumerContext from "./Context/ConsumerContext.jsx";
 import ProducerContext from "./Context/ProducerContext.jsx";
 import UpcyclingIContext from "./Context/UpcyclingIContext.jsx";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
+     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
     <UpcyclingIContext>
     <ProducerContext>
       <ConsumerContext>
@@ -19,5 +21,6 @@ createRoot(document.getElementById("root")).render(
       </ConsumerContext>
     </ProducerContext>
     </UpcyclingIContext>
+    </GoogleOAuthProvider>
   </StrictMode>
 );

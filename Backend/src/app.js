@@ -36,6 +36,24 @@ import communityRoute from './routes/communityPost.routes.js'
 import gamificationRoute from './routes/gamification.routes.js'
 import visionRoute from './routes/vision.routes.js'
 import aiRoute from './routes/ai.routes.js'
+import passport from "passport";
+import session from "express-session";
+import "./services/passport.service.js";
+import authRoutes from "./routes/auth.routes.js";
+
+
+// Sessions for passport
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "secret",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use("/api/v1/auth", authRoutes);
 import loginRouter from './routes/loginRoute.routes.js'
 
 
