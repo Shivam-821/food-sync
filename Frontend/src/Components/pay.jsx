@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./pay.css";
+import axios from "axios";
 
 export function Pay() {
   const location = useLocation();
@@ -9,9 +10,32 @@ export function Pay() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [animateIn, setAnimateIn] = useState(false);
+  const [amount,setAmount]=useState("0");
 
   // Get the total amount from location state
   const totalAmount = location.state?.totalAmount || 0;
+
+  //fetch total amount from backend
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    const fetchAmount = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/v1/cart/getcart`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          }
+        );
+        setAmount(response.data.data.totalAmount);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+    };
+    fetchAmount();
+  }, []);
 
   useEffect(() => {
     // Trigger entrance animation
@@ -111,7 +135,7 @@ export function Pay() {
             <div className="food-icon fries"></div>
           </div>
         </div>
-
+ 
         {orderPlaced ? (
           <div className="order-success">
             <div className="success-icon-container">
@@ -156,7 +180,7 @@ export function Pay() {
                   <span className="amount-icon">🛒</span>
                   <span>Total Amount:</span>
                 </div>
-                <span className="amount">₹{totalAmount.toFixed(2)}</span>
+                <span className="amount">₹{amount}</span>
               </div>
               <div className="payment-progress">
                 <div className="progress-step completed">

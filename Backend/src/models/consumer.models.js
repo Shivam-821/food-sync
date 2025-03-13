@@ -22,7 +22,7 @@ const consumerSchema = new Schema(
     },
     phone: {
       type: Number,
-      required: true,
+      // required: true,
       unique: true,
       validate: {
         validator: function (value) {
@@ -38,7 +38,7 @@ const consumerSchema = new Schema(
     avatar: { type: String },
     password: {
       type: String,
-      required: [true, "password is required"],
+      // required: [true, "password is required"],
     },
     refreshToken: { type: String },
     consumerType: {

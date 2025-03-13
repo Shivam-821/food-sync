@@ -1,7 +1,8 @@
 "use client";
 import "./feedback.css";
-import { useState, useEffect } from "react";
 import axios from "axios";
+
+import { useState, useEffect } from "react";
 import {
   Heart,
   MessageCircle,
@@ -24,62 +25,99 @@ const Feedback = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [userName, setUserName] = useState("Guest User");
   const [userType, setUserType] = useState("individual");
+    const [loading, setLoading] = useState(false);
 
-  // Fetch feedback from the backend
-  const fetchFeedback = async () => {
-    try {
-      const response = await axios.get("/api/v1/feedback/getallfeedback");
-      const backendFeedback = response.data.data || []; // Ensure backendFeedback is an array
-
-      // Check if there's any locally stored feedback data
-      const savedFeedback = localStorage.getItem("feedbackData");
-      if (savedFeedback) {
-        const localFeedback = JSON.parse(savedFeedback);
-
-        // Merge backend feedback with local likes and replies
-        const mergedFeedback = backendFeedback.map((feedback) => {
-          const localMatch = localFeedback.find((f) => f._id === feedback._id);
-          return localMatch
-            ? {
-                ...feedback,
-                likes: localMatch.likes || 0,
-                replies: localMatch.replies || [],
-              }
-            : feedback;
-        });
-
-        setFeedbackList(mergedFeedback);
-      } else {
-        setFeedbackList(backendFeedback);
+  // Load feedback from localStorage on component mount
+  useEffect(() => {
+    const fetchFeedback = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_BASE_URL
+          }/api/v1/feedback/getallfeedback`
+        );
+        setFeedbackList(response.data.data);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      } finally {
+        setLoading(false); // Stop loader after fetching
       }
-    } catch (error) {
-      console.error("Failed to fetch feedback:", error);
-      setFeedbackList([]); // Fallback to an empty array on error
+    };
+    fetchFeedback();
+    
+    const savedTheme = localStorage.getItem("darkMode");
+    if (savedTheme) {
+      setIsDarkMode(savedTheme === "true");
     }
-  };
+  }, []);
 
-  // Submit feedback to the backend
-  const submitFeedback = async () => {
-    try {
-      const response = await axios.post("/api/v1/feedback/givefeedback", {
-        rating: newFeedback.rating,
-        comment: newFeedback.comment,
-      });
-      setFeedbackList([response.data.data, ...feedbackList]);
-      setNewFeedback({ rating: 5, comment: "" });
-    } catch (error) {
-      console.error("Failed to submit feedback:", error);
+  useEffect(() => {
+  }, [feedbackList]); // ✅ Only logs when feedbackList updates
+  
+
+  // Update body class when dark mode changes
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
     }
-  };
+    localStorage.setItem("darkMode", isDarkMode);
+  }, [isDarkMode]);
 
-  // Handle feedback submission
-  const handleSubmitFeedback = (e) => {
+  // Handle submitting new feedback
+  const handleSubmitFeedback = async (e) => {
     e.preventDefault();
     if (!newFeedback.comment.trim()) return;
-    submitFeedback();
+
+    const feedback = {
+      id: Date.now(),
+      user: userName + (userType !== "individual" ? ` (${userType})` : ""),
+      avatar: "/placeholder.svg?height=40&width=40",
+      rating: newFeedback.rating,
+      comment: newFeedback.comment,
+      date: new Date().toISOString(),
+      likes: 0,
+      replies: [],
+    };
+
+    const updatedFeedback = [feedback, ...feedbackList];
+    setFeedbackList(updatedFeedback);
+    
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        alert("You must be logged in to donate food.");
+        return;
+      }
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/feedback/givefeedback`,
+        feedback,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json", // Correct content type
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        alert("Feedback submitted successfully!");
+        setNewFeedback({ rating: 5, comment: "" });
+      } else {
+        alert("Error during donation. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during donation:", error);
+      alert("Failed to connect to server.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Handle liking feedback (frontend only)
+  // Handle liking a feedback
   const handleLike = (id) => {
     const updated = feedbackList.map((item) => {
       if (item._id === id) {
@@ -321,6 +359,7 @@ const Feedback = () => {
             <div className="flex space-x-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
+                name="rating"
                   key={star}
                   type="button"
                   onClick={() =>
@@ -341,6 +380,7 @@ const Feedback = () => {
           <div className="mb-4">
             <label className="block mb-2 font-medium">Your Feedback:</label>
             <textarea
+              name="comment"
               value={newFeedback.comment}
               onChange={(e) =>
                 setNewFeedback({ ...newFeedback, comment: e.target.value })
@@ -423,7 +463,7 @@ const Feedback = () => {
                     isDarkMode ? "bg-gray-700" : "bg-green-100"
                   }`}
                 >
-                  {feedback.user.includes("Restaurant") ||
+                  {/* {feedback.user.includes("Restaurant") ||
                   feedback.user.includes("Catering") ||
                   feedback.user.includes("Buffet") ? (
                     <Utensils className="text-green-500" size={24} />
@@ -433,12 +473,12 @@ const Feedback = () => {
                     <Heart className="text-red-500" size={24} />
                   ) : (
                     <Apple className="text-green-500" size={24} />
-                  )}
+                  )} */}
                 </div>
                 <div className="flex-1">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-semibold text-lg">{feedback.user}</h3>
+                      <h3 className="font-semibold text-lg">{feedback.user.fullname}</h3>
                       <div className="flex items-center mt-1">
                         {renderStars(feedback.rating)}
                         <span
@@ -470,7 +510,7 @@ const Feedback = () => {
                       } hover:scale-110`}
                     >
                       <Heart size={18} className="fill-current" />
-                      <span>{feedback.likes || 0}</span>
+                      <span>{feedback.likes||9}</span>
                     </button>
 
                     <button
@@ -486,7 +526,7 @@ const Feedback = () => {
                       } hover:scale-110`}
                     >
                       <MessageCircle size={18} />
-                      <span>{feedback.replies?.length || 0}</span>
+                      <span>{feedback.replies || 19}</span>
                     </button>
                   </div>
 
@@ -537,7 +577,7 @@ const Feedback = () => {
                   )}
 
                   {/* Replies */}
-                  {feedback.replies?.length > 0 && (
+                  {/* {feedback.replies.length > 0 && (
                     <div
                       className={`mt-4 pl-4 border-l-2 ${
                         isDarkMode ? "border-gray-700" : "border-green-200"
@@ -598,7 +638,7 @@ const Feedback = () => {
                         </div>
                       ))}
                     </div>
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>
