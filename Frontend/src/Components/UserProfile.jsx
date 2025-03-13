@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "remixicon/fonts/remixicon.css";
 import Navbar from "../Components/Navbar/Navbar";
 import Footer from "../Components/Footer/Footer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -19,83 +20,111 @@ const UserProfile = () => {
   const [isImageHovered, setIsImageHovered] = useState(false);
   const navigate = useNavigate();
 
+  // State to store user data fetched from the backend
   const [userData, setUserData] = useState({
-    name: "Utkarsh Singh",
-    username: "@Gandu_Prasad",
-    location: "GB Road, new Delhi",
-    email: "69Land@email.com",
-    phone: "+1 6969696969",
-    address: "Laura XNXX chowk, Delhi",
-    bio: "Passionate about sucking.",
-    twitter: "@LauraMera",
-    instagram: "@Land",
-    linkedin: "Zindabaad",
+    fullname: "",
+    email: "",
+    phone: "",
+    location: "",
+    address: "",
+    bio: "",
+    consumerType: "",
+    avatar: "",
   });
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.1,
-      },
-    },
+  // Fetch user profile data from the backend
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          alert("You must be logged in to view your profile.");
+          navigate("/login");
+          return;
+        }
+
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/v1/consumer/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.data && response.data.data) {
+          const user = response.data.data;
+          setUserData({
+            fullname: user.fullname,
+            email: user.email,
+            phone: user.phone,
+            location: user.location,
+            address: user.address,
+            bio: user.bio || "No bio available",
+            consumerType: user.consumerType,
+            avatar: user.avatar || profileImage, // Use default image if avatar is not available
+          });
+          setProfileImage(user.avatar || profileImage); // Update profile image
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+        alert("Failed to fetch user profile. Please try again.");
+      }
+    };
+
+    fetchUserProfile();
+  }, [navigate]);
+
+  // Toggle dark mode
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    document.body.classList.toggle("dark-mode", !isDarkMode);
   };
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { type: "spring", stiffness: 300, damping: 24 },
-    },
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  const handleEditToggle = () => {
-    setIsEditing(!isEditing);
-  };
-
+  // Handle image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result);
+        setUserData((prevData) => ({
+          ...prevData,
+          avatar: reader.result,
+        }));
       };
       reader.readAsDataURL(file);
     }
   };
 
+  // Handle input changes in the edit form
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // Toggle edit mode
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+  };
+
+  // Handle logout
   const handleLogOut = () => {
     setShowLogoutModal(true);
   };
 
+  // Confirm logout
   const confirmLogOut = () => {
     setIsLoggingOut(true);
-    setShowLogoutModal(false);
+    localStorage.removeItem("accessToken"); // Clear the access token
     setTimeout(() => {
-      navigate("/");
+      navigate("/"); 
     }, 3000);
   };
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    // Add a class to the body for global dark mode
-    if (!isDarkMode) {
-      document.body.classList.add("dark-mode");
-    } else {
-      document.body.classList.remove("dark-mode");
-    }
-  };
-
-  // Add floating animation for cards
   const floatingAnimation = {
     y: [0, -10, 0],
     transition: {
@@ -164,6 +193,7 @@ const UserProfile = () => {
         </div>
       </motion.div>
 
+      {/* Profile Content */}
       <div className="max-w-7xl mx-auto py-6 px-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column - Profile Card */}
         <motion.div
@@ -189,7 +219,7 @@ const UserProfile = () => {
                 <motion.div className="h-48 w-48 rounded-full overflow-hidden border-4 border-gray-200 shadow-lg relative">
                   <motion.img
                     className="h-full w-full object-cover"
-                    src={profileImage}
+                    src={userData.avatar}
                     alt="Profile"
                     animate={{
                       scale: isImageHovered ? 1.1 : 1,
@@ -230,7 +260,7 @@ const UserProfile = () => {
                   whileHover={{ scale: 1.05, color: "#3b82f6" }}
                   transition={{ type: "spring", stiffness: 500 }}
                 >
-                  {userData.name}
+                  {userData.fullname}
                 </motion.h1>
                 <motion.p
                   className={`${
@@ -239,7 +269,7 @@ const UserProfile = () => {
                   animate={{ opacity: [0.5, 1, 0.5] }}
                   transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
                 >
-                  {userData.username}
+                  {userData.email}
                 </motion.p>
               </motion.div>
 
@@ -320,7 +350,7 @@ const UserProfile = () => {
                   }`}
                   whileHover={{ scale: 1.02 }}
                 >
-                  <span className="font-medium">NGO</span>
+                  <span className="font-medium">{userData.consumerType}</span>
                   <motion.div className="w-full h-1 bg-blue-500/30 mt-2 rounded-full overflow-hidden">
                     <motion.div
                       className="h-full bg-blue-500"
@@ -365,7 +395,6 @@ const UserProfile = () => {
             </motion.div>
           </div>
 
-          {/* Social Links */}
           <motion.div
             className={`p-6 rounded-xl shadow-md ${
               isDarkMode ? "bg-gray-800" : "bg-white"
