@@ -10,9 +10,7 @@ import { UpcyclingItem } from "../models/upcyclingItem.models.js";
 import chalk from "chalk";
 
 const getBuyerAndType = async (req) => {
-  console.log("Request Consumer:", req.consumer);
-  console.log("Request Upcycled Industry:", req.upcycledIndustry);
-
+  
   if (req.consumer) {
     return {
       buyer: await Consumer.findById(req.consumer._id),
@@ -34,8 +32,7 @@ const addToCart = asyncHandler(async (req, res) => {
   try {
     const { buyer, buyerId, buyerType } = await getBuyerAndType(req);
     const { itemId, quantity, price } = req.query;
-    console.log(req.query)
-    console.log(buyer,buyerType,buyerId)
+   
     
 
     if (!buyerId || !buyerType || !itemId || !quantity || !price) {
@@ -163,23 +160,29 @@ const getCart = asyncHandler(async (req, res) => {
   try {
     const { buyer, buyerId, buyerType } = await getBuyerAndType(req);
 
+    // Validate buyer, buyerId, and buyerType
     if (!buyer || !buyerId || !buyerType) {
       throw new ApiError(404, "Buyer not found");
     }
 
+    // Validate buyerType
+    if (buyerType !== "Consumer" && buyerType !== "UpcyclingIndustry") {
+      throw new ApiError(400, "Invalid buyer type");
+    }
+
+    // Define populate options based on buyerType
     let populateOptions = {
       path: "items.item",
-      select: "name producer",
+      select: "name producer avatar",
     };
 
     if (buyerType === "Consumer") {
-      populateOptions.path = "items.item";
       populateOptions.model = "Item";
     } else if (buyerType === "UpcyclingIndustry") {
-      populateOptions.path = "items.item";
       populateOptions.model = "UpcyclingItem";
     }
 
+    // Fetch the cart and populate the necessary fields
     const cart = await Cart.findOne({ buyer: buyerId, buyerType })
       .populate(populateOptions)
       .populate({
@@ -187,14 +190,22 @@ const getCart = asyncHandler(async (req, res) => {
         select: "location email phone fullname producerType companyName",
       });
 
+    // Check if cart exists
     if (!cart) {
       throw new ApiError(404, "Cart not found");
     }
 
-    res.status(200).json(new ApiResponse(200, cart));
+    // Return the cart details
+    res.status(200).json(new ApiResponse(200, cart, "Cart fetched successfully"));
   } catch (error) {
     console.error(`Error During getCart: ${error}`);
-    throw new ApiError(500, "Internal server error");
+
+    // Handle specific errors
+    if (error instanceof ApiError) {
+      throw error; // Re-throw custom errors
+    } else {
+      throw new ApiError(500, error?.message || "Internal server error");
+    }
   }
 });
 

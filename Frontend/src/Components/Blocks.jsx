@@ -30,7 +30,7 @@ function BlockList() {
   const [isCartBouncing, setIsCartBouncing] = useState(false);
 
   // Filter states
-  const [priceRange, setPriceRange] = useState([0, 100]); // Adjusted price range
+  const [priceRange, setPriceRange] = useState([0, 70000]); // Adjusted price range
   const [productType, setProductType] = useState("all");
   const [expiryDateFilter, setExpiryDateFilter] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,8 +42,7 @@ function BlockList() {
       try {
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/items/getallitem`);
         const data = response.data.data || [];
-
-
+  
         // Transform fetched data to match the expected structure
         const transformedData = data.map((item) => ({
           id: item._id,
@@ -56,50 +55,49 @@ function BlockList() {
           expiryDate: item.expiryDate,
           description: item.description,
           manufacturingDate: item.mfDate,
-
         }));
-
+  
         setBlocks(transformedData);
         setSampleProducts(transformedData);
         setProducts(transformedData);
-        setFilteredProducts(transformedData); // Initialize filteredProducts with fetched data
+  
+        // Apply filters immediately after fetching data
+        let filtered = [...transformedData];
+  
+        // Filter by price
+        filtered = filtered.filter(
+          (product) =>
+            product.price >= priceRange[0] && product.price <= priceRange[1]
+        );
+  
+        // Filter by type
+        if (productType !== "all") {
+          filtered = filtered.filter((product) => product.type === productType);
+        }
+  
+        // Filter by expiry date
+        if (expiryDateFilter) {
+          filtered = filtered.filter(
+            (product) => new Date(product.expiryDate) <= new Date(expiryDateFilter)
+          );
+        }
+  
+        setFilteredProducts(filtered); // Set filteredProducts after filtering
       } catch (err) {
         console.error("Error fetching data:", err);
+      } finally {
+        setLoading(false); // Set loading to false after fetching data
       }
     };
-
+  
     fetchBlocks();
-  }, []);
+  }, [priceRange, productType, expiryDateFilter]); // Add filter dependencies
 
   // Update products when sampleProducts changes
   useEffect(() => {
-    setProducts(sampleProducts);
-  }, [sampleProducts]);
+  }, [filteredProducts]);
 
-  // Apply filters
-  useEffect(() => {
-    let filtered = [...products];
-
-    // Filter by price
-    filtered = filtered.filter(
-      (product) =>
-        product.price >= priceRange[0] && product.price <= priceRange[1]
-    );
-
-    // Filter by type
-    if (productType !== "all") {
-      filtered = filtered.filter((product) => product.type === productType);
-    }
-
-    // Filter by expiry date
-    if (expiryDateFilter) {
-      filtered = filtered.filter(
-        (product) => new Date(product.expiryDate) <= new Date(expiryDateFilter)
-      );
-    }
-
-    setFilteredProducts(filtered);
-  }, [products, priceRange, productType, expiryDateFilter]);
+  
 
   // Log the updated filteredProducts whenever it changes
   useEffect(() => {
@@ -146,19 +144,19 @@ function BlockList() {
     }
   
     // Update local cart state
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
+    // setCartItems((prevItems) => {
+    //   const existingItem = prevItems.find((item) => item.id === product.id);
   
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.id === product.id
-            ? { ...item, cartQuantity: item.cartQuantity + quantity }
-            : item
-        );
-      } else {
-        return [...prevItems, { ...product, cartQuantity: quantity }];
-      }
-    });
+    //   if (existingItem) {
+    //     return prevItems.map((item) =>
+    //       item.id === product.id
+    //         ? { ...item, cartQuantity: item.cartQuantity + quantity }
+    //         : item
+    //     );
+    //   } else {
+    //     return [...prevItems, { ...product, cartQuantity: quantity }];
+    //   }
+    // });
   
     // Trigger cart bounce animation
     setIsCartBouncing(true);
@@ -171,15 +169,41 @@ function BlockList() {
       prevItems.filter((item) => item.id !== productId)
     );
   };
+  const [data, setData] = useState({})
+  //fetch function
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    const fetchCart = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/v1/cart/getcart`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          }
+        );
+        console.log(response.data.data)
+        setData(response.data.data);
+        setCartItems(response.data.data.items || []);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+    };
+    fetchCart();
+  }, []);
 
   // Update cart quantity
-  const updateCartQuantity = (productId, quantity) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === productId ? { ...item, cartQuantity: quantity } : item
-      )
-    );
+  const updateCartQuantity = async (productId, quantity) => {
+    //update cart quantity
+    if (typeof quantity !== "number" || quantity < 0) {
+      console.error("Invalid quantity:", quantity);
+      return;
+    }
   };
+
+useEffect(()=>{},[cartItems]);
 
   return (
     <div className="blocks-container">
@@ -193,7 +217,7 @@ function BlockList() {
         >
           <FaShoppingCart className="cart-icon" />
           <span>
-            Cart ({cartItems.reduce((acc, item) => acc + item.cartQuantity, 0)})
+            Cart {cartItems.length}
           </span>
         </button>
       </div>
@@ -236,6 +260,7 @@ function BlockList() {
         cartItems={cartItems}
         removeFromCart={removeFromCart}
         updateQuantity={updateCartQuantity}
+        data={data}
       />
     </div>
   );
