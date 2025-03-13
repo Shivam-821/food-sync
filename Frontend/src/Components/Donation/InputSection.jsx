@@ -28,7 +28,7 @@ const InputSection = () => {
   };
 
   const handleAddressChange = (e) => {
-    setAddress(e.target.value);  // Handle address change
+    setAddress(e.target.value); 
   };
 
   const addMoreFields = () => {
@@ -41,7 +41,7 @@ const InputSection = () => {
       if (!item.name.trim()) newErrors[`name-${index}`] = "Food name is required.";
       if (!item.quantity.trim()) newErrors[`quantity-${index}`] = "Quantity is required.";
     });
-    if (!address.trim()) newErrors["address"] = "Address is required.";  // Validate address
+    if (!address.trim()) newErrors["address"] = "Address is required.";  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -49,47 +49,45 @@ const InputSection = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-  
+
     const formData = new FormData();
 
-    formData.append("items", JSON.stringify(foodItems.map(item => ({
-      name: item.name,
-      quantity: parseFloat(item.quantity.replace(/[^\d.]/g, '')), // ✅ Converts "5kg" to 5
-      image: item.image ? item.image.name : "", // Handle image separately
-    }))));
-    
-    foodItems.forEach((item) => {
+    foodItems.forEach((item, index) => {
+      formData.append(`items[${index}][name]`, item.name);
+      formData.append(`items[${index}][quantity]`, item.quantity);
       if (item.image) {
-        formData.append("image", item.image); // ✅ Correct field name
+        formData.append(`images`, item.image); // Append each image file
       }
     });
-    
-    formData.append("address", address);
-    // Append address to form data
-  
+
+    formData.append("pickupLocation", address);
+
     setLoading(true);
-  
+
     try {
       const token = localStorage.getItem("accessToken");
-      console.log(token)
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/donation/create-donation`, formData, {
-        headers: {
-          'Authorization': `Bearer ${token}`, // Add the token
-          'Content-Type': 'multipart/form-data', // Important: specify multipart form data
-        }
-      });
-      
       if (!token) {
         alert("You must be logged in to donate food.");
         return;
       }
-  
-    
-  
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/donation/create-donation`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
       if (response.status === 201) {
         alert("Food donation successful!");
-        setFoodItems([{ name: "", quantity: "", image: null, imagePreview: null }]); // Clear form
-        setAddress("");  // Clear the address field
+        setFoodItems([
+          { name: "", quantity: "", image: null, imagePreview: null },
+        ]);
+        setAddress("");
       } else {
         alert("Error during donation. Please try again.");
       }
