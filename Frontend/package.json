@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@react-oauth/google": "^0.12.1",
     "@google-cloud/vision": "^4.3.3",
+    "@react-oauth/google": "^0.12.1",
     "@splinetool/react-spline": "^4.0.0",
     "@tailwindcss/vite": "^4.0.12",
     "axios": "^1.8.3",
