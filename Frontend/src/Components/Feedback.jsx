@@ -3,7 +3,6 @@ import "./feedback.css";
 import axios from "axios";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
 import {
   Heart,
   MessageCircle,

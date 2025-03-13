@@ -37,7 +37,7 @@ router.get(
     }
   }
 );
-
+ 
 // Handle POST request from frontend
 router.post("/google", async (req, res) => {
   try {
@@ -53,6 +53,7 @@ router.post("/google", async (req, res) => {
         fullname: name,
         email,
         avatar,
+        role: "consumer"
       });
       await user.save();
     }

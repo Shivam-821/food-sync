@@ -696,13 +696,9 @@ const SignUp = () => {
                 </motion.p>
 
                 <motion.div variants={itemVariants} className="flex space-x-4">
-                  <button
-                    type="button"
-                    className="consumer-button google-button flex-1"
-                    onClick={handleGoogleSignup}
-                  >
-                    Google
-                  </button>
+                  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+                    <GoogleLogin />
+                  </GoogleOAuthProvider>
                   <button
                     type="button"
                     className="consumer-button facebook-button flex-1"
