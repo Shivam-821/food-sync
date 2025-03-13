@@ -1,7 +1,7 @@
 "use client";
 import "./feedback.css";
-
 import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Heart,
   MessageCircle,
@@ -15,140 +15,7 @@ import {
   Utensils,
 } from "lucide-react";
 
-// Sample initial feedback data for FoodSync platform
-const initialFeedback = [
-  {
-    id: 1,
-    user: "Green Harvest Restaurant",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 5,
-    comment:
-      "FoodSync has transformed how we handle surplus food! Instead of throwing away unsold meals, we're now connecting with local shelters. Already donated over 200 meals this month!",
-    date: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 days ago
-    likes: 42,
-    replies: [
-      {
-        id: 101,
-        user: "FoodSync Support",
-        avatar: "/placeholder.svg?height=30&width=30",
-        comment:
-          "We're thrilled to hear about your success! 200 meals is an incredible impact. Thank you for being part of our mission to reduce food waste.",
-        date: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-        likes: 15,
-      },
-    ],
-  },
-  {
-    id: 2,
-    user: "Helping Hands NGO",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 5,
-    comment:
-      "As a shelter serving 100+ people daily, FoodSync has been a game-changer. We're now receiving fresh produce and prepared meals that would otherwise go to waste. Our food costs are down 30%!",
-    date: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 days ago
-    likes: 38,
-    replies: [
-      {
-        id: 201,
-        user: "FarmFresh Market",
-        avatar: "/placeholder.svg?height=30&width=30",
-        comment:
-          "We're happy our surplus produce is going to your shelter! Let's continue this partnership!",
-        date: new Date(Date.now() - 86400000 * 4).toISOString(),
-        likes: 12,
-      },
-    ],
-  },
-  {
-    id: 3,
-    user: "Campus Dining Services",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 4,
-    comment:
-      "Our university cafeteria has reduced food waste by 45% since joining FoodSync. The analytics dashboard helps us track our environmental impact, which is great for our sustainability reports.",
-    date: new Date(Date.now() - 86400000 * 7).toISOString(),
-    likes: 29,
-    replies: [],
-  },
-  {
-    id: 4,
-    user: "Community Fridge Network",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 5,
-    comment:
-      "FoodSync's real-time notifications have made it so much easier to stock our community fridges! When local bakeries have day-old bread or cafes have unsold sandwiches, we get alerted immediately.",
-    date: new Date(Date.now() - 86400000 * 3).toISOString(),
-    likes: 51,
-    replies: [
-      {
-        id: 401,
-        user: "Daily Bread Bakery",
-        avatar: "/placeholder.svg?height=30&width=30",
-        comment:
-          "We love being able to donate our extra baked goods at the end of each day. Nothing goes to waste anymore!",
-        date: new Date(Date.now() - 86400000 * 2).toISOString(),
-        likes: 18,
-      },
-    ],
-  },
-  {
-    id: 5,
-    user: "Sarah (Individual User)",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 5,
-    comment:
-      "As a college student on a budget, the FoodSync app has been amazing! I get notifications about discounted food from local restaurants before they close. Saving money and reducing waste!",
-    date: new Date(Date.now() - 86400000 * 1).toISOString(), // 1 day ago
-    likes: 33,
-    replies: [],
-  },
-  {
-    id: 6,
-    user: "GreenPlate Catering",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 4,
-    comment:
-      "After events, we often had leftover food that went to waste. With FoodSync, we now have a network of shelters we can contact immediately. The logistics coordination feature is excellent!",
-    date: new Date(Date.now() - 86400000 * 4).toISOString(),
-    likes: 27,
-    replies: [],
-  },
-  {
-    id: 7,
-    user: "Urban Harvest Coalition",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 5,
-    comment:
-      "We've been connecting urban farms with food banks, and FoodSync has streamlined the entire process. The platform's matching algorithm ensures produce goes to those who need it most.",
-    date: new Date(Date.now() - 86400000 * 6).toISOString(),
-    likes: 45,
-    replies: [
-      {
-        id: 701,
-        user: "City Food Bank",
-        avatar: "/placeholder.svg?height=30&width=30",
-        comment:
-          "The quality of fresh produce we're receiving has improved dramatically. Our clients are getting nutritious food that would have been wasted!",
-        date: new Date(Date.now() - 86400000 * 5).toISOString(),
-        likes: 22,
-      },
-    ],
-  },
-  {
-    id: 8,
-    user: "Hotel Grand Buffet",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 5,
-    comment:
-      "Our hotel chain has reduced food waste by 60% using FoodSync! The tax deduction receipts for donations are automatically generated, making it easy for our accounting department.",
-    date: new Date(Date.now() - 86400000 * 8).toISOString(),
-    likes: 37,
-    replies: [],
-  },
-];
-
-export default function Feedback() {
-  // State for feedback data
+const Feedback = () => {
   const [feedbackList, setFeedbackList] = useState([]);
   const [newFeedback, setNewFeedback] = useState({ rating: 5, comment: "" });
   const [activeFilter, setActiveFilter] = useState("recent");
@@ -158,60 +25,65 @@ export default function Feedback() {
   const [userName, setUserName] = useState("Guest User");
   const [userType, setUserType] = useState("individual");
 
-  // Load feedback from localStorage on component mount
-  useEffect(() => {
-    const savedFeedback = localStorage.getItem("feedbackData");
-    if (savedFeedback) {
-      setFeedbackList(JSON.parse(savedFeedback));
-    } else {
-      setFeedbackList(initialFeedback);
-      localStorage.setItem("feedbackData", JSON.stringify(initialFeedback));
-    }
+  // Fetch feedback from the backend
+  const fetchFeedback = async () => {
+    try {
+      const response = await axios.get("/api/v1/feedback/getallfeedback");
+      const backendFeedback = response.data.data || []; // Ensure backendFeedback is an array
 
-    // Check for saved theme preference
-    const savedTheme = localStorage.getItem("darkMode");
-    if (savedTheme) {
-      setIsDarkMode(savedTheme === "true");
-    }
-  }, []);
+      // Check if there's any locally stored feedback data
+      const savedFeedback = localStorage.getItem("feedbackData");
+      if (savedFeedback) {
+        const localFeedback = JSON.parse(savedFeedback);
 
-  // Update body class when dark mode changes
-  useEffect(() => {
-    if (isDarkMode) {
-      document.body.classList.add("dark");
-    } else {
-      document.body.classList.remove("dark");
-    }
-    localStorage.setItem("darkMode", isDarkMode);
-  }, [isDarkMode]);
+        // Merge backend feedback with local likes and replies
+        const mergedFeedback = backendFeedback.map((feedback) => {
+          const localMatch = localFeedback.find((f) => f._id === feedback._id);
+          return localMatch
+            ? {
+                ...feedback,
+                likes: localMatch.likes || 0,
+                replies: localMatch.replies || [],
+              }
+            : feedback;
+        });
 
-  // Handle submitting new feedback
+        setFeedbackList(mergedFeedback);
+      } else {
+        setFeedbackList(backendFeedback);
+      }
+    } catch (error) {
+      console.error("Failed to fetch feedback:", error);
+      setFeedbackList([]); // Fallback to an empty array on error
+    }
+  };
+
+  // Submit feedback to the backend
+  const submitFeedback = async () => {
+    try {
+      const response = await axios.post("/api/v1/feedback/givefeedback", {
+        rating: newFeedback.rating,
+        comment: newFeedback.comment,
+      });
+      setFeedbackList([response.data.data, ...feedbackList]);
+      setNewFeedback({ rating: 5, comment: "" });
+    } catch (error) {
+      console.error("Failed to submit feedback:", error);
+    }
+  };
+
+  // Handle feedback submission
   const handleSubmitFeedback = (e) => {
     e.preventDefault();
     if (!newFeedback.comment.trim()) return;
-
-    const feedback = {
-      id: Date.now(),
-      user: userName + (userType !== "individual" ? ` (${userType})` : ""),
-      avatar: "/placeholder.svg?height=40&width=40",
-      rating: newFeedback.rating,
-      comment: newFeedback.comment,
-      date: new Date().toISOString(),
-      likes: 0,
-      replies: [],
-    };
-
-    const updatedFeedback = [feedback, ...feedbackList];
-    setFeedbackList(updatedFeedback);
-    localStorage.setItem("feedbackData", JSON.stringify(updatedFeedback));
-    setNewFeedback({ rating: 5, comment: "" });
+    submitFeedback();
   };
 
-  // Handle liking a feedback
+  // Handle liking feedback (frontend only)
   const handleLike = (id) => {
     const updated = feedbackList.map((item) => {
-      if (item.id === id) {
-        return { ...item, likes: item.likes + 1 };
+      if (item._id === id) {
+        return { ...item, likes: (item.likes || 0) + 1 };
       }
       return item;
     });
@@ -219,12 +91,12 @@ export default function Feedback() {
     localStorage.setItem("feedbackData", JSON.stringify(updated));
   };
 
-  // Handle submitting a reply
+  // Handle replying to feedback (frontend only)
   const handleReply = (feedbackId) => {
     if (!replyText.trim()) return;
 
     const updated = feedbackList.map((item) => {
-      if (item.id === feedbackId) {
+      if (item._id === feedbackId) {
         const newReply = {
           id: Date.now(),
           user: userName + (userType !== "individual" ? ` (${userType})` : ""),
@@ -233,7 +105,7 @@ export default function Feedback() {
           date: new Date().toISOString(),
           likes: 0,
         };
-        return { ...item, replies: [...item.replies, newReply] };
+        return { ...item, replies: [...(item.replies || []), newReply] };
       }
       return item;
     });
@@ -244,10 +116,10 @@ export default function Feedback() {
     setReplyText("");
   };
 
-  // Handle liking a reply
+  // Handle liking replies (frontend only)
   const handleLikeReply = (feedbackId, replyId) => {
     const updated = feedbackList.map((item) => {
-      if (item.id === feedbackId) {
+      if (item._id === feedbackId) {
         const updatedReplies = item.replies.map((reply) => {
           if (reply.id === replyId) {
             return { ...reply, likes: reply.likes + 1 };
@@ -263,22 +135,43 @@ export default function Feedback() {
     localStorage.setItem("feedbackData", JSON.stringify(updated));
   };
 
-  // Filter feedback based on selected filter
+  // Fetch feedback on component mount
+  useEffect(() => {
+    fetchFeedback();
+  }, []);
+
+  // Handle dark mode toggle
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+    localStorage.setItem("darkMode", isDarkMode);
+  }, [isDarkMode]);
+
+  // Filter feedback based on active filter
   const getFilteredFeedback = () => {
+    if (!Array.isArray(feedbackList)) {
+      return []; // Return an empty array if feedbackList is not an array
+    }
+
     switch (activeFilter) {
       case "recent":
         return [...feedbackList].sort(
-          (a, b) => new Date(b.date) - new Date(a.date)
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
       case "oldest":
         return [...feedbackList].sort(
-          (a, b) => new Date(a.date) - new Date(b.date)
+          (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         );
       case "mostLiked":
-        return [...feedbackList].sort((a, b) => b.likes - a.likes);
+        return [...feedbackList].sort(
+          (a, b) => (b.likes || 0) - (a.likes || 0)
+        );
       case "mostReplies":
         return [...feedbackList].sort(
-          (a, b) => b.replies.length - a.replies.length
+          (a, b) => (b.replies?.length || 0) - (a.replies?.length || 0)
         );
       case "highestRated":
         return [...feedbackList].sort((a, b) => b.rating - a.rating);
@@ -287,7 +180,7 @@ export default function Feedback() {
     }
   };
 
-  // Format date to relative time (e.g., "2 days ago")
+  // Format date for display
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -324,7 +217,7 @@ export default function Feedback() {
       ));
   };
 
-  // Get animation class based on index (alternating left/right)
+  // Get animation class based on index
   const getAnimationClass = (index) => {
     return index % 2 === 0 ? "animate-slide-in-right" : "animate-slide-in-left";
   };
@@ -514,7 +407,7 @@ export default function Feedback() {
         <div className="space-y-6">
           {getFilteredFeedback().map((feedback, index) => (
             <div
-              key={feedback.id}
+              key={feedback._id}
               className={`p-6 rounded-xl transition-all duration-500 ${getAnimationClass(
                 index
               )} ${
@@ -553,7 +446,7 @@ export default function Feedback() {
                             isDarkMode ? "text-gray-400" : "text-gray-500"
                           }`}
                         >
-                          {formatDate(feedback.date)}
+                          {formatDate(feedback.createdAt)}
                         </span>
                       </div>
                     </div>
@@ -569,7 +462,7 @@ export default function Feedback() {
 
                   <div className="flex items-center gap-4 mt-2">
                     <button
-                      onClick={() => handleLike(feedback.id)}
+                      onClick={() => handleLike(feedback._id)}
                       className={`flex items-center gap-1 transition-all duration-300 ${
                         isDarkMode
                           ? "text-gray-400 hover:text-red-400"
@@ -577,13 +470,13 @@ export default function Feedback() {
                       } hover:scale-110`}
                     >
                       <Heart size={18} className="fill-current" />
-                      <span>{feedback.likes}</span>
+                      <span>{feedback.likes || 0}</span>
                     </button>
 
                     <button
                       onClick={() =>
                         setReplyingTo(
-                          replyingTo === feedback.id ? null : feedback.id
+                          replyingTo === feedback._id ? null : feedback._id
                         )
                       }
                       className={`flex items-center gap-1 transition-all duration-300 ${
@@ -593,12 +486,12 @@ export default function Feedback() {
                       } hover:scale-110`}
                     >
                       <MessageCircle size={18} />
-                      <span>{feedback.replies.length}</span>
+                      <span>{feedback.replies?.length || 0}</span>
                     </button>
                   </div>
 
                   {/* Reply form */}
-                  {replyingTo === feedback.id && (
+                  {replyingTo === feedback._id && (
                     <div
                       className={`mt-4 p-4 rounded-lg animate-fade-in ${
                         isDarkMode
@@ -629,7 +522,7 @@ export default function Feedback() {
                           Cancel
                         </button>
                         <button
-                          onClick={() => handleReply(feedback.id)}
+                          onClick={() => handleReply(feedback._id)}
                           className={`px-4 py-2 rounded-lg flex items-center gap-1 transition-all duration-300 ${
                             isDarkMode
                               ? "bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-500 hover:to-blue-500"
@@ -644,7 +537,7 @@ export default function Feedback() {
                   )}
 
                   {/* Replies */}
-                  {feedback.replies.length > 0 && (
+                  {feedback.replies?.length > 0 && (
                     <div
                       className={`mt-4 pl-4 border-l-2 ${
                         isDarkMode ? "border-gray-700" : "border-green-200"
@@ -689,7 +582,7 @@ export default function Feedback() {
                               </p>
                               <button
                                 onClick={() =>
-                                  handleLikeReply(feedback.id, reply.id)
+                                  handleLikeReply(feedback._id, reply.id)
                                 }
                                 className={`flex items-center gap-1 mt-1 text-sm transition-all duration-300 ${
                                   isDarkMode
@@ -698,7 +591,7 @@ export default function Feedback() {
                                 } hover:scale-110`}
                               >
                                 <ThumbsUp size={14} className="fill-current" />
-                                <span>{reply.likes}</span>
+                                <span>{reply.likes || 0}</span>
                               </button>
                             </div>
                           </div>
@@ -728,4 +621,6 @@ export default function Feedback() {
       </div>
     </div>
   );
-}
+};
+
+export default Feedback;
