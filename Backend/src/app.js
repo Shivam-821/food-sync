@@ -32,13 +32,14 @@ import upcyclingItemRoute from "./routes/upcyclingItem.routes.js"
 import mapsRoutes from './routes/maps.routes.js'
 import donationRoute from "./routes/donation.routes.js"
 import communityRoute from './routes/communityPost.routes.js'
+import gamificationRoute from './routes/gamification.routes.js'
 import visionRoute from './routes/vision.routes.js'
 import aiRoute from './routes/ai.routes.js'
 
 
 app.use("/api/v1/consumer", consumerRoute);
 app.use("/api/v1/producer", producerRoute)
-app.use("/api/v1/items/", itemRoute)
+app.use("/api/v1/items", itemRoute)
 app.use("/api/v1/upcyclingIndustry", upcycleIndRoute)
 app.use("/api/v1/feedback", feedbacdRoute)
 app.use("/api/v1/cart", cartRoute)
@@ -51,6 +52,7 @@ app.use("/api/v1/vision", visionRoute)
 app.use('/api/v1/ai',aiRoute)
 
 
+app.use("/api/v1/gamification", gamificationRoute)
 
 
 export { app };

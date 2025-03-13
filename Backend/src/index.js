@@ -3,18 +3,23 @@ import dotenv from "dotenv";
 import connectDB from "./db/index.js";
 import chalk from "chalk";
 import { createServer } from "http";
-import initializeSocket from "./socket.js"; // Import the socket setup
+import initializeSocket from "./socket.js"; 
+import cron from "node-cron";
+import moveExpiredItems from "./utils/moveExpiredItems.js";
 
 dotenv.config({
   path: "./.env",
 });
 
+cron.schedule("0 * * * *", async () => {
+  console.log("Running cron job to move expired items...");
+  await moveExpiredItems();
+});
+
 const PORT = process.env.PORT || 3005;
 
-// Create HTTP server
 const server = createServer(app);
 
-// Initialize Socket.IO
 initializeSocket(server);
 
 connectDB()

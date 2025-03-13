@@ -15,12 +15,13 @@ import Social from "./pages/Social/Social";
 //import SignUp from "./pages/Signup/SignUp";
 import Producer from "./pages/ProducerSignUp/Producer";
 import CommunityChat from "./Components/CommunityChat";
-import { Pay } from "./Components/Pay";
+import { Pay } from "./Components/pay";
 import ConsumerProtectWrapper from "./pages/Wrapper/ConsumerProtectedWrapper";
 import Feedback from "./Components/Feedback";
 import UserProfile from "./Components/UserProfile";
 import ImageReview from './pages/ImageReview'
 import ChatBot from "./pages/ChatBot";
+import Login from "./Components/Login/Login";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
       <Route path="/userProfile" element={<UserProfile />} />
       <Route path="/image-review" element={<ImageReview />} />
       <Route path="/chat-bot" element={<ChatBot />} />
+      <Route path="/login" element={<Login />} />
     </Routes>
   );
 }

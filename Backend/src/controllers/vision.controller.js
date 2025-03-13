@@ -7,7 +7,7 @@ const analyzeImageController = async (req, res) => {
       return res.status(400).json({ error: "No image uploaded" });
     }
 
-    const imagePath = req.file.path; // Path to uploaded image
+    const imagePath = req.file.path; 
 
     // Call analyzeImage function to process the image
     const analysisResult = await analyzeImage(imagePath);
