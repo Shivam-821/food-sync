@@ -32,6 +32,7 @@ import upcyclingItemRoute from "./routes/upcyclingItem.routes.js"
 import mapsRoutes from './routes/maps.routes.js'
 import donationRoute from "./routes/donation.routes.js"
 import communityRoute from './routes/communityPost.routes.js'
+import gamificationRoute from './routes/gamification.routes.js'
 import visionRoute from './routes/vision.routes.js'
 
 

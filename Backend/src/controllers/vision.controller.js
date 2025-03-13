@@ -9,12 +9,10 @@ const analyzeImage = async (req, res) => {
       return res.status(400).json({ error: "No image uploaded" });
     }
 
-    const imagePath = req.file.path; // Path to uploaded image
+    const imagePath = req.file.path; 
 
-    // Call Vision API for analysis
     const analysisResult = await analyzeFoodQuality(imagePath);
 
-    // Delete the image after analysis
     fs.unlink(imagePath, (err) => {
       if (err) {
         console.error("Error deleting image:", err);

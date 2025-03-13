@@ -11,8 +11,8 @@ import {upload } from "../middlewares/multer.middlewares.js"
 const router = Router()
 
 router.route("/create-donation").post(
-  upload.array("image", 10), 
   verifyUnified,
+  upload.array("images", 10),
   createDonation
 );
 
