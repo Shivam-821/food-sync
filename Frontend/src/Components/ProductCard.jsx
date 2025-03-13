@@ -16,7 +16,7 @@ function ProductCard({ product, onImageClick, onAddToCart }) {
       <div className="product-image-container" onClick={onImageClick}>
         <div
           className="product-color-overlay"
-          style={{ backgroundColor: product.color, opacity: 0.2 }}
+          style={{ backgroundColor: "#f87171", opacity: 0.2 }}
         ></div>
         <img
           src={product.image || "/placeholder.svg"}
@@ -31,7 +31,7 @@ function ProductCard({ product, onImageClick, onAddToCart }) {
         )}
         <div
           className={`product-detail-hint ${isHovered ? "visible" : ""}`}
-          style={{ backgroundColor: product.color }}
+          style={{ backgroundColor: "#f87171"}}
         >
           Click for details
         </div>
