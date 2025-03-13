@@ -72,6 +72,7 @@ const registerProducer = asyncHandler(async (req, res) => {
       avatar: avatar?.url || "",
       email,
       phone,
+      role: "producer",
       password,
       companyName,
       producerType,
@@ -117,60 +118,6 @@ const registerProducer = asyncHandler(async (req, res) => {
   }
 });
 
-// login
-const loginProducer = asyncHandler(async (req, res) => {
-  const { email, phone, password } = req.body;
-
-  if (!email && !phone) {
-    throw new ApiError(400, "Email or phone is required");
-  }
-  if (!password) {
-    throw new ApiError(400, "Password is required");
-  }
-
-  const producer = await Producer.findOne({ $or: [{ phone }, { email }] });
-
-  if (!producer) {
-    throw new ApiError(404, "Producer not found");
-  }
-
-  const isPasswordValid = await producer.isPasswordCorrect(password);
-  if (!isPasswordValid) {
-    throw new ApiError(401, "Invalid credentials");
-  }
-
-  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-    producer._id
-  );
-
-  const loggedInProducer = await Producer.findById(producer._id)
-    .select("-password -refreshToken")
-    .populate("items expiredItems")
-    .populate("feedbacks");
-
-  if (!loggedInProducer) {
-    throw new ApiError(404, "Producer not found");
-  }
-
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-  };
-
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
-      new ApiResponse(
-        200,
-        { user: loggedInProducer, accessToken, refreshToken },
-        "Producer logged in successfully"
-      )
-    );
-});
-
 const logoutProducer = asyncHandler(async (req, res) => {
   const producer = await Producer.findByIdAndUpdate(
     req.producer._id,
@@ -210,4 +157,4 @@ const producerProfile = asyncHandler(async (req, res) => {
 
 // update profile will be added in future
 
-export { registerProducer, loginProducer, logoutProducer, producerProfile };
+export { registerProducer, logoutProducer, producerProfile };

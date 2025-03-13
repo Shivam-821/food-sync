@@ -38,6 +38,10 @@ const upcyclingIndustrySchema = new Schema(
     avatar: {
       type: String,
     },
+    role: {
+      type: String,
+      required: true,
+    },
     address: {
       type: String,
     },
@@ -46,7 +50,7 @@ const upcyclingIndustrySchema = new Schema(
       lng: { type: Number, required: true },
     },
     upcyclingMethods: {
-      type: [String],
+      type: String,
       enum: ["biogas", "compost", "fertilizer", "cosmetics"],
       required: true,
     },

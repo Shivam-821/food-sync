@@ -54,6 +54,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/api/v1/auth", authRoutes);
+import loginRouter from './routes/loginRoute.routes.js'
 
 
 app.use("/api/v1/consumer", consumerRoute);
@@ -69,6 +70,7 @@ app.use("/api/v1/donation", donationRoute)
 app.use("/api/v1/community", communityRoute)
 app.use("/api/v1/vision", visionRoute)
 app.use('/api/v1/ai',aiRoute)
+app.use("/api/v1/auth/", loginRouter)
 
 
 app.use("/api/v1/gamification", gamificationRoute)

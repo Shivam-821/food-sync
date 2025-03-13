@@ -63,6 +63,7 @@ const registerUpcyclingIndustry = asyncHandler(async (req, res) => {
       companyName,
       email,
       phone,
+      role: "upcyclingIndustry",
       password,
       location,
       upcyclingMethods,
@@ -107,57 +108,6 @@ const registerUpcyclingIndustry = asyncHandler(async (req, res) => {
   }
 });
 
-const loginUpcyclingIndustry = asyncHandler(async (req, res) => {
-  const { email, phone, password } = req.body;
-
-  if (!email && !phone) {
-    throw new ApiError(400, "Email or phone is required");
-  }
-  if (!password) {
-    throw new ApiError(400, "Password is required");
-  }
-
-  const upcycled = await UpcyclingIndustry.findOne({
-    $or: [{ email }, {phone}],
-  });
-
-  if (!upcycled) {
-    throw new ApiError(404, "UpcycledIndustry not found");
-  }
-
-  const isPasswordValid = await upcycled.isPasswordCorrect(password);
-  if (!isPasswordValid) {
-    throw new ApiError(401, "Invalid credentials");
-  }
-
-  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-    upcycled._id
-  );
-
-  const loggedInUpcycled = await UpcyclingIndustry.findById(
-    upcycled._id
-  ).select("-password -refreshToken").populate("feedbacks")
-  if (!loggedInUpcycled) {
-    throw new ApiError(404, "Upcycling Industry not found");
-  }
-
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-  };
-
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
-      new ApiResponse(
-        200,
-        { user: loggedInUpcycled, accessToken, refreshToken },
-        "UpcyclingIndustry logged in successfully"
-      )
-    );
-});
 
 const logoutUpcycledIndustry = asyncHandler(async (req, res) => {
   await UpcyclingIndustry.findByIdAndUpdate(
@@ -203,7 +153,6 @@ const UpcycledIndustryProfile = asyncHandler(async (req, res) => {
 
 export {
   registerUpcyclingIndustry,
-  loginUpcyclingIndustry,
   logoutUpcycledIndustry,
   UpcycledIndustryProfile,
 };

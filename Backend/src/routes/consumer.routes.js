@@ -1,5 +1,4 @@
 import {
-  loginConsumer,
   registerConsumer,
   logoutConsumer,
   consumerProfile,
@@ -18,11 +17,6 @@ router
     upload.single("avatar"),
     registerConsumer
   );
-
-// login
-router
-  .route("/login")
-  .post(loginConsumer);
 
 // // secure routes
 router.route("/profile").get(verifyJWT, consumerProfile)

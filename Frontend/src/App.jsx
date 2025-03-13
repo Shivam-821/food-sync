@@ -19,9 +19,10 @@ import { Pay } from "./Components/pay";
 import ConsumerProtectWrapper from "./pages/Wrapper/ConsumerProtectedWrapper";
 import Feedback from "./Components/Feedback";
 import UserProfile from "./Components/UserProfile";
-import ImageReview from './pages/ImageReview'
+import ImageReview from "./pages/ImageReview";
 import ChatBot from "./pages/ChatBot";
 import Login from "./Components/Login/Login";
+import USignup from "./Components/UpcyclingSignup/USignup";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
       <Route path="/image-review" element={<ImageReview />} />
       <Route path="/chat-bot" element={<ChatBot />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/upcyclesignup" element={<USignup />} />
     </Routes>
   );
 }

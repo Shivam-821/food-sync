@@ -3,6 +3,7 @@ import "./feedback.css";
 import axios from "axios";
 
 import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Heart,
   MessageCircle,
@@ -16,140 +17,7 @@ import {
   Utensils,
 } from "lucide-react";
 
-// Sample initial feedback data for FoodSync platform
-const initialFeedback = [
-  {
-    id: 1,
-    user: "Green Harvest Restaurant",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 5,
-    comment:
-      "FoodSync has transformed how we handle surplus food! Instead of throwing away unsold meals, we're now connecting with local shelters. Already donated over 200 meals this month!",
-    date: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 days ago
-    likes: 42,
-    replies: [
-      {
-        id: 101,
-        user: "FoodSync Support",
-        avatar: "/placeholder.svg?height=30&width=30",
-        comment:
-          "We're thrilled to hear about your success! 200 meals is an incredible impact. Thank you for being part of our mission to reduce food waste.",
-        date: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-        likes: 15,
-      },
-    ],
-  },
-  {
-    id: 2,
-    user: "Helping Hands NGO",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 5,
-    comment:
-      "As a shelter serving 100+ people daily, FoodSync has been a game-changer. We're now receiving fresh produce and prepared meals that would otherwise go to waste. Our food costs are down 30%!",
-    date: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 days ago
-    likes: 38,
-    replies: [
-      {
-        id: 201,
-        user: "FarmFresh Market",
-        avatar: "/placeholder.svg?height=30&width=30",
-        comment:
-          "We're happy our surplus produce is going to your shelter! Let's continue this partnership!",
-        date: new Date(Date.now() - 86400000 * 4).toISOString(),
-        likes: 12,
-      },
-    ],
-  },
-  {
-    id: 3,
-    user: "Campus Dining Services",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 4,
-    comment:
-      "Our university cafeteria has reduced food waste by 45% since joining FoodSync. The analytics dashboard helps us track our environmental impact, which is great for our sustainability reports.",
-    date: new Date(Date.now() - 86400000 * 7).toISOString(),
-    likes: 29,
-    replies: [],
-  },
-  {
-    id: 4,
-    user: "Community Fridge Network",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 5,
-    comment:
-      "FoodSync's real-time notifications have made it so much easier to stock our community fridges! When local bakeries have day-old bread or cafes have unsold sandwiches, we get alerted immediately.",
-    date: new Date(Date.now() - 86400000 * 3).toISOString(),
-    likes: 51,
-    replies: [
-      {
-        id: 401,
-        user: "Daily Bread Bakery",
-        avatar: "/placeholder.svg?height=30&width=30",
-        comment:
-          "We love being able to donate our extra baked goods at the end of each day. Nothing goes to waste anymore!",
-        date: new Date(Date.now() - 86400000 * 2).toISOString(),
-        likes: 18,
-      },
-    ],
-  },
-  {
-    id: 5,
-    user: "Sarah (Individual User)",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 5,
-    comment:
-      "As a college student on a budget, the FoodSync app has been amazing! I get notifications about discounted food from local restaurants before they close. Saving money and reducing waste!",
-    date: new Date(Date.now() - 86400000 * 1).toISOString(), // 1 day ago
-    likes: 33,
-    replies: [],
-  },
-  {
-    id: 6,
-    user: "GreenPlate Catering",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 4,
-    comment:
-      "After events, we often had leftover food that went to waste. With FoodSync, we now have a network of shelters we can contact immediately. The logistics coordination feature is excellent!",
-    date: new Date(Date.now() - 86400000 * 4).toISOString(),
-    likes: 27,
-    replies: [],
-  },
-  {
-    id: 7,
-    user: "Urban Harvest Coalition",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 5,
-    comment:
-      "We've been connecting urban farms with food banks, and FoodSync has streamlined the entire process. The platform's matching algorithm ensures produce goes to those who need it most.",
-    date: new Date(Date.now() - 86400000 * 6).toISOString(),
-    likes: 45,
-    replies: [
-      {
-        id: 701,
-        user: "City Food Bank",
-        avatar: "/placeholder.svg?height=30&width=30",
-        comment:
-          "The quality of fresh produce we're receiving has improved dramatically. Our clients are getting nutritious food that would have been wasted!",
-        date: new Date(Date.now() - 86400000 * 5).toISOString(),
-        likes: 22,
-      },
-    ],
-  },
-  {
-    id: 8,
-    user: "Hotel Grand Buffet",
-    avatar: "/placeholder.svg?height=40&width=40",
-    rating: 5,
-    comment:
-      "Our hotel chain has reduced food waste by 60% using FoodSync! The tax deduction receipts for donations are automatically generated, making it easy for our accounting department.",
-    date: new Date(Date.now() - 86400000 * 8).toISOString(),
-    likes: 37,
-    replies: [],
-  },
-];
-
-export default function Feedback() {
-  // State for feedback data
+const Feedback = () => {
   const [feedbackList, setFeedbackList] = useState([]);
   const [newFeedback, setNewFeedback] = useState({ rating: 5, comment: "" });
   const [activeFilter, setActiveFilter] = useState("recent");
@@ -253,8 +121,8 @@ export default function Feedback() {
   // Handle liking a feedback
   const handleLike = (id) => {
     const updated = feedbackList.map((item) => {
-      if (item.id === id) {
-        return { ...item, likes: item.likes + 1 };
+      if (item._id === id) {
+        return { ...item, likes: (item.likes || 0) + 1 };
       }
       return item;
     });
@@ -262,12 +130,12 @@ export default function Feedback() {
     localStorage.setItem("feedbackData", JSON.stringify(updated));
   };
 
-  // Handle submitting a reply
+  // Handle replying to feedback (frontend only)
   const handleReply = (feedbackId) => {
     if (!replyText.trim()) return;
 
     const updated = feedbackList.map((item) => {
-      if (item.id === feedbackId) {
+      if (item._id === feedbackId) {
         const newReply = {
           id: Date.now(),
           user: userName + (userType !== "individual" ? ` (${userType})` : ""),
@@ -276,7 +144,7 @@ export default function Feedback() {
           date: new Date().toISOString(),
           likes: 0,
         };
-        return { ...item, replies: [...item.replies, newReply] };
+        return { ...item, replies: [...(item.replies || []), newReply] };
       }
       return item;
     });
@@ -287,10 +155,10 @@ export default function Feedback() {
     setReplyText("");
   };
 
-  // Handle liking a reply
+  // Handle liking replies (frontend only)
   const handleLikeReply = (feedbackId, replyId) => {
     const updated = feedbackList.map((item) => {
-      if (item.id === feedbackId) {
+      if (item._id === feedbackId) {
         const updatedReplies = item.replies.map((reply) => {
           if (reply.id === replyId) {
             return { ...reply, likes: reply.likes + 1 };
@@ -306,22 +174,43 @@ export default function Feedback() {
     localStorage.setItem("feedbackData", JSON.stringify(updated));
   };
 
-  // Filter feedback based on selected filter
+  // Fetch feedback on component mount
+  useEffect(() => {
+    fetchFeedback();
+  }, []);
+
+  // Handle dark mode toggle
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+    localStorage.setItem("darkMode", isDarkMode);
+  }, [isDarkMode]);
+
+  // Filter feedback based on active filter
   const getFilteredFeedback = () => {
+    if (!Array.isArray(feedbackList)) {
+      return []; // Return an empty array if feedbackList is not an array
+    }
+
     switch (activeFilter) {
       case "recent":
         return [...feedbackList].sort(
-          (a, b) => new Date(b.date) - new Date(a.date)
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
       case "oldest":
         return [...feedbackList].sort(
-          (a, b) => new Date(a.date) - new Date(b.date)
+          (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         );
       case "mostLiked":
-        return [...feedbackList].sort((a, b) => b.likes - a.likes);
+        return [...feedbackList].sort(
+          (a, b) => (b.likes || 0) - (a.likes || 0)
+        );
       case "mostReplies":
         return [...feedbackList].sort(
-          (a, b) => b.replies.length - a.replies.length
+          (a, b) => (b.replies?.length || 0) - (a.replies?.length || 0)
         );
       case "highestRated":
         return [...feedbackList].sort((a, b) => b.rating - a.rating);
@@ -330,7 +219,7 @@ export default function Feedback() {
     }
   };
 
-  // Format date to relative time (e.g., "2 days ago")
+  // Format date for display
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -367,7 +256,7 @@ export default function Feedback() {
       ));
   };
 
-  // Get animation class based on index (alternating left/right)
+  // Get animation class based on index
   const getAnimationClass = (index) => {
     return index % 2 === 0 ? "animate-slide-in-right" : "animate-slide-in-left";
   };
@@ -559,7 +448,7 @@ export default function Feedback() {
         <div className="space-y-6">
           {getFilteredFeedback().map((feedback, index) => (
             <div
-              key={feedback.id}
+              key={feedback._id}
               className={`p-6 rounded-xl transition-all duration-500 ${getAnimationClass(
                 index
               )} ${
@@ -734,7 +623,7 @@ export default function Feedback() {
                               </p>
                               <button
                                 onClick={() =>
-                                  handleLikeReply(feedback.id, reply.id)
+                                  handleLikeReply(feedback._id, reply.id)
                                 }
                                 className={`flex items-center gap-1 mt-1 text-sm transition-all duration-300 ${
                                   isDarkMode
@@ -743,7 +632,7 @@ export default function Feedback() {
                                 } hover:scale-110`}
                               >
                                 <ThumbsUp size={14} className="fill-current" />
-                                <span>{reply.likes}</span>
+                                <span>{reply.likes || 0}</span>
                               </button>
                             </div>
                           </div>
@@ -773,4 +662,6 @@ export default function Feedback() {
       </div>
     </div>
   );
-}
+};
+
+export default Feedback;
