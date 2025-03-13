@@ -35,6 +35,7 @@ function BlockList() {
   const [expiryDateFilter, setExpiryDateFilter] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [data, setData] = useState({});
 
   // Fetch data from the backend
   useEffect(() => {
@@ -113,20 +114,68 @@ function BlockList() {
   };
 
   // Add to cart functionality
+  // const addToCart = async (product, quantity = 1) => {
+  //   setLoading(true);
+  //   setMessage("");
+  //   try {
+  //     const token = localStorage.getItem("accessToken");
+
+  //     // Use axios.get and send data as query parameters
+  //     const response = await axios.get(
+  //       `${import.meta.env.VITE_BASE_URL}/api/v1/cart/addtocart`,
+  //       {
+  //         params: {
+  //           itemId: product.id, // Use 'id' from the transformed product data
+  //           quantity: quantity, // Use the passed quantity
+  //           price: product.price, // Use 'price' from the transformed product data
+  //         },
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         withCredentials: true,
+  //       }
+  //     );
+
+  //     setMessage(response.data.message);
+  //   } catch (error) {
+  //     setMessage(error.response?.data?.message || "Failed to add to cart");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+
+  //   // Update local cart state
+  //   // setCartItems((prevItems) => {
+  //   //   const existingItem = prevItems.find((item) => item.id === product.id);
+
+  //   //   if (existingItem) {
+  //   //     return prevItems.map((item) =>
+  //   //       item.id === product.id
+  //   //         ? { ...item, cartQuantity: item.cartQuantity + quantity }
+  //   //         : item
+  //   //     );
+  //   //   } else {
+  //   //     return [...prevItems, { ...product, cartQuantity: quantity }];
+  //   //   }
+  //   // });
+
+  //   // Trigger cart bounce animation
+  //   setIsCartBouncing(true);
+  //   setTimeout(() => setIsCartBouncing(false), 1000);
+  // };
   const addToCart = async (product, quantity = 1) => {
     setLoading(true);
     setMessage("");
     try {
       const token = localStorage.getItem("accessToken");
-
-      // Use axios.get and send data as query parameters
+  
+      // Add item to cart in the backend
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/v1/cart/addtocart`,
         {
           params: {
-            itemId: product.id, // Use 'id' from the transformed product data
-            quantity: quantity, // Use the passed quantity
-            price: product.price, // Use 'price' from the transformed product data
+            itemId: product.id,
+            quantity: quantity,
+            price: product.price,
           },
           headers: {
             Authorization: `Bearer ${token}`,
@@ -134,41 +183,72 @@ function BlockList() {
           withCredentials: true,
         }
       );
-
+  
       setMessage(response.data.message);
+  
+      // Fetch updated cart data from the backend
+      const cartResponse = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/getcart`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      setData(cartResponse.data.data);
+      setCartItems(cartResponse.data.data.items || []);
     } catch (error) {
       setMessage(error.response?.data?.message || "Failed to add to cart");
     } finally {
       setLoading(false);
     }
-
-    // Update local cart state
-    // setCartItems((prevItems) => {
-    //   const existingItem = prevItems.find((item) => item.id === product.id);
-
-    //   if (existingItem) {
-    //     return prevItems.map((item) =>
-    //       item.id === product.id
-    //         ? { ...item, cartQuantity: item.cartQuantity + quantity }
-    //         : item
-    //     );
-    //   } else {
-    //     return [...prevItems, { ...product, cartQuantity: quantity }];
-    //   }
-    // });
-
+  
     // Trigger cart bounce animation
     setIsCartBouncing(true);
     setTimeout(() => setIsCartBouncing(false), 1000);
   };
 
   // Remove from cart
-  const removeFromCart = (productId) => {
-    setCartItems((prevItems) =>
-      prevItems.filter((item) => item.id !== productId)
-    );
+  const removeFromCart = async (productId) => {
+    setLoading(true);
+    setMessage("");
+    try {
+      const token = localStorage.getItem("accessToken");
+      // Add item to cart in the backend
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/addtocart`,
+        {
+          params: {
+            itemId: productId,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+  
+      setMessage(response.data.message);
+  
+      // Fetch updated cart data from the backend
+      const cartResponse = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/removeitem`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      setData(cartResponse.data.data);
+      setCartItems(cartResponse.data.data.items || []);
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Failed to add to cart");
+    } finally {
+      setLoading(false);
+    }
   };
-  const [data, setData] = useState({});
   //fetch function
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -183,7 +263,6 @@ function BlockList() {
             withCredentials: true,
           }
         );
-        console.log(response.data.data);
         setData(response.data.data);
         setCartItems(response.data.data.items || []);
       } catch (err) {
