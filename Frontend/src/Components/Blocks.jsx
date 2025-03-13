@@ -5,118 +5,82 @@ import ProductCard from "./ProductCard";
 import ProductDetail from "./ProductDetail";
 import FilterSection from "./FilterSection";
 import CartDrawer from "./CartDrawer";
+import axios from "axios";
 import "./Blocks.css";
 import { FaShoppingCart } from "react-icons/fa";
-import f1 from "../assets/f1.jpg";
-import f2 from "../assets/f2.jpg";
-import f3 from "../assets/f3.jpg";
-import f4 from "../assets/f4.jpg";
-import f5 from "../assets/f5.jpeg";
-import f6 from "../assets/f6.webp";
 
-// Sample product data
-const sampleProducts = [
-  {
-    id: 1,
-    name: "Fresh Apples",
-    price: 2.99,
-    image: f1,
-    quantity: "1 kg",
-    offers: "Buy 1 Get 1 Free",
-    type: "perishable",
-    manufacturingDate: "2023-03-01",
-    expiryDate: "2023-03-15",
-    description:
-      "Fresh and juicy apples from local farms. Rich in vitamins and fiber.",
-    color: "#f87171",
-  },
-  {
-    id: 2,
-    name: "Canned Beans",
-    price: 1.49,
-    image: f2,
-    quantity: "400g",
-    offers: "20% Off",
-    type: "non-perishable",
-    manufacturingDate: "2023-01-10",
-    expiryDate: "2024-01-10",
-    description:
-      "Premium quality canned beans. High in protein and ready to use.",
-    color: "#b45309",
-  },
-  {
-    id: 3,
-    name: "Organic Milk",
-    price: 3.99,
-    image: f3,
-    quantity: "1 L",
-    offers: "",
-    type: "perishable",
-    manufacturingDate: "2023-03-05",
-    expiryDate: "2023-03-12",
-    description:
-      "Organic whole milk from grass-fed cows. No hormones or antibiotics.",
-    color: "#93c5fd",
-  },
-  {
-    id: 4,
-    name: "Rice",
-    price: 5.99,
-    image: f4,
-    quantity: "2 kg",
-    offers: "10% Off",
-    type: "non-perishable",
-    manufacturingDate: "2023-01-15",
-    expiryDate: "2024-01-15",
-    description: "Premium basmati rice. Perfect for all your rice dishes.",
-    color: "#fde68a",
-  },
-  {
-    id: 5,
-    name: "Fresh Chicken",
-    price: 7.99,
-    image: f5,
-    quantity: "500g",
-    offers: "",
-    type: "perishable",
-    manufacturingDate: "2023-03-06",
-    expiryDate: "2023-03-10",
-    description: "Farm-raised chicken with no antibiotics. High in protein.",
-    color: "#fdba74",
-  },
-  {
-    id: 6,
-    name: "Pasta",
-    price: 1.99,
-    image: f6,
-    quantity: "500g",
-    offers: "Buy 2 Get 1 Free",
-    type: "non-perishable",
-    manufacturingDate: "2023-02-01",
-    expiryDate: "2024-02-01",
-    description: "Italian durum wheat pasta. Perfect for all pasta recipes.",
-    color: "#fef3c7",
-  },
-];
+const Blocks = () => {
+  return (
+    <div>
+      <BlockList />
+    </div>
+  );
+};
 
-function Blocks() {
-  const [products] = useState(sampleProducts);
-  const [filteredProducts, setFilteredProducts] = useState(sampleProducts);
+export default Blocks;
+
+function BlockList() {
+  const [blocks, setBlocks] = useState([]);
+  const [sampleProducts, setSampleProducts] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCartBouncing, setIsCartBouncing] = useState(false);
 
   // Filter states
-  const [priceRange, setPriceRange] = useState([0, 10]);
+  const [priceRange, setPriceRange] = useState([0, 100]); // Adjusted price range
   const [productType, setProductType] = useState("all");
   const [expiryDateFilter, setExpiryDateFilter] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
+  // Fetch data from the backend
+  useEffect(() => {
+    const fetchBlocks = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/items/getallitem`);
+        const data = response.data.data || [];
+
+        console.log("Fetched Data:", data);
+
+        // Transform fetched data to match the expected structure
+        const transformedData = data.map((item) => ({
+          id: item._id,
+          name: item.name,
+          price: item.price,
+          image: item.avatar, // Use 'avatar' from fetched data
+          quantity: item.quantity,
+          unit: item.unit,
+          type: item.category, // Use 'category' as 'type'
+          expiryDate: item.expiryDate,
+          description: item.description,
+          manufacturingDate: item.mfDate,
+
+        }));
+
+        setBlocks(transformedData);
+        setSampleProducts(transformedData);
+        setProducts(transformedData);
+        setFilteredProducts(transformedData); // Initialize filteredProducts with fetched data
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+    };
+
+    fetchBlocks();
+  }, []);
+
+  // Update products when sampleProducts changes
+  useEffect(() => {
+    setProducts(sampleProducts);
+  }, [sampleProducts]);
+
   // Apply filters
   useEffect(() => {
     let filtered = [...products];
+    console.log("Products before filtering:", filtered);
 
     // Filter by price
     filtered = filtered.filter(
@@ -139,6 +103,11 @@ function Blocks() {
     setFilteredProducts(filtered);
   }, [products, priceRange, productType, expiryDateFilter]);
 
+  // Log the updated filteredProducts whenever it changes
+  useEffect(() => {
+    console.log("Updated filteredProducts:", filteredProducts);
+  }, [filteredProducts]);
+
   // Handle product selection for detailed view
   const handleProductSelect = (product) => {
     setSelectedProduct(product);
@@ -148,23 +117,23 @@ function Blocks() {
   const handleCloseDetail = () => {
     setSelectedProduct(null);
   };
- 
-  // Add to cart functionality with animation
+
+  // Add to cart functionality
   const addToCart = async (product, quantity = 1) => {
     setLoading(true);
     setMessage("");
     try {
-      const token = localStorage.getItem("accessToken"); // Assuming user is logged in
+      const token = localStorage.getItem("accessToken");
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/v1/cart/add-to-cart`,
         {
-          itemId: product._id,
-          quantity: 1, // Default to 1, change as needed
-          price:12,
+          itemId: product.id,
+          quantity: 1,
+          price: product.price,
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Pass token for authentication
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -175,7 +144,6 @@ function Blocks() {
     } finally {
       setLoading(false);
     }
-
 
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
@@ -213,7 +181,7 @@ function Blocks() {
   };
 
   return (
-    <div className="blocks-container ">
+    <div className="blocks-container">
       {/* Cart button with animation */}
       <div className="cart-button-container">
         <button
@@ -271,5 +239,3 @@ function Blocks() {
     </div>
   );
 }
-
-export default Blocks;
