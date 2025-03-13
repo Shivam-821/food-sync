@@ -31,6 +31,10 @@ const consumerSchema = new Schema(
         message: (props) => `${props.value} is not a valid mobile number!`,
       },
     },
+    role: {
+      type: String,
+      required: true,
+    },
     avatar: { type: String },
     password: {
       type: String,

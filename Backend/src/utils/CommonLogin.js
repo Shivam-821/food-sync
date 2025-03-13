@@ -20,43 +20,60 @@ const generateAccessAndRefreshToken = async (user) => {
 };
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, phone, password } = req.body;
+  const { emailOrPhone, password } = req.body;
 
-  if (!email && !phone) {
+  if (!emailOrPhone) {
     throw new ApiError(400, "Email or phone is required");
   }
   if (!password) {
     throw new ApiError(400, "Password is required");
   }
 
-  let user =
-    (await Producer.findOne({ $or: [{ phone }, { email }] })) ||
-    (await UpcyclingIndustry.findOne({ $or: [{ phone }, { email }] })) || (await Consumer.findOne({ $or: [{ phone }, { email }] }))
+  const isEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+    emailOrPhone);
+  const isPhone = /^[6-9]\d{9}$/.test(emailOrPhone);
+
+  if (!isEmail && !isPhone) {
+    throw new ApiError(400, "Invalid email or phone number");
+  }
+
+  const user =
+    (await Producer.findOne({ [isEmail ? "email" : "phone"]: emailOrPhone })) ||
+    (await UpcyclingIndustry.findOne({
+      [isEmail ? "email" : "phone"]: emailOrPhone,
+    })) ||
+    (await Consumer.findOne({ [isEmail ? "email" : "phone"]: emailOrPhone }));
 
   if (!user) {
     throw new ApiError(404, "User not found");
   }
 
+  // Verify password
   const isPasswordValid = await user.isPasswordCorrect(password);
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid credentials");
   }
 
+  // Generate tokens
   const { accessToken, refreshToken } =
     await generateAccessAndRefreshToken(user);
 
-  const newUser =
-    (await Consumer.findById(user._id)
+  let populatedUser;
+  if (user instanceof Consumer) {
+    populatedUser = await Consumer.findById(user._id)
       .select("-password -refreshToken")
-      .populate("feedbacks donationsMade orders")) ||
-    (await Producer.findById(user._id).populate(
-      "feedbacks donationsMade items"
-    )) ||
-    (await UpcyclingIndustry.findById(user._id).populate(
-      "feedbacks donationsMade"
-    ));
+      .populate("feedbacks donationsMade orders");
+  } else if (user instanceof Producer) {
+    populatedUser = await Producer.findById(user._id)
+      .select("-password -refreshToken")
+      .populate("feedbacks donationsMade items");
+  } else if (user instanceof UpcyclingIndustry) {
+    populatedUser = await UpcyclingIndustry.findById(user._id)
+      .select("-password -refreshToken")
+      .populate("feedbacks donationsMade upcyclingOrders");
+  }
 
-  if (!newUser) {
+  if (!populatedUser) {
     throw new ApiError(404, "User not found");
   }
 
@@ -73,7 +90,7 @@ const loginUser = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        { newUser, accessToken, refreshToken },
+        { user: populatedUser, accessToken, refreshToken },
         "User logged in successfully"
       )
     );

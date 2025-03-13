@@ -63,6 +63,7 @@ const registerUpcyclingIndustry = asyncHandler(async (req, res) => {
       companyName,
       email,
       phone,
+      role: "upcyclingIndustry",
       password,
       location,
       upcyclingMethods,

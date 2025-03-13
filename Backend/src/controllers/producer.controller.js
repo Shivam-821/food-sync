@@ -72,6 +72,7 @@ const registerProducer = asyncHandler(async (req, res) => {
       avatar: avatar?.url || "",
       email,
       phone,
+      role: "producer",
       password,
       companyName,
       producerType,

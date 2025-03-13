@@ -61,6 +61,7 @@ const registerConsumer = asyncHandler(async (req, res) => {
       avatar: avatar?.url || "",
       email,
       phone,
+      role: "consumer",
       password,
       location: location || "",
       consumerType,
