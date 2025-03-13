@@ -30,7 +30,7 @@ function BlockList() {
   const [isCartBouncing, setIsCartBouncing] = useState(false);
 
   // Filter states
-  const [priceRange, setPriceRange] = useState([0, 6000]); // Adjusted price range
+  const [priceRange, setPriceRange] = useState([0, 70000]); // Adjusted price range
   const [productType, setProductType] = useState("all");
   const [expiryDateFilter, setExpiryDateFilter] = useState("");
   const [loading, setLoading] = useState(false);
@@ -44,8 +44,6 @@ function BlockList() {
           `${import.meta.env.VITE_BASE_URL}/api/v1/items/getallitem`
         );
         const data = response.data.data || [];
-
-        console.log("Fetched Data:", data);
 
         // Transform fetched data to match the expected structure
         const transformedData = data.map((item) => ({
@@ -64,50 +62,45 @@ function BlockList() {
         setBlocks(transformedData);
         setSampleProducts(transformedData);
         setProducts(transformedData);
-        setFilteredProducts(transformedData); // Initialize filteredProducts with fetched data
+
+        // Apply filters immediately after fetching data
+        let filtered = [...transformedData];
+
+        // Filter by price
+        filtered = filtered.filter(
+          (product) =>
+            product.price >= priceRange[0] && product.price <= priceRange[1]
+        );
+
+        // Filter by type
+        if (productType !== "all") {
+          filtered = filtered.filter((product) => product.type === productType);
+        }
+
+        // Filter by expiry date
+        if (expiryDateFilter) {
+          filtered = filtered.filter(
+            (product) =>
+              new Date(product.expiryDate) <= new Date(expiryDateFilter)
+          );
+        }
+
+        setFilteredProducts(filtered); // Set filteredProducts after filtering
       } catch (err) {
         console.error("Error fetching data:", err);
+      } finally {
+        setLoading(false); // Set loading to false after fetching data
       }
     };
 
     fetchBlocks();
-  }, []);
+  }, [priceRange, productType, expiryDateFilter]); // Add filter dependencies
 
   // Update products when sampleProducts changes
-  useEffect(() => {
-    setProducts(sampleProducts);
-  }, [sampleProducts]);
-
-  // Apply filters
-  useEffect(() => {
-    let filtered = [...products];
-    console.log("Products before filtering:", filtered);
-
-    // Filter by price
-    filtered = filtered.filter(
-      (product) =>
-        product.price >= priceRange[0] && product.price <= priceRange[1]
-    );
-
-    // Filter by type
-    if (productType !== "all") {
-      filtered = filtered.filter((product) => product.type === productType);
-    }
-
-    // Filter by expiry date
-    if (expiryDateFilter) {
-      filtered = filtered.filter(
-        (product) => new Date(product.expiryDate) <= new Date(expiryDateFilter)
-      );
-    }
-
-    setFilteredProducts(filtered);
-  }, [products, priceRange, productType, expiryDateFilter]);
+  useEffect(() => {}, [filteredProducts]);
 
   // Log the updated filteredProducts whenever it changes
-  useEffect(() => {
-    console.log("Updated filteredProducts:", filteredProducts);
-  }, [filteredProducts]);
+  useEffect(() => {}, [filteredProducts]);
 
   // Handle product selection for detailed view
   const handleProductSelect = (product) => {
@@ -125,17 +118,20 @@ function BlockList() {
     setMessage("");
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/add-to-cart`,
+
+      // Use axios.get and send data as query parameters
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/addtocart`,
         {
-          itemId: product.id,
-          quantity: 1,
-          price: product.price,
-        },
-        {
+          params: {
+            itemId: product.id, // Use 'id' from the transformed product data
+            quantity: quantity, // Use the passed quantity
+            price: product.price, // Use 'price' from the transformed product data
+          },
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          withCredentials: true,
         }
       );
 
@@ -146,19 +142,20 @@ function BlockList() {
       setLoading(false);
     }
 
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
+    // Update local cart state
+    // setCartItems((prevItems) => {
+    //   const existingItem = prevItems.find((item) => item.id === product.id);
 
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.id === product.id
-            ? { ...item, cartQuantity: item.cartQuantity + quantity }
-            : item
-        );
-      } else {
-        return [...prevItems, { ...product, cartQuantity: quantity }];
-      }
-    });
+    //   if (existingItem) {
+    //     return prevItems.map((item) =>
+    //       item.id === product.id
+    //         ? { ...item, cartQuantity: item.cartQuantity + quantity }
+    //         : item
+    //     );
+    //   } else {
+    //     return [...prevItems, { ...product, cartQuantity: quantity }];
+    //   }
+    // });
 
     // Trigger cart bounce animation
     setIsCartBouncing(true);
@@ -171,15 +168,41 @@ function BlockList() {
       prevItems.filter((item) => item.id !== productId)
     );
   };
+  const [data, setData] = useState({});
+  //fetch function
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    const fetchCart = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/v1/cart/getcart`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          }
+        );
+        console.log(response.data.data);
+        setData(response.data.data);
+        setCartItems(response.data.data.items || []);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+    };
+    fetchCart();
+  }, []);
 
   // Update cart quantity
-  const updateCartQuantity = (productId, quantity) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === productId ? { ...item, cartQuantity: quantity } : item
-      )
-    );
+  const updateCartQuantity = async (productId, quantity) => {
+    //update cart quantity
+    if (typeof quantity !== "number" || quantity < 0) {
+      console.error("Invalid quantity:", quantity);
+      return;
+    }
   };
+
+  useEffect(() => {}, [cartItems]);
 
   return (
     <div className="blocks-container">
@@ -192,9 +215,7 @@ function BlockList() {
           onClick={() => setIsCartOpen(true)}
         >
           <FaShoppingCart className="cart-icon" />
-          <span>
-            Cart ({cartItems.reduce((acc, item) => acc + item.cartQuantity, 0)})
-          </span>
+          <span>Cart {cartItems.length}</span>
         </button>
       </div>
 
@@ -236,6 +257,7 @@ function BlockList() {
         cartItems={cartItems}
         removeFromCart={removeFromCart}
         updateQuantity={updateCartQuantity}
+        data={data}
       />
     </div>
   );
