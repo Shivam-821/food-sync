@@ -69,7 +69,8 @@ const SignUp = () => {
         const data= response.data
       
         setConsumer(data.user)
-        localStorage.setItem('token', data.token)
+        console.log(data)
+        localStorage.setItem('accessToken', data.accessToken)
 
         alert("Registration successful!");
         navigate("/");

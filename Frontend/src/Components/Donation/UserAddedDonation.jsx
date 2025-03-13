@@ -52,7 +52,7 @@ const DonationsList = () => {
               {donation.items?.map((item) => (
                 <div key={item._id} className="flex items-center space-x-3 border-b pb-2">
                   <img
-                    src={item.image?.startsWith(http) ? item.image : `https://www.paramporulfoundation.com/wp-content/uploads/2023/10/How-does-food-donation-or-Nishkayakarma-bring-about-transformation.jpg`}
+                    src={item.image?.startsWith("http") ? item.image : `https://www.paramporulfoundation.com/wp-content/uploads/2023/10/How-does-food-donation-or-Nishkayakarma-bring-about-transformation.jpg`}
                     alt={item.name}
                     className="w-14 h-14 object-cover rounded-lg"
                   />

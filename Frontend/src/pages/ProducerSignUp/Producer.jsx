@@ -87,7 +87,7 @@ const ProducerSignUp = () => {
       producerType: formData.producerType,
       location
     }
-
+ 
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/producer/register`, ProducerData)
       console.log(response.data)
