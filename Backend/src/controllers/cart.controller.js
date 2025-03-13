@@ -10,18 +10,23 @@ import { UpcyclingItem } from "../models/upcyclingItem.models.js";
 import chalk from "chalk";
 
 const getBuyerAndType = async (req) => {
-  if (req.consumer)
+  console.log("Request Consumer:", req.consumer);
+  console.log("Request Upcycled Industry:", req.upcycledIndustry);
+
+  if (req.consumer) {
     return {
       buyer: await Consumer.findById(req.consumer._id),
       buyerId: req.consumer._id,
       buyerType: "Consumer",
     };
-  if (req.upcycledIndustry)
+  }
+  if (req.upcycledIndustry) {
     return {
       buyer: await UpcyclingIndustry.findById(req.upcycledIndustry._id),
       buyerId: req.upcycledIndustry._id,
       buyerType: "UpcyclingIndustry",
     };
+  }
   return { buyer: null, buyerId: null, buyerType: null };
 };
 
@@ -29,6 +34,9 @@ const addToCart = asyncHandler(async (req, res) => {
   try {
     const { buyer, buyerId, buyerType } = await getBuyerAndType(req);
     const { itemId, quantity, price } = req.query;
+    console.log(req.query)
+    console.log(buyer,buyerType,buyerId)
+    
 
     if (!buyerId || !buyerType || !itemId || !quantity || !price) {
       console.log(chalk.red("Addto cart: Missing required fields"));

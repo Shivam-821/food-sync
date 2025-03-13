@@ -43,7 +43,6 @@ function BlockList() {
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/items/getallitem`);
         const data = response.data.data || [];
 
-        console.log("Fetched Data:", data);
 
         // Transform fetched data to match the expected structure
         const transformedData = data.map((item) => ({
@@ -80,7 +79,6 @@ function BlockList() {
   // Apply filters
   useEffect(() => {
     let filtered = [...products];
-    console.log("Products before filtering:", filtered);
 
     // Filter by price
     filtered = filtered.filter(
@@ -105,7 +103,6 @@ function BlockList() {
 
   // Log the updated filteredProducts whenever it changes
   useEffect(() => {
-    console.log("Updated filteredProducts:", filteredProducts);
   }, [filteredProducts]);
 
   // Handle product selection for detailed view
@@ -124,30 +121,34 @@ function BlockList() {
     setMessage("");
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/add-to-cart`,
+  
+      // Use axios.get and send data as query parameters
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/addtocart`,
         {
-          itemId: product.id,
-          quantity: 1,
-          price: product.price,
-        },
-        {
+          params: {
+            itemId: product.id, // Use 'id' from the transformed product data
+            quantity: quantity, // Use the passed quantity
+            price: product.price, // Use 'price' from the transformed product data
+          },
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          withCredentials: true,
         }
       );
-
+  
       setMessage(response.data.message);
     } catch (error) {
       setMessage(error.response?.data?.message || "Failed to add to cart");
     } finally {
       setLoading(false);
     }
-
+  
+    // Update local cart state
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
-
+  
       if (existingItem) {
         return prevItems.map((item) =>
           item.id === product.id
@@ -158,7 +159,7 @@ function BlockList() {
         return [...prevItems, { ...product, cartQuantity: quantity }];
       }
     });
-
+  
     // Trigger cart bounce animation
     setIsCartBouncing(true);
     setTimeout(() => setIsCartBouncing(false), 1000);
