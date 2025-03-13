@@ -1,11 +1,17 @@
 import Router from "express";
 import { verifyToken } from "../middlewares/authProd.middlewares.js";
 import { upload } from "../middlewares/multer.middlewares.js";
-import { createItem, getAllItems, getItemById, updateItem, deleteItem } from "../controllers/items.controller.js";
+import {
+  createItem,
+  getAllItems,
+  getItemById,
+  updateItem,
+  deleteItem,
+} from "../controllers/items.controller.js";
 
 const router = Router()
 
-router.route("/create").post(upload.single("avatar"), verifyToken, createItem);
+router.route("/create").post(verifyToken, upload.single("avatar"), createItem);
 
 router.route("/update/:itemId").patch(verifyToken, updateItem)
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 
 const UserAddedDonation = () => {
   return (
@@ -20,10 +21,9 @@ const DonationsList = () => {
   useEffect(() => {
     const fetchDonations = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/donation/get-universal-donations`);
-        const data = await response.json();
-        console.log(response)
-        setDonations(data.data || []); // Ensure it's an array
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/donation/get-universal-donations`);
+        // const data = await response.json();
+        setDonations(response.data.data || []);
       } catch (err) {
         console.error("Error fetching data:", err);
       }
@@ -49,16 +49,16 @@ const DonationsList = () => {
           <div className="border-t border-gray-300 p-4">
             <h4 className="text-lg font-medium text-gray-800 mb-2">Donated Items:</h4>
             <div className="space-y-3">
-              {donation.items.map((item) => (
+              {donation.items?.map((item) => (
                 <div key={item._id} className="flex items-center space-x-3 border-b pb-2">
                   <img
-                    src={item.image}
+                    src={item.image?.startsWith("http") ? item.image : `https://www.paramporulfoundation.com/wp-content/uploads/2023/10/How-does-food-donation-or-Nishkayakarma-bring-about-transformation.jpg`}
                     alt={item.name}
                     className="w-14 h-14 object-cover rounded-lg"
                   />
                   <div>
                     <p className="text-gray-800 font-medium">{item.name}</p>
-                    <p className="text-gray-600 text-sm">Quantity: {item.quantity}</p>
+                    <p className="text-gray-600 text-sm">Quantity: {item.quantity}Kg</p>
                   </div>
                 </div>
               ))}
