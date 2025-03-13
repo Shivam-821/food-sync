@@ -28,6 +28,7 @@ function CommunityChat() {
             "Content-Type": "application/json",
           },
         });
+        console.log(response.data)
         setName(response.data.name); // Assuming the API returns { name: "User Name" }
       } catch (error) {
         console.error("Error fetching user data:", error);
