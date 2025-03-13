@@ -12,6 +12,7 @@ function CartDrawer({
   cartItems,
   removeFromCart,
   updateQuantity,
+  data,
 }) {
   const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
@@ -78,37 +79,37 @@ function CartDrawer({
           <>
             <div className="cart-items">
               {cartItems.map((item) => (
-                <div key={item.id} className="cart-item">
+                <div key={item.item._id} className="cart-item">
                   <div
                     className="cart-item-image-container"
                     style={{ backgroundColor: item.color + "33" }}
                   >
                     <img
-                      src={item.image || "/placeholder.svg"}
-                      alt={item.name}
+                      src={item.item.avatar || "/placeholder.svg"}
+                      alt={item.item.name}
                       className="cart-item-image"
                     />
                   </div>
                   <div className="cart-item-details">
                     <div className="cart-item-header">
-                      <h3 className="cart-item-title">{item.name}</h3>
+                      <h3 className="cart-item-title">{item.item.name}</h3>
                       <button
                         className="remove-item-button"
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromCart(item.item._id)}
                       >
                         <FaTrash />
                       </button>
                     </div>
                     <div className="cart-item-price">
-                      ₹{item.price.toFixed(2)} × {item.cartQuantity}
+                      ₹{item.price.toFixed(2)} × {item.quantity}
                     </div>
                     <div className="cart-item-quantity">
                       <button
                         className="btn btn-outline btn-icon quantity-btn"
                         onClick={() =>
                           updateQuantity(
-                            item.id,
-                            Math.max(1, item.cartQuantity - 1)
+                            item.item._id,
+                            Math.max(1, item.quantity - 1)
                           )
                         }
                       >
@@ -117,10 +118,10 @@ function CartDrawer({
                       <input
                         type="number"
                         min="1"
-                        value={item.cartQuantity}
+                        value={item.quantity}
                         onChange={(e) =>
                           updateQuantity(
-                            item.id,
+                            item.item._id,
                             Number.parseInt(e.target.value) || 1
                           )
                         }
@@ -129,7 +130,7 @@ function CartDrawer({
                       <button
                         className="btn btn-outline btn-icon quantity-btn"
                         onClick={() =>
-                          updateQuantity(item.id, item.cartQuantity + 1)
+                          updateQuantity(item.item._id, item.quantity + 1)
                         }
                       >
                         +
@@ -143,7 +144,7 @@ function CartDrawer({
             <div className="cart-footer">
               <div className="cart-total">
                 <span>Total:</span>
-                <span>₹{totalPrice.toFixed(2)}</span>
+                <span>₹{data.totalAmount}</span>
               </div>
               <button
                 className="btn btn-primary btn-full checkout-btn"
