@@ -6,6 +6,15 @@ import { UpcyclingIndustry } from "../models/upcyclingIndustry.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { Gamification } from "../models/gamification.models.js";
+
+const getBadge = (points) => {
+  if (points >= 151) return "Legend";
+  if (points >= 101) return "Champion";
+  if (points >= 61) return "Achiever";
+  if (points >= 21) return "Contributor";
+  return "Beginner";
+};
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -14,22 +23,18 @@ const razorpay = new Razorpay({
 
 const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
   try {
-    const {
-      deliveryAddress,
-      deliveryLocation,
-      paymentMethod,
-    } = req.body;
+    const { deliveryAddress, deliveryLocation, paymentMethod } = req.body;
 
-    if (!deliveryAddress ||      !deliveryLocation || !paymentMethod) {
+    if (!deliveryAddress || !deliveryLocation || !paymentMethod) {
       throw new ApiError(400, "All fields are required");
     }
 
-    const upcyclingIndustry =
-      await UpcyclingIndustry.findById(req.upcyclingIndustry._id);
+    const upcyclingIndustry = await UpcyclingIndustry.findById(
+      req.upcyclingIndustry._id
+    );
     if (!upcyclingIndustry) {
       throw new ApiError(404, "Upcycling Industry not found");
     }
-    
 
     const cart = await Cart.findOne({
       buyer: upcyclingIndustry._id,
@@ -65,6 +70,24 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
       upcyclingOrder.razorpayOrderId = razorpayOrder.id;
       await upcyclingOrder.save();
 
+      let gamification = await Gamification.findOne({
+        user: upcyclingIndustry._id,
+      });
+      const newCredit = Math.floor(cart.totalAmount / 100);
+
+      if (gamification) {
+        gamification.points += newCredit;
+        gamification.badges = getBadge(gamification.points);
+        await gamification.save();
+      } else {
+        gamification = await Gamification.create({
+          user: upcyclingIndustry._id,
+          userType: "UpcyclingIndustry",
+          points: newCredit,
+          badges: getBadge(newCredit),
+        });
+      }
+
       return res.status(201).json(
         new ApiResponse(
           201,
@@ -82,7 +105,7 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
 
     upcyclingIndustry.upcyclingOrders.push(upcyclingOrder._id);
     await upcyclingIndustry.save();
-    
+
     await Cart.deleteOne({
       buyer: upcyclingIndustry._id,
       buyerType: "UpcyclingIndustry",

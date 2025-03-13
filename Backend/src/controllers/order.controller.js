@@ -6,6 +6,15 @@ import { Consumer } from "../models/consumer.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { Gamification } from "../models/gamification.models.js";
+
+const getBadge = (points) => {
+  if (points >= 151) return "Legend";
+  if (points >= 101) return "Champion";
+  if (points >= 61) return "Achiever";
+  if (points >= 21) return "Contributor";
+  return "Beginner";
+};
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -17,7 +26,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     const { location, address, paymentMethod } = req.body;
 
     if (!location || !address || !paymentMethod) {
-      throw new ApiError(400, "All fields are required")
+      throw new ApiError(400, "All fields are required");
     }
 
     const consumer = await Consumer.findById(req.consumer.id);
@@ -30,9 +39,47 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     const cart = await Cart.findOne({
       buyer: consumerId,
       buyerType: "Consumer",
-    });
+    }).populate("items.item");
+
     if (!cart || cart.items.length === 0) {
       return res.status(404).json(new ApiError(404, "Cart is Empty"));
+    }
+
+    let extraPoints = 0;
+    const today = new Date();
+
+    for (let cartItem of cart.items) {
+      const item = cartItem.item;
+      if (!item.expiryDate) continue;
+
+      const expiryDate = new Date(item.expiryDate);
+      const daysToExpiry = Math.ceil(
+        (expiryDate - today) / (1000 * 60 * 60 * 24)
+      );
+
+      let multiplier = 1;
+      if (daysToExpiry <= 3) multiplier = 3;
+      else if (daysToExpiry <= 7) multiplier = 2;
+
+      extraPoints +=
+        Math.floor((cartItem.price * cartItem.quantity) / 100) * multiplier;
+    }
+
+    let gamification = await Gamification.findOne({ user: consumer._id });
+    const newCredit = Math.floor(cart.totalAmount / 100) + extraPoints;
+
+    if (gamification) {
+      gamification.points += newCredit;
+      gamification.badges = getBadge(gamification.points);
+      await gamification.save();
+    } else {
+      gamification = await Gamification.create({
+        user: consumer._id,
+        userType: "Consumer",
+        contribution: "Order",
+        points: newCredit,
+        badges: getBadge(newCredit),
+      });
     }
 
     const order = new Order({
@@ -50,16 +97,18 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
 
     if (paymentMethod === "Online") {
       const options = {
-        amount: cart.totalAmount * 100, 
+        amount: cart.totalAmount * 100,
         currency: "INR",
         receipt: `receipt_${order._id}`,
-        payment_capture: 1, 
+        payment_capture: 1,
       };
 
       const razorpayOrder = await razorpay.orders.create(options);
 
       order.razorpayOrderId = razorpayOrder.id;
       await order.save();
+
+      await Cart.deleteOne({ buyer: consumerId, buyerType: "Consumer" });
 
       return res.status(201).json(
         new ApiResponse(
@@ -69,7 +118,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
             razorpayOrderId: razorpayOrder.id,
             amount: cart.totalAmount,
             currency: "INR",
-            key: process.env.RAZORPAY_KEY_ID, 
+            key: process.env.RAZORPAY_KEY_ID,
           },
           "Order placed successfully. Proceed with payment."
         )
