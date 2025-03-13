@@ -1,23 +1,21 @@
-import { analyzeFoodQuality } from "../services/vision.service.js";
 import fs from "fs";
-import path from "path";
+import { analyzeImage } from "../services/vision.service.js";
 
-const analyzeImage = async (req, res) => {
+const analyzeImageController = async (req, res) => {
   try {
-    // Ensure an image is uploaded
     if (!req.file) {
       return res.status(400).json({ error: "No image uploaded" });
     }
 
     const imagePath = req.file.path; 
 
-    const analysisResult = await analyzeFoodQuality(imagePath);
+    // Call analyzeImage function to process the image
+    const analysisResult = await analyzeImage(imagePath);
 
+    // Delete the image after processing
     fs.unlink(imagePath, (err) => {
       if (err) {
         console.error("Error deleting image:", err);
-      } else {
-        console.log("Image deleted successfully.");
       }
     });
 
@@ -26,10 +24,11 @@ const analyzeImage = async (req, res) => {
       message: "Image analyzed successfully",
       data: analysisResult,
     });
+
   } catch (error) {
     console.error("Error analyzing image:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-export { analyzeImage };
+export { analyzeImageController };
