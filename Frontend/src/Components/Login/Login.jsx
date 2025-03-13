@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -16,54 +16,40 @@ const Login = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Simulated login function
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
 
     try {
-      const response1 = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/consumer/login`,
-        { email, password }
+      // Send login request to the common login endpoint
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/auth/login`,
+        { emailOrPhone, password }
       );
 
-      const response2 = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/producer/login`,
-        { email, password }
-      );
-      console.log(response1)
-      console.log(response2)
+      const { accessToken, refreshToken, user } = response.data.data;
 
-      // // Assume backend response contains { token, role }
-      // const { token, role } = response.data;
+      // Store tokens in local storage
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
 
-      // // Store token in local storage
-      // localStorage.setItem("authToken", token);
-
-      // // Redirect based on role
-      // if (role === "producer") {
-      //   navigate("/producer-dashboard");
-      // } else if (role === "consumer") {
-      //   navigate("/consumer-dashboard");
-      // } else {
-      //   setError("Invalid role received.");
-      // }
+      // Redirect based on role
+      if (user.role === "consumer") {
+        navigate("/", { state: { user } });
+      } else if (user.role === "producer") {
+        navigate("/producerHome", { state: { user } });
+      } else if (user.role === "upcycling-industry") {
+        navigate("/upcycling-profile", { state: { user } });
+      } else {
+        setError("Invalid role received.");
+      }
     } catch (err) {
       console.error("Login failed:", err);
       setError(err.response?.data?.message || "Something went wrong");
-    }
-
-    // Simulate API call
-    setTimeout(() => {
+    } finally {
       setIsLoading(false);
-      setIsSuccess(true);
-
-      // Reset success state after showing success animation
-      setTimeout(() => {
-        setIsSuccess(false);
-      }, 2000);
-    }, 1500);
+    }
   };
 
   // Animation variants
@@ -149,15 +135,17 @@ const Login = () => {
               </label>
               <motion.div
                 animate={
-                  focusedInput === "email" ? { scale: 1.02 } : { scale: 1 }
+                  focusedInput === "emailOrPhone"
+                    ? { scale: 1.02 }
+                    : { scale: 1 }
                 }
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
                 <input
                   type="text"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onFocus={() => setFocusedInput("email")}
+                  value={emailOrPhone}
+                  onChange={(e) => setEmailOrPhone(e.target.value)}
+                  onFocus={() => setFocusedInput("emailOrPhone")}
                   onBlur={() => setFocusedInput(null)}
                   placeholder="Enter your email or phone"
                   className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition duration-200"
@@ -168,9 +156,13 @@ const Login = () => {
                 initial={{ width: "0%" }}
                 animate={{
                   width:
-                    focusedInput === "email" ? "100%" : email ? "100%" : "0%",
+                    focusedInput === "emailOrPhone"
+                      ? "100%"
+                      : emailOrPhone
+                      ? "100%"
+                      : "0%",
                   backgroundColor:
-                    focusedInput === "email"
+                    focusedInput === "emailOrPhone"
                       ? "rgba(255, 255, 255, 0.8)"
                       : "rgba(255, 255, 255, 0.5)",
                 }}

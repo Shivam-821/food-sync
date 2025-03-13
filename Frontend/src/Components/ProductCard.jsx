@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import "./ProductCard.css";
 import { FaShoppingCart, FaTag } from "react-icons/fa";
