@@ -111,6 +111,8 @@ function Blocks() {
   const [priceRange, setPriceRange] = useState([0, 10]);
   const [productType, setProductType] = useState("all");
   const [expiryDateFilter, setExpiryDateFilter] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   // Apply filters
   useEffect(() => {
@@ -146,9 +148,35 @@ function Blocks() {
   const handleCloseDetail = () => {
     setSelectedProduct(null);
   };
-
+ 
   // Add to cart functionality with animation
-  const addToCart = (product, quantity = 1) => {
+  const addToCart = async (product, quantity = 1) => {
+    setLoading(true);
+    setMessage("");
+    try {
+      const token = localStorage.getItem("accessToken"); // Assuming user is logged in
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/add-to-cart`,
+        {
+          itemId: product._id,
+          quantity: 1, // Default to 1, change as needed
+          price:12,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Pass token for authentication
+          },
+        }
+      );
+
+      setMessage(response.data.message);
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Failed to add to cart");
+    } finally {
+      setLoading(false);
+    }
+
+
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
 

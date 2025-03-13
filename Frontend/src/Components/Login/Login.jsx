@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../Navbar/Navbar";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,11 +13,46 @@ const Login = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   // Simulated login function
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError(null);
     setIsLoading(true);
+
+    try {
+      const response1 = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/consumer/login`,
+        { email, password }
+      );
+
+      const response2 = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/producer/login`,
+        { email, password }
+      );
+      console.log(response1)
+      console.log(response2)
+
+      // // Assume backend response contains { token, role }
+      // const { token, role } = response.data;
+
+      // // Store token in local storage
+      // localStorage.setItem("authToken", token);
+
+      // // Redirect based on role
+      // if (role === "producer") {
+      //   navigate("/producer-dashboard");
+      // } else if (role === "consumer") {
+      //   navigate("/consumer-dashboard");
+      // } else {
+      //   setError("Invalid role received.");
+      // }
+    } catch (err) {
+      console.error("Login failed:", err);
+      setError(err.response?.data?.message || "Something went wrong");
+    }
 
     // Simulate API call
     setTimeout(() => {
