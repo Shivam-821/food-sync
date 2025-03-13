@@ -5,6 +5,8 @@ import "./signup.css";
 import Navbar from "../../Components/Navbar/Navbar";
 import axios from "axios";
 import { ConsumerDataContext } from "../../Context/ConsumerContext";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import GoogleLogin from "../../Components/GoogleLogin";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -231,13 +233,9 @@ const SignUp = () => {
               {/* Social Signup Options */}
               <p className="text-center text-gray-600 my-4">or sign up with</p>
               <div className="flex space-x-4">
-                <button
-                  type="button"
-                  className="flex-1 bg-red-500 text-white p-3 rounded-lg font-bold hover:bg-red-600"
-                  onClick={handleGoogleSignup}
-                >
-                  Google
-                </button>
+              <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+                <GoogleLogin />
+              </GoogleOAuthProvider>
                 <button
                   type="button"
                   className="flex-1 bg-blue-700 text-white p-3 rounded-lg font-bold hover:bg-blue-800"
