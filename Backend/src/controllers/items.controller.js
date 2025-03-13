@@ -69,7 +69,7 @@ const createItem = asyncHandler(async (req, res) => {
       mfDate,
       expiryDate,
       description,
-      upcyclingOptions,
+      upcyclingOptions: upcyclingOptions || "compost"
     });
 
     // Add the item to the producer's items list

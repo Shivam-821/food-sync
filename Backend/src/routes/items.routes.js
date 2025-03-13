@@ -5,7 +5,7 @@ import { createItem, getAllItems, getItemById, updateItem, deleteItem } from "..
 
 const router = Router()
 
-router.route("/create").post(upload.single("avatar"), verifyToken, createItem);
+router.route("/create").post(verifyToken, upload.single("avatar"), createItem);
 
 router.route("/update/:itemId").patch(verifyToken, updateItem)
 

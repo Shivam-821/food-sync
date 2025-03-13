@@ -2,15 +2,12 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../Components/Navbar/Navbar";
 import Footer from "../Components/Footer/Footer";
-import image1 from "./../assets/producer1.jpeg"
-import image2 from "./../assets/producer2.jpeg"
-import image3 from "./../assets/producer3.jpeg"
-import image4 from "./../assets/producer4.jpeg"
 import axios from "axios";
+import ItemsDetail from "../Components/ItemsDetail";
 
 
 const ProducerHome = () => {
-  const [image, setImage] = useState(null);
+  const [avatar, setAvatar] = useState(null);
   const [itemName, setItemName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("");
@@ -26,7 +23,7 @@ const ProducerHome = () => {
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setImage(URL.createObjectURL(file));
+      setAvatar(URL.createObjectURL(file));
     }
   };
 
@@ -34,7 +31,6 @@ const ProducerHome = () => {
     event.preventDefault();
     
     const token = localStorage.getItem("accessToken");
-    console.log("Token being sent:", token);
     
     if (!token) {
       alert("Unauthorized: No token found. Please log in again.");
@@ -53,8 +49,10 @@ const ProducerHome = () => {
     formData.append("upcyclingOptions", upcyclingOption);
     formData.append("description", description);
     
-    if (image) {
-      formData.append("avatar", image); // ✅ Ensure correct file key
+    if (avatar) {
+      const fileInput = document.querySelector('input[type="file"]')
+      const file = fileInput.files[0];
+      formData.append("avatar", file); // ✅ Ensure correct file key
     }
   
     try {
@@ -83,7 +81,7 @@ const ProducerHome = () => {
       setStatus("");
       setUpcyclingOption("");
       setDescription("");
-      setImage(null);
+      setAvatar(null);
     } catch (error) {
       console.error("Error adding item:", error);
       alert(error.response?.data?.message || "Failed to add item");
@@ -126,7 +124,7 @@ const ProducerHome = () => {
               <div>
                 <label className="block text-lg font-medium text-gray-700">Image</label>
                 <input type="file" accept="image/*" onChange={handleImageChange} className="w-full p-3 border rounded-lg bg-gray-200" />
-                {image && <img className="h-32 w-32 mt-2 rounded-lg shadow-md" src={image} alt="Preview" />}
+                {avatar && <img className="h-32 w-32 mt-2 rounded-lg shadow-md" src={avatar} alt="Preview" />}
               </div>
   
               
@@ -186,13 +184,14 @@ const ProducerHome = () => {
               </div>
   
               
-              {status === "upcycled" && (
+              {(
                 <div>
                   <label className="block text-lg font-medium text-gray-700">Upcycling Option</label>
-                  <select required className="w-full p-3 border rounded-lg bg-gray-200" value={upcyclingOption} onChange={(e) => setUpcyclingOption(e.target.value)}>
-                    <option value="">Select Upcycling Option</option>
-                    <option value="biogas">Biogas</option>
+                  <select  className="w-full p-3 border rounded-lg bg-gray-200" value={upcyclingOption} onChange={(e) => setUpcyclingOption(e.target.value)}>
+                    {/* <option value="">Select Upcycling Option</option> */}
                     <option value="compost">Compost</option>
+                    <option value="biogas">Biogas</option>
+                    
                     <option value="fertilizer">Fertilizer</option>
                     <option value="cosmetics">Cosmetics</option>
                   </select>
@@ -204,59 +203,7 @@ const ProducerHome = () => {
           </form>
         </div>
   
-    <div >
-    <h3 className='text-2xl mt-5 mb-5'>Added Items</h3>
-  
-  <div className="flex flex-wrap  gap-9">
-    <div className="flex border bg-white border-gray-400 hover:border-gray-600 rounded-4xl transform transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-2xl flex-col items-center">
-      <img className="h-60  w-60 rounded-4xl" src={image1} alt="" />
-      <div className="flex gap-10 font-semibold  mt-1">
-      <h3 className="flex">Mangos</h3>
-      <p className="flex">10kg</p>
-      </div>
-  
-    </div>
-  
-    <div className="flex border bg-white border-gray-400 hover:border-gray-600 rounded-4xl transform transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-2xl flex-col items-center">
-      <img className="h-60  w-60 rounded-4xl" src={image2} alt="" />
-      <div className="flex gap-10 font-semibold  mt-1">
-      <h3 className="flex">Paneer</h3>
-      <p className="flex">15kg</p>
-      </div>
-  
-    </div>
-  
-  
-    <div className="flex border bg-white border-gray-400 hover:border-gray-600 rounded-4xl transform transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-2xl flex-col items-center">
-      <img className="h-60  w-60 rounded-4xl" src={image4} alt="" />
-      <div className="flex gap-10 font-semibold  mt-1">
-      <h3 className="flex">Tomato</h3>
-      <p className="flex">7kg</p>
-      </div>
-  
-    </div>
-  
-    <div className="flex border bg-white border-gray-400 hover:border-gray-600 rounded-4xl transform transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-2xl flex-col items-center">
-      <img className="h-60  w-60 rounded-4xl" src="https://imgs.search.brave.com/CGjizhvSz9PL8P1qQZ7G9uDshmtbT2I5h1FHp6l-AWQ/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTI1/NjQ3Njk5My9waG90/by9mb29kLmpwZz9z/PTYxMng2MTImdz0w/Jms9MjAmYz1NLS1H/TDMwYTl0a0VEUUpW/SDBVSTA3VmUtUWdG/TTJ4NUpVejRUd3Y5/OUxnPQ" alt="" />
-      <div className="flex gap-10 font-semibold  mt-1">
-      <h3 className="flex">Chiken</h3>
-      <p className="flex">5kg</p>
-      </div>
-  
-    </div>
-  
-    <div className="flex border bg-white border-gray-400 hover:border-gray-600 rounded-4xl transform transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-2xl flex-col items-center">
-      <img className="h-60  w-60 rounded-4xl" src={image3} alt="" />
-      <div className="flex gap-10 font-semibold  mt-1">
-      <h3 className="flex">Burger</h3>
-      <p className="flex">6kg</p>
-      </div>
-  
-    </div>
-  
-    
-  </div>
-    </div>
+    <ItemsDetail/>
   
         </div>
   
