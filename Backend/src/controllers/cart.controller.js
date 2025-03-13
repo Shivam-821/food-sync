@@ -28,7 +28,7 @@ const getBuyerAndType = async (req) => {
 const addToCart = asyncHandler(async (req, res) => {
   try {
     const { buyer, buyerId, buyerType } = await getBuyerAndType(req);
-    const { itemId, quantity, price } = req.query;
+    const { itemId, quantity, price, addOne, deleteOne } = req.query;
 
     if (!buyerId || !buyerType || !itemId || !quantity || !price) {
       console.log(chalk.red("Addto cart: Missing required fields"));
@@ -80,6 +80,16 @@ const addToCart = asyncHandler(async (req, res) => {
     const existingItem = cart.items.find((cartItem) =>
       cartItem.item.equals(itemId)
     );
+    if (existingItem){
+      if (addOne === "add") {
+       existingItem.quantity = existingItem.quantity + 1;
+      }else if(deleteOne === "delete"){
+        existingItem.quantity = existingItem.quantity - 1
+      }
+      await cart.save()
+
+      return res.status(200).json(new ApiResponse(200, cart, "Item quantity updated successfully"))
+    }
 
     if (existingItem) {
       existingItem.quantity += parsedQuantity;
@@ -92,8 +102,9 @@ const addToCart = asyncHandler(async (req, res) => {
         producer: producer._id,
       });
     }
-
     await cart.save();
+
+    
 
     return res.status(200).json({
       success: true,
