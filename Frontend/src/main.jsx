@@ -6,9 +6,11 @@ import { BrowserRouter } from "react-router-dom";
 import "./i18n"; // Import i18n configuration
 import ConsumerContext from "./Context/ConsumerContext.jsx";
 import ProducerContext from "./Context/ProducerContext.jsx";
+import UpcyclingIContext from "./Context/UpcyclingIContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
+    <UpcyclingIContext>
     <ProducerContext>
       <ConsumerContext>
         <BrowserRouter>
@@ -16,5 +18,6 @@ createRoot(document.getElementById("root")).render(
         </BrowserRouter>
       </ConsumerContext>
     </ProducerContext>
+    </UpcyclingIContext>
   </StrictMode>
 );
