@@ -1,5 +1,6 @@
 "use client";
 import "./feedback.css";
+import axios from "axios";
 
 import { useState, useEffect } from "react";
 import {
@@ -157,23 +158,36 @@ export default function Feedback() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [userName, setUserName] = useState("Guest User");
   const [userType, setUserType] = useState("individual");
+    const [loading, setLoading] = useState(false);
 
   // Load feedback from localStorage on component mount
   useEffect(() => {
-    const savedFeedback = localStorage.getItem("feedbackData");
-    if (savedFeedback) {
-      setFeedbackList(JSON.parse(savedFeedback));
-    } else {
-      setFeedbackList(initialFeedback);
-      localStorage.setItem("feedbackData", JSON.stringify(initialFeedback));
-    }
-
-    // Check for saved theme preference
+    const fetchFeedback = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_BASE_URL
+          }/api/v1/feedback/getallfeedback`
+        );
+        setFeedbackList(response.data.data);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      } finally {
+        setLoading(false); // Stop loader after fetching
+      }
+    };
+    fetchFeedback();
+    
     const savedTheme = localStorage.getItem("darkMode");
     if (savedTheme) {
       setIsDarkMode(savedTheme === "true");
     }
   }, []);
+
+  useEffect(() => {
+  }, [feedbackList]); // ✅ Only logs when feedbackList updates
+  
 
   // Update body class when dark mode changes
   useEffect(() => {
@@ -186,7 +200,7 @@ export default function Feedback() {
   }, [isDarkMode]);
 
   // Handle submitting new feedback
-  const handleSubmitFeedback = (e) => {
+  const handleSubmitFeedback = async (e) => {
     e.preventDefault();
     if (!newFeedback.comment.trim()) return;
 
@@ -203,8 +217,37 @@ export default function Feedback() {
 
     const updatedFeedback = [feedback, ...feedbackList];
     setFeedbackList(updatedFeedback);
-    localStorage.setItem("feedbackData", JSON.stringify(updatedFeedback));
-    setNewFeedback({ rating: 5, comment: "" });
+    
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        alert("You must be logged in to donate food.");
+        return;
+      }
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/feedback/givefeedback`,
+        feedback,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json", // Correct content type
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        alert("Feedback submitted successfully!");
+        setNewFeedback({ rating: 5, comment: "" });
+      } else {
+        alert("Error during donation. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during donation:", error);
+      alert("Failed to connect to server.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Handle liking a feedback
@@ -428,6 +471,7 @@ export default function Feedback() {
             <div className="flex space-x-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
+                name="rating"
                   key={star}
                   type="button"
                   onClick={() =>
@@ -448,6 +492,7 @@ export default function Feedback() {
           <div className="mb-4">
             <label className="block mb-2 font-medium">Your Feedback:</label>
             <textarea
+              name="comment"
               value={newFeedback.comment}
               onChange={(e) =>
                 setNewFeedback({ ...newFeedback, comment: e.target.value })
@@ -530,7 +575,7 @@ export default function Feedback() {
                     isDarkMode ? "bg-gray-700" : "bg-green-100"
                   }`}
                 >
-                  {feedback.user.includes("Restaurant") ||
+                  {/* {feedback.user.includes("Restaurant") ||
                   feedback.user.includes("Catering") ||
                   feedback.user.includes("Buffet") ? (
                     <Utensils className="text-green-500" size={24} />
@@ -540,12 +585,12 @@ export default function Feedback() {
                     <Heart className="text-red-500" size={24} />
                   ) : (
                     <Apple className="text-green-500" size={24} />
-                  )}
+                  )} */}
                 </div>
                 <div className="flex-1">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-semibold text-lg">{feedback.user}</h3>
+                      <h3 className="font-semibold text-lg">{feedback.user.fullname}</h3>
                       <div className="flex items-center mt-1">
                         {renderStars(feedback.rating)}
                         <span
@@ -553,7 +598,7 @@ export default function Feedback() {
                             isDarkMode ? "text-gray-400" : "text-gray-500"
                           }`}
                         >
-                          {formatDate(feedback.date)}
+                          {formatDate(feedback.createdAt)}
                         </span>
                       </div>
                     </div>
@@ -569,7 +614,7 @@ export default function Feedback() {
 
                   <div className="flex items-center gap-4 mt-2">
                     <button
-                      onClick={() => handleLike(feedback.id)}
+                      onClick={() => handleLike(feedback._id)}
                       className={`flex items-center gap-1 transition-all duration-300 ${
                         isDarkMode
                           ? "text-gray-400 hover:text-red-400"
@@ -577,13 +622,13 @@ export default function Feedback() {
                       } hover:scale-110`}
                     >
                       <Heart size={18} className="fill-current" />
-                      <span>{feedback.likes}</span>
+                      <span>{feedback.likes||9}</span>
                     </button>
 
                     <button
                       onClick={() =>
                         setReplyingTo(
-                          replyingTo === feedback.id ? null : feedback.id
+                          replyingTo === feedback._id ? null : feedback._id
                         )
                       }
                       className={`flex items-center gap-1 transition-all duration-300 ${
@@ -593,12 +638,12 @@ export default function Feedback() {
                       } hover:scale-110`}
                     >
                       <MessageCircle size={18} />
-                      <span>{feedback.replies.length}</span>
+                      <span>{feedback.replies || 19}</span>
                     </button>
                   </div>
 
                   {/* Reply form */}
-                  {replyingTo === feedback.id && (
+                  {replyingTo === feedback._id && (
                     <div
                       className={`mt-4 p-4 rounded-lg animate-fade-in ${
                         isDarkMode
@@ -629,7 +674,7 @@ export default function Feedback() {
                           Cancel
                         </button>
                         <button
-                          onClick={() => handleReply(feedback.id)}
+                          onClick={() => handleReply(feedback._id)}
                           className={`px-4 py-2 rounded-lg flex items-center gap-1 transition-all duration-300 ${
                             isDarkMode
                               ? "bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-500 hover:to-blue-500"
@@ -644,7 +689,7 @@ export default function Feedback() {
                   )}
 
                   {/* Replies */}
-                  {feedback.replies.length > 0 && (
+                  {/* {feedback.replies.length > 0 && (
                     <div
                       className={`mt-4 pl-4 border-l-2 ${
                         isDarkMode ? "border-gray-700" : "border-green-200"
@@ -705,7 +750,7 @@ export default function Feedback() {
                         </div>
                       ))}
                     </div>
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>
