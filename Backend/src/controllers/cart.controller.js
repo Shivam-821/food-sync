@@ -10,7 +10,7 @@ import { UpcyclingItem } from "../models/upcyclingItem.models.js";
 import chalk from "chalk";
 
 const getBuyerAndType = async (req) => {
-  
+   
   if (req.consumer) {
     return {
       buyer: await Consumer.findById(req.consumer._id),
@@ -117,6 +117,7 @@ const removeItemFromCart = asyncHandler(async (req, res) => {
   try {
     const { buyer, buyerId, buyerType } = await getBuyerAndType(req);
     const { itemId } = req.query;
+    console.log("printing",buyer,buyerId,buyerType)
 
     if (!buyer || !buyerId || !buyerType || !itemId) {
       throw new ApiError(400, "Missing required fields");
