@@ -1,4 +1,4 @@
-import { loginProducer, logoutProducer, producerProfile, registerProducer } from "../controllers/producer.controller.js";
+import { logoutProducer, producerProfile, registerProducer } from "../controllers/producer.controller.js";
 import { verifyToken } from "../middlewares/authProd.middlewares.js";
 import { upload } from "../middlewares/multer.middlewares.js";
 import Router from "express";
@@ -13,11 +13,7 @@ router
     upload.single("avatar"),
     registerProducer
   );
-
-// // login
-router
-  .route("/login")
-  .post(loginProducer);
+  
 
 // // secure routes
 router.route("/profile").get(verifyToken, producerProfile);

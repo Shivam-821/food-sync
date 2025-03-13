@@ -1,6 +1,5 @@
 import {
   registerUpcyclingIndustry,
-  loginUpcyclingIndustry,
   logoutUpcycledIndustry,
   UpcycledIndustryProfile,
 } from "../controllers/upcyclingIndustry.controller.js";
@@ -16,8 +15,6 @@ router
   .route("/register")
   .post(upload.single("avatar"), registerUpcyclingIndustry);
 
-// // login
-router.route("/login").post(loginUpcyclingIndustry);
 
 // secure routes
 router.route("/profile").get(verifyTok, UpcycledIndustryProfile);

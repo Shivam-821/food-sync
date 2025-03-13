@@ -103,58 +103,6 @@ const registerConsumer = asyncHandler(async (req, res) => {
   }
 });
 
-// Login consumer
-const loginConsumer = asyncHandler(async (req, res) => {
-
-  const { email, phone, password } = req.body;
-
-  if (!email && !phone) {
-    throw new ApiError(400, "Email or phone is required");
-  }
-  if (!password) {
-    throw new ApiError(400, "Password is required");
-  }
-
-  const consumer = await Consumer.findOne({ $or: [{ phone }, { email }] });
-
-  if (!consumer) {
-    throw new ApiError(404, "Consumer not found");
-  }
-
-  const isPasswordValid = await consumer.isPasswordCorrect(password);
-  if (!isPasswordValid) {
-    throw new ApiError(401, "Invalid credentials");
-  }
-
-  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-    consumer._id
-  );
-
-  const loggedInConsumer = await Consumer.findById(consumer._id).select(
-    "-password -refreshToken").populate("feedbacks donationsMade orders")
-  if (!loggedInConsumer) {
-    throw new ApiError(404, "Consumer not found");
-  }
-
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "None"
-  };
-
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
-      new ApiResponse(
-        200,
-        { user: loggedInConsumer, accessToken, refreshToken },
-        "Consumer logged in successfully"
-      )
-    );
-});
-
 const logoutConsumer = asyncHandler(async (req, res) => {
   const consumer = await Consumer.findByIdAndUpdate(
     req.consumer._id,
@@ -188,4 +136,4 @@ const consumerProfile = asyncHandler(async (req, res) => {
 
 // update profile will be added in future
 
-export { registerConsumer, loginConsumer, logoutConsumer, consumerProfile };
+export { registerConsumer, logoutConsumer, consumerProfile };

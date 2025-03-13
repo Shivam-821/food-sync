@@ -36,6 +36,7 @@ import communityRoute from './routes/communityPost.routes.js'
 import gamificationRoute from './routes/gamification.routes.js'
 import visionRoute from './routes/vision.routes.js'
 import aiRoute from './routes/ai.routes.js'
+import loginRouter from './routes/loginRoute.routes.js'
 
 
 app.use("/api/v1/consumer", consumerRoute);
@@ -51,6 +52,7 @@ app.use("/api/v1/donation", donationRoute)
 app.use("/api/v1/community", communityRoute)
 app.use("/api/v1/vision", visionRoute)
 app.use('/api/v1/ai',aiRoute)
+app.use("/api/v1/auth/", loginRouter)
 
 
 app.use("/api/v1/gamification", gamificationRoute)
