@@ -30,7 +30,7 @@ function BlockList() {
   const [isCartBouncing, setIsCartBouncing] = useState(false);
 
   // Filter states
-  const [priceRange, setPriceRange] = useState([0, 100]); // Adjusted price range
+  const [priceRange, setPriceRange] = useState([0, 6000]); // Adjusted price range
   const [productType, setProductType] = useState("all");
   const [expiryDateFilter, setExpiryDateFilter] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,7 +40,9 @@ function BlockList() {
   useEffect(() => {
     const fetchBlocks = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/items/getallitem`);
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/v1/items/getallitem`
+        );
         const data = response.data.data || [];
 
         console.log("Fetched Data:", data);
@@ -57,7 +59,6 @@ function BlockList() {
           expiryDate: item.expiryDate,
           description: item.description,
           manufacturingDate: item.mfDate,
-
         }));
 
         setBlocks(transformedData);
