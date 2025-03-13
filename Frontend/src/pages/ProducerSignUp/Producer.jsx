@@ -87,14 +87,18 @@ const ProducerSignUp = () => {
       producerType: formData.producerType,
       location
     }
-
+ 
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/producer/register`, ProducerData)
       console.log(response.data)
       if (response.status === 200) {
-        const data = response.data
+        const data = response.data.data
         setProducer(data.producer)
-        localStorage.setItem('token', data.token)
+        console.log(data);
+        const token = response.data.data.accessToken; // Make sure your backend sends the token in response
+        if (token) {
+            localStorage.setItem("accessToken", token);
+        }
         alert("Registration successful!");
         navigate("/surplusProducer");
       } else {

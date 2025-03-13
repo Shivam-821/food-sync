@@ -38,20 +38,48 @@ const analyzeImage = async (imagePath) => {
 
 // Function to analyze food quality based on response
 const analyzeFoodQuality = (data) => {
-  const labels = data.responses[0]?.labelAnnotations?.map(label => label.description) || [];
+  const labels = data.responses[0]?.labelAnnotations?.map(label => label.description.toLowerCase()) || [];
   const colors = data.responses[0]?.imagePropertiesAnnotation?.dominantColors?.colors || [];
-
-  console.log("Detected Labels:", labels);
 
   let quality = "Unknown";
   let expiryDate = "Not determined";
 
-  if (labels.includes("mold") || labels.includes("spoiled")) {
+  // Define freshness indicators
+  const freshIndicators = ["fresh", "ripe", "green", "juicy", "healthy"];
+  const badIndicators = ["mold", "rotten", "spoiled", "decayed", "mushy", "stale", "fungus"];
+
+  // Check for bad food labels
+  if (labels.some(label => badIndicators.includes(label))) {
     quality = "Bad";
     expiryDate = "Expired";
-  } else if (labels.includes("fresh") || labels.includes("ripe")) {
+  } 
+  // Check for fresh food labels
+  else if (labels.some(label => freshIndicators.includes(label))) {
     quality = "Good";
     expiryDate = "5-7 days from today";
+  } 
+  // If food is detected but no freshness indicator found
+  else if (labels.includes("food") || labels.includes("produce") || labels.includes("vegetable")) {
+    quality = "Average";
+    expiryDate = "2-3 days from today";
+  }
+
+  // Analyze color changes for spoilage detection
+  let darkColors = 0;
+  let lightColors = 0;
+
+  colors.forEach(colorData => {
+    const { red, green, blue } = colorData.color;
+    const brightness = (red + green + blue) / 3; // Calculate average brightness
+
+    if (brightness < 60) darkColors++;  // Dark colors suggest spoilage
+    if (brightness > 200) lightColors++; // Fresh food is usually bright
+  });
+
+  // If there are too many dark colors, assume the food is spoiling
+  if (darkColors > lightColors && darkColors > 5) {
+    quality = "Bad";
+    expiryDate = "Expired";
   }
 
   return {
@@ -62,4 +90,4 @@ const analyzeFoodQuality = (data) => {
   };
 };
 
-export { analyzeFoodQuality };
+export { analyzeImage };

@@ -6,7 +6,8 @@ const app = express();
 
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    // origin: process.env.CORS_ORIGIN,
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
   })
 );
@@ -34,6 +35,7 @@ import donationRoute from "./routes/donation.routes.js"
 import communityRoute from './routes/communityPost.routes.js'
 import gamificationRoute from './routes/gamification.routes.js'
 import visionRoute from './routes/vision.routes.js'
+import aiRoute from './routes/ai.routes.js'
 
 
 app.use("/api/v1/consumer", consumerRoute);
@@ -47,7 +49,9 @@ app.use("/api/v1/upcyclingItem",upcyclingItemRoute)
 app.use('/api/v1/maps',mapsRoutes);
 app.use("/api/v1/donation", donationRoute)
 app.use("/api/v1/community", communityRoute)
-// app.use("/api/v1/vision", visionRoute)
+app.use("/api/v1/vision", visionRoute)
+app.use('/api/v1/ai',aiRoute)
+
 
 app.use("/api/v1/gamification", gamificationRoute)
 
