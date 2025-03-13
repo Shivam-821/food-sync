@@ -19,6 +19,7 @@ import { Pay } from "./Components/pay";
 import ConsumerProtectWrapper from "./pages/Wrapper/ConsumerProtectedWrapper";
 import Feedback from "./Components/Feedback";
 import UserProfile from "./Components/UserProfile";
+import Login from "./Components/Login/Login";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
       <Route path="/pay" element={<Pay />} />
       <Route path="/feedback" element={<Feedback />} />
       <Route path="/userProfile" element={<UserProfile />} />
+      <Route path="/login" element={<Login />} />
     </Routes>
   );
 }

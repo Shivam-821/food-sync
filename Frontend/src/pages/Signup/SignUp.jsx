@@ -17,8 +17,8 @@ const SignUp = () => {
     password: "",
     confirmPassword: "",
   });
- 
-  const { consumer , setConsumer } = useContext(ConsumerDataContext);
+
+  const { consumer, setConsumer } = useContext(ConsumerDataContext);
 
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
@@ -39,8 +39,7 @@ const SignUp = () => {
       newErrors.password = "Number must be at least 6 characters.";
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "Passwords do not match.";
-    if (!formData.userType)
-      newErrors.userType = "Please select a user type!";
+    if (!formData.userType) newErrors.userType = "Please select a user type!";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -50,31 +49,34 @@ const SignUp = () => {
     if (!validateForm()) return;
 
     const newUser = {
-      consumerType:formData.userType,
-      fullname:formData.fullname,
-      email:formData.email,
-      phone:formData.phone,
-      password: formData.password
-    }
+      consumerType: formData.userType,
+      fullname: formData.fullname,
+      email: formData.email,
+      phone: formData.phone,
+      password: formData.password,
+    };
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/consumer/register`, newUser);
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/consumer/register`,
+        newUser
+      );
 
       if (response.status === 201) {
         const token = response.data.data.accessToken; // Make sure your backend sends the token in response
         if (token) {
-            localStorage.setItem("accessToken", token);
+          localStorage.setItem("accessToken", token);
         }
 
-        const data= response.data
-      
-        setConsumer(data.user)
-        localStorage.setItem('token', data.token)
+        const data = response.data;
+
+        setConsumer(data.user);
+        localStorage.setItem("token", data.token);
 
         alert("Registration successful!");
         navigate("/");
       } else {
-        setFormData({ ...formData, [e.target.name]: '' });
+        setFormData({ ...formData, [e.target.name]: "" });
         alert("Error during signup. Please try again.");
       }
     } catch (error) {
@@ -120,7 +122,7 @@ const SignUp = () => {
             </p>
 
             {/* Signup Form */}
-            <form className="space-y-4" onSubmit={(e)=>handleSubmit(e)}>
+            <form className="space-y-4" onSubmit={(e) => handleSubmit(e)}>
               <input
                 type="text"
                 name="fullname"
@@ -144,12 +146,12 @@ const SignUp = () => {
               {errors.email && <p className="text-red-500">{errors.email}</p>}
 
               <input
-                type="tel"  // 'tel' type ensures only numbers are entered
+                type="tel" // 'tel' type ensures only numbers are entered
                 name="phone"
                 placeholder="Mobile Number"
                 value={formData.phone}
                 onChange={handleChange}
-                pattern="[6-9]\d{9}"  // Ensures only 10-digit Indian numbers
+                pattern="[6-9]\d{9}" // Ensures only 10-digit Indian numbers
                 title="Mobile Number"
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -196,12 +198,17 @@ const SignUp = () => {
                 <p className="text-red-500">{errors.confirmPassword}</p>
               )}
               {/* Added By me -UTKARSH SINGH */}
-                  <label htmlFor="userType">Select User Type:</label>
-                  <select name="userType" id="userType" value={formData.userType} onChange={handleChange}>
-                    <option value="">-- Select --</option>
-                    <option value="ngo">NGO</option>
-                    <option value="individual">Consumer</option>
-                  </select>
+              <label htmlFor="userType">Select User Type:</label>
+              <select
+                name="userType"
+                id="userType"
+                value={formData.userType}
+                onChange={handleChange}
+              >
+                <option value="">-- Select --</option>
+                <option value="ngo">NGO</option>
+                <option value="individual">Consumer</option>
+              </select>
 
               <button
                 type="submit"
