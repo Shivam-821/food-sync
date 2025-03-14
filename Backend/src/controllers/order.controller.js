@@ -19,6 +19,8 @@ const razorpay = new Razorpay({
 const placeOrderFromCart = asyncHandler(async (req, res) => {
   try {
     const { location, address, paymentMethod } = req.body;
+
+    // Validate input data
     if (!address || !paymentMethod) {
       throw new ApiError(400, "All fields are required");
     }
@@ -80,8 +82,8 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     consumer.gamification = gamification._id;
     await consumer.save();
 
-    let totalAmount = cart.totalAmount - (discountPoint * 2.5).toFixed(2);
-    console.log(totalAmount)
+    // Calculate total amount after applying discount
+    let totalAmount = cart.totalAmount - discountPoint * 2.5;
     if (totalAmount < 0) {
       totalAmount = 0;
     }
@@ -100,6 +102,11 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     await order.save();
 
     if (paymentMethod === "razorpay") {
+      // Validate Razorpay configuration
+      if (!razorpay) {
+        throw new ApiError(500, "Razorpay is not configured");
+      }
+
       const options = {
         amount: totalAmount * 100, // Amount in paise
         currency: "INR",
@@ -152,6 +159,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
       );
     }
 
+    // For Cash on Delivery (COD)
     consumer.orders.push(order._id);
     await consumer.save();
     await Cart.deleteOne({ buyer: consumerId, buyerType: "Consumer" });

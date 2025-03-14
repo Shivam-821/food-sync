@@ -247,7 +247,7 @@ const mockUsers = [
     rank: 8,
     avatar: "/placeholder.svg?height=100&width=100",
     userType: "Consumer",
-    badge: "Beginner",
+    badge: "Rookie",
     trend: "down",
   },
   {
@@ -308,7 +308,7 @@ const recentActivity = [
 
 // Badge colors and icons
 const badgeConfig = {
-  Beginner: { color: "#64B5F6", icon: <Star className="h-4 w-4" /> },
+  Rookie: { color: "#64B5F6", icon: <Star className="h-4 w-4" /> },
   Contributor: { color: "#81C784", icon: <Award className="h-4 w-4" /> },
   Achiever: { color: "#FFD54F", icon: <Zap className="h-4 w-4" /> },
   Champion: { color: "#FF8A65", icon: <Trophy className="h-4 w-4" /> },
@@ -1323,7 +1323,7 @@ const GamificationPage = () => {
                   <div className={styles.badgesGrid}>
                     {Object.entries(badgeConfig).map(
                       ([badge, config], index) => {
-                        const isEarned = ["Beginner", "Contributor"].includes(
+                        const isEarned = ["Rookie", "Contributor"].includes(
                           badge
                         );
                         return (
@@ -1375,7 +1375,7 @@ const GamificationPage = () => {
                           </div>
                         </div>
                         <span>
-                          <strong>Beginner</strong>: Join the platform and
+                          <strong>Rookie</strong>: Join the platform and
                           complete your profile
                         </span>
                       </li>
