@@ -7,14 +7,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Gamification } from "../models/gamification.models.js";
+import { getBadge } from "../utils/gamificationUtils.js";
 
-const getBadge = (points) => {
-  if (points >= 151) return "Legend";
-  if (points >= 101) return "Champion";
-  if (points >= 61) return "Achiever";
-  if (points >= 21) return "Contributor";
-  return "Beginner";
-};
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
