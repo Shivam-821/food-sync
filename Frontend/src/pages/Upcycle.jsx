@@ -9,7 +9,7 @@ import Up from "../Components/UpProduct/Up";
 
 function Upcycle() {
   return (
-    <div>
+    <div className="overflow-auto h-screen">
       <Navbar />
       <UpSlider />
       <UpInSlider />

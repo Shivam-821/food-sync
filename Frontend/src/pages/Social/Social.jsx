@@ -50,7 +50,7 @@ const Social = () => {
   };
 
   return (
-    <div>
+    <div className="overflow-auto h-screen">
       <Navbar />
       <div className="ml-30 mr-30">
         <SoicalSlider heroCount={heroCount} />

@@ -31,7 +31,7 @@ import {
 // Styles directly in component
 const styles = {
   gradientBg:
-    "min-h-screen bg-gradient-to-br from-purple-700 via-purple-900 to-indigo-900 text-white",
+    "min-h-screen bg-gradient-to-br from-purple-700 via-purple-900 to-indigo-900 text-white overflow-auto h-screen",
   header: "p-20 pl--5 md:p-6 flex justify-between items-center",
   logo: "flex items-center gap-2",
   logoText:
