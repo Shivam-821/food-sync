@@ -46,11 +46,10 @@ const createDonation = asyncHandler(async (req, res) => {
     if (!donor) throw new ApiError(400, "Donor not found");
 
     const { pickupLocation } = req.body;
-    const items = req.body.items; // Assuming items are sent as form data
+    const items = req.body.items; 
 
     if (!items) throw new ApiError(400, "Items are required");
 
-    // Handle image uploads
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
         const uploadedImage = await uploadOnCloudinary(file.path);
@@ -59,6 +58,8 @@ const createDonation = asyncHandler(async (req, res) => {
         }
       }
     }
+
+    const totalQuantity = items.reduce((acc, item) => acc + item.quantity, 0);
 
     const processedItems = items.map((item, index) => ({
       name: item.name,
@@ -79,7 +80,7 @@ const createDonation = asyncHandler(async (req, res) => {
     if (!donation) throw new ApiError(500, "Failed to create donation");
 
     let gamification = await Gamification.findOne({ user: donor._id });
-    const newCredit = processedItems.length * 2;
+    const newCredit = (processedItems.length * totalQuantity)/12
 
     if (gamification) {
       gamification.points += newCredit;
@@ -112,7 +113,6 @@ const createDonation = asyncHandler(async (req, res) => {
         )
       );
   } catch (error) {
-    // Clean up uploaded images if an error occurs
     for (const image of uploadedImages) {
       if (image.public_id) await deleteFromCloudinary(image.public_id);
     }
