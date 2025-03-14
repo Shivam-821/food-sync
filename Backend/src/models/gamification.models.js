@@ -18,7 +18,7 @@ const gamificationSchema = new Schema(
     },
     badges: {
       type: String,
-      enum: ["Beginner", "Contributor", "Achiever", "Champion", "Legend"],
+      enum: ["Rookie", "Contributor", "Achiever", "Champion", "Legend"],
     },
     contribution: {
       type: String,

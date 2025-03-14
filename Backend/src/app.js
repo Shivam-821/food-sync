@@ -1,6 +1,9 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import passport from "passport";
+import session from "express-session";
+import "./services/passport.service.js";
 
 const app = express();
 
@@ -17,10 +20,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 app.use(cookieParser());
-
-app.get('/', (req, res) => {
-  res.send('Hello World');
-});
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "secret",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 import consumerRoute from "./routes/consumer.routes.js"
 import producerRoute from "./routes/producer.routes.js"
@@ -36,24 +44,7 @@ import communityRoute from './routes/communityPost.routes.js'
 import gamificationRoute from './routes/gamification.routes.js'
 import visionRoute from './routes/vision.routes.js'
 import aiRoute from './routes/ai.routes.js'
-import passport from "passport";
-import session from "express-session";
-import "./services/passport.service.js";
 import authRoutes from "./routes/auth.routes.js";
-
-
-// Sessions for passport
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "secret",
-    resave: false,
-    saveUninitialized: true,
-  })
-);
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.use("/api/v1/auth", authRoutes);
 import loginRouter from './routes/loginRoute.routes.js'
 
 
@@ -71,8 +62,7 @@ app.use("/api/v1/community", communityRoute)
 app.use("/api/v1/vision", visionRoute)
 app.use('/api/v1/ai',aiRoute)
 app.use("/api/v1/auth/", loginRouter)
-
-
+app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/gamification", gamificationRoute)
 
 
