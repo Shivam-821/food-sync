@@ -49,8 +49,13 @@ const consumerSchema = new Schema(
       type: String,
     },
     location: {
-      lat: { type: Number },
-      lng: { type: Number },
+      type: {
+          type: String,
+          enum: ['Point'],
+      },
+      coordinates: {
+          type: [Number],
+      }
     },
     orders: [
       {
@@ -125,5 +130,34 @@ consumerSchema.methods.generateRefreshToken = function () {
     { expiresIn: process.env.REFERESH_TOKEN_EXPIRY }
   );
 };
+
+
+consumerSchema.methods.updateLocation = async function(lng, lat) {
+  this.location = {
+      type: 'Point',
+      coordinates: [lng, lat]
+  };
+  await this.save();
+}
+
+// Create 2dsphere index for geospatial queries
+consumerSchema.index({ location: '2dsphere' });
+
+// Function to start periodic location updates
+function startLocationUpdates(captain, updateInterval = 10000) {
+  if (navigator.geolocation) {
+      const intervalId = setInterval(async () => {
+          navigator.geolocation.getCurrentPosition(async (position) => {
+              await captain.updateLocation(
+                  position.coords.longitude,
+                  position.coords.latitude
+              );
+          });
+      }, updateInterval);
+
+      return intervalId;
+  }
+  return null;
+}
 
 export const Consumer = mongoose.model("Consumer", consumerSchema);

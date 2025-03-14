@@ -64,8 +64,15 @@ const orderSchema = new Schema(
       required: true,
     },
     deliveryLocation: {
-      lat: { type: Number, required: true },
-      lng: { type: Number, required: true },
+      type: {
+          type: String,
+          enum: ['Point'],
+          required: true
+      },
+      coordinates: {
+          type: [Number],
+          required: true
+      }
     },
     orderDate: {
       type: Date,
@@ -86,5 +93,33 @@ orderSchema.pre("save", function (next) {
   );
   next();
 });
+
+orderSchema.methods.updateLocation = async function(lng, lat) {
+  this.location = {
+      type: 'Point',
+      coordinates: [lng, lat]
+  };
+  await this.save();
+}
+
+// Create 2dsphere index for geospatial queries
+orderSchema.index({ location: '2dsphere' });
+
+// Function to start periodic location updates
+function startLocationUpdates(captain, updateInterval = 10000) {
+  if (navigator.geolocation) {
+      const intervalId = setInterval(async () => {
+          navigator.geolocation.getCurrentPosition(async (position) => {
+              await captain.updateLocation(
+                  position.coords.longitude,
+                  position.coords.latitude
+              );
+          });
+      }, updateInterval);
+
+      return intervalId;
+  }
+  return null;
+}
 
 export const Order = mongoose.model("Order", orderSchema);
