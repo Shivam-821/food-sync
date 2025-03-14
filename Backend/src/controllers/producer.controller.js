@@ -35,7 +35,6 @@ const registerProducer = asyncHandler(async (req, res) => {
     producerType,
     location,
   } = req.body;
-  console.log(req.body)
   if (
     [fullname, email, password, companyName, producerType].some(
       (field) => !field?.trim()
