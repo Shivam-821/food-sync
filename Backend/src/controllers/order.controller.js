@@ -1,16 +1,16 @@
-import asyncHandler from "../utils/asyncHandler.js";
+import {asyncHandler} from "../utils/asyncHandler.js";
 import crypto from "crypto";
-import razorpay from "razorpay";
-import Order from "../models/order.models.js";
-import Cart from "../models/cart.models.js";
-import Consumer from "../models/consumer.models.js";
-import Producer from "../models/producer.models.js";
-import Gamification from "../models/gamification.models.js";
+import Razorpay from "razorpay";
+import {Order} from "../models/order.models.js";
+import {Cart} from "../models/cart.models.js";
+import {Consumer} from "../models/consumer.models.js";
+import {Producer} from "../models/producer.models.js";
+import {Gamification} from "../models/gamification.models.js";
 import { getBadge } from "../utils/gamificationUtils.js";
-import ApiResponse from "../utils/ApiResponse.js";
-import ApiError from "../utils/ApiError.js";
+import {ApiResponse} from "../utils/ApiResponse.js";
+import {ApiError} from "../utils/ApiError.js";
 
-const razorpay = new razorpay({
+const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
