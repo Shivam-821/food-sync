@@ -80,7 +80,7 @@ const createDonation = asyncHandler(async (req, res) => {
     if (!donation) throw new ApiError(500, "Failed to create donation");
 
     let gamification = await Gamification.findOne({ user: donor._id });
-    const newCredit = (processedItems.length * totalQuantity)/12
+    const newCredit = ((processedItems.length * totalQuantity)/12).toFixed(2)
 
     if (gamification) {
       gamification.points += newCredit;
@@ -94,6 +94,9 @@ const createDonation = asyncHandler(async (req, res) => {
         badges: getBadge(newCredit),
       });
     }
+
+    donor.gamification = gamification._id;
+    await donor.save()
 
     donor.donationsMade.push(donation._id);
     await donor.save();

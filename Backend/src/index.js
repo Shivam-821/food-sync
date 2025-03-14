@@ -6,7 +6,7 @@ import { createServer } from "http";
 import initializeSocket from "./socket.js"; 
 import cron from "node-cron";
 import moveExpiredItems from "./utils/moveExpiredItems.js";
-import changePrice from "./utils/dynamicPricing.js"
+// import changePrice from "./utils/dynamicPricing.js"
 
 dotenv.config({
   path: "./.env",
@@ -16,7 +16,7 @@ setTimeout(async () => {
   try {
     console.log("Running corn for its task");
     await moveExpiredItems();
-    await changePrice();
+    // await changePrice();
   } catch (error) {
     console.error(chalk.redBright("Error in initial task execution: ", error));
   }
@@ -29,7 +29,7 @@ cron.schedule("0 * * * *", async () => {
     await moveExpiredItems();
     //console.log("Expired items moved successfully.");
 
-    await changePrice();
+    // await changePrice();
     //console.log("Prices of about-to-expire items updated successfully.");
   } catch (error) {
     console.error(chalk.redBright("Error in cron job: ", error));
