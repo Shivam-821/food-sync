@@ -43,9 +43,8 @@ const ItemsDetail = () => {
             }
           );
   
-          console.log(response.data.data);
+          
           setItems(response.data.data.items || []); 
-          console.log(response.data.data.items)
         } catch (err) {
           console.error("Error fetching data:", err);
         }
