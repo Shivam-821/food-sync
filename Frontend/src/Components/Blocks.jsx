@@ -197,28 +197,31 @@ function BlockList() {
   };
 
   // Update cart quantity
-  const updateCartQuantity = async (productId, quantity) => {
+  const updateCartQuantity = async (productId, quantity, action) => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-
+  
       // Update item quantity in the backend
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/updatequantity`,
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/addtocart`,
         {
-          itemId: productId,
-          quantity: quantity,
-        },
-        {
+          params: {
+            itemId: productId,
+            quantity: quantity,
+            price: data.totalAmount,
+            addOne: action === "add" ? "add" : undefined, // Add one if action is "add"
+            deleteOne: action === "delete" ? "delete" : undefined, // Delete one if action is "delete"
+          },
           headers: {
             Authorization: `Bearer ${token}`,
           },
           withCredentials: true,
         }
       );
-
+  
       toast.success("Cart quantity updated successfully!");
-
+  
       // Fetch updated cart data from the backend
       const cartResponse = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/v1/cart/getcart`,
