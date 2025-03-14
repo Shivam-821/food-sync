@@ -38,7 +38,7 @@ const Login = () => {
       if (user.role === "consumer") {
         navigate("/", { state: { user } });
       } else if (user.role === "producer") {
-        navigate("/producerHome", { state: { user } });
+        navigate("/SurplusProducer", { state: { user } });
       } else if (user.role === "upcycling-industry") {
         navigate("/upcycling-profile", { state: { user } });
       } else {
