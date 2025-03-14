@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../Components/Navbar/Navbar";
 import Footer from "../Components/Footer/Footer";
 import axios from "axios";
-import ItemsDetail from "../Components/ItemsDetail";
+import ItemsDetail from "../Components/Block/ItemsDetail";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -32,12 +32,15 @@ const ProducerHome = () => {
   const handleAddItem = async (event) => {
     event.preventDefault();
 
+
     const token = localStorage.getItem("accessToken");
+
 
     if (!token) {
       toast.error("Unauthorized: No token found. Please log in again.");
       return;
     }
+
 
     const formData = new FormData();
     formData.append("name", itemName);
@@ -51,7 +54,9 @@ const ProducerHome = () => {
     formData.append("upcyclingOptions", upcyclingOption);
     formData.append("description", description);
 
+
     if (avatar) {
+      const fileInput = document.querySelector('input[type="file"]');
       const fileInput = document.querySelector('input[type="file"]');
       const file = fileInput.files[0];
       formData.append("avatar", file); // ✅ Ensure correct file key
@@ -74,6 +79,7 @@ const ProducerHome = () => {
 
       toast.success("Item added successfully!");
       setAddedItems([...addedItems, response.data]);
+
 
       // Clear form inputs
       setItemName("");
@@ -144,6 +150,7 @@ const ProducerHome = () => {
                 />
               </div>
 
+
               <div>
                 <label className="block text-lg font-medium text-gray-700">Image</label>
                 <input
@@ -161,6 +168,7 @@ const ProducerHome = () => {
                 )}
               </div>
 
+
               <div>
                 <label className="block text-lg font-medium text-gray-700">Quantity</label>
                 <input
@@ -172,6 +180,7 @@ const ProducerHome = () => {
                   onChange={(e) => setQuantity(e.target.value)}
                 />
               </div>
+
 
               <div>
                 <label className="block text-lg font-medium text-gray-700">Unit</label>
@@ -197,6 +206,7 @@ const ProducerHome = () => {
                 />
               </div>
 
+
               <div>
                 <label className="block text-lg font-medium text-gray-700">Category</label>
                 <select
@@ -211,6 +221,7 @@ const ProducerHome = () => {
                   <option value="ready-to-eat">Ready-to-Eat</option>
                 </select>
               </div>
+
 
               <div>
                 <label className="block text-lg font-medium text-gray-700">Manufacturing Date</label>
@@ -233,6 +244,7 @@ const ProducerHome = () => {
                   onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
+
 
               <div>
                 <label className="block text-lg font-medium text-gray-700">Expiry Date</label>
@@ -315,6 +327,12 @@ const ProducerHome = () => {
             </button>
           </form>
         </div>
+
+        <ItemsDetail />
+      </div>
+
+      <Footer />
+    </div>
 
         <ItemsDetail />
       </div>

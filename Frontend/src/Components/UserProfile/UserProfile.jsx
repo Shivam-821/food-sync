@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import "remixicon/fonts/remixicon.css";
-import Navbar from "../Components/Navbar/Navbar";
-import Footer from "../Components/Footer/Footer";
+import Navbar from "../Navbar/Navbar";
+import Footer from "../Footer/Footer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -121,7 +121,7 @@ const UserProfile = () => {
     setIsLoggingOut(true);
     localStorage.removeItem("accessToken"); // Clear the access token
     setTimeout(() => {
-      navigate("/"); 
+      navigate("/");
     }, 3000);
   };
 
@@ -137,7 +137,7 @@ const UserProfile = () => {
 
   return (
     <div
-      className={`min-h-screen font-sans relative mt-9 transition-colors duration-500 ${
+      className={`min-h-screen font-sans relative mt-9 transition-colors duration-500 overflow-auto h-screen ${
         isDarkMode ? "bg-gray-900 text-white" : "bg-blue-50 text-gray-900"
       }`}
     >
