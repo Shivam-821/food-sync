@@ -174,9 +174,7 @@ const Feedback = () => {
   };
 
   // Fetch feedback on component mount
-  useEffect(() => {
-    fetchFeedback();
-  }, []);
+  useEffect(() => {}, [feedbackList]);
 
   // Handle dark mode toggle
   useEffect(() => {
