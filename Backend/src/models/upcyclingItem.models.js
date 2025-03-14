@@ -33,6 +33,9 @@ const upcyclingSchema = new Schema(
       min: [1, "Quantity must be at least 1"],
       required: [true, "Quantity is required"],
     },
+    avatar: {
+      type: String,
+    },
     unit: {
       type: String,
       enum: {
@@ -52,40 +55,84 @@ const upcyclingSchema = new Schema(
 
 upcyclingSchema.plugin(mongooseAggregatePaginate);
 
-upcyclingSchema.statics.addExpiredItemsToUpcycling = asyncHandler(
-  async function () {
+upcyclingSchema.statics.addExpiredItemsToUpcycling = async function () {
+  try {
+    const Item = mongoose.model("Item");
+    const UpcyclingItem = mongoose.model("UpcyclingItem");
+    const Producer = mongoose.model("Producer");
+
+    // Find expired items
+    const expiredItems = await Item.find({
+      expiryDate: { $lt: new Date() },
+      status: "expired",
+    });
+    console.log("Expired Items:", expiredItems);
+
+    console.log(`Found ${expiredItems.length} expired items.`);
+
+    if (expiredItems.length === 0) return;
+
+    // Map expired items to upcycling entries
+    const upcyclingEntries = expiredItems.map((expiredItem) => ({
+      item: expiredItem._id,
+      name: expiredItem.name,
+      method: expiredItem.upcyclingOptions || "compost",
+      avatar: expiredItem.avatar || "",
+      price: parseFloat((expiredItem.price * 0.6).toFixed(2)),
+      quantity: expiredItem.quantity,
+      unit: expiredItem.unit,
+      producer: expiredItem.producer,
+    }));
+    console.log("Upcycling Entries:", upcyclingEntries);
+
+    // Insert upcycling entries into the UpcyclingItem collection
+    let insertedUpcyclingItems;
     try {
-      const Item = mongoose.model("Item");
-      const UpcyclingItem = mongoose.model("UpcyclingItem");
-
-      const expiredItems = await Item.find({
-        expiryDate: { $lt: new Date() },
-        status: "expired",
-      });
-
-      if (expiredItems.length === 0) return;
-
-      const upcyclingEntries = expiredItems.map((expiredItem) => ({
-        item: expiredItem._id,
-        name: expiredItem.name,
-        method: expiredItem.upcyclingOptions?.[0] || "compost",
-        price: (expiredItem.price * 0.6).toFixed(2),
-        quantity: expiredItem.quantity,
-        unit: expiredItem.unit,
-        producer: expiredItem.producer,
-      }));
-
-      await UpcyclingItem.insertMany(upcyclingEntries, { ordered: false });
-
-      const expiredItemIds = expiredItems.map((item) => item._id);
-      await Item.deleteMany({ _id: { $in: expiredItemIds } });
-
-      console.log(`Added ${expiredItems.length} expired items to Upcycling.`);
+      insertedUpcyclingItems = await UpcyclingItem.insertMany(
+        upcyclingEntries,
+        { ordered: false }
+      );
+      console.log(
+        `Inserted ${insertedUpcyclingItems.length} items into UpcyclingItem collection.`
+      );
     } catch (error) {
-      console.error("Error adding expired items to Upcycling:", error);
+      console.error("Error inserting upcycling items:", error);
+      throw error; // Re-throw the error to stop further execution
     }
+
+    // Update producers with the new upcycling items
+    const producerUpdates = {};
+    insertedUpcyclingItems.forEach((upcyclingItem, index) => {
+      const producerId = expiredItems[index].producer;
+      if (!producerUpdates[producerId]) {
+        producerUpdates[producerId] = [];
+      }
+      producerUpdates[producerId].push(upcyclingItem._id);
+    });
+
+    const updatePromises = Object.entries(producerUpdates).map(
+      async ([producerId, upcyclingItemIds]) => {
+        await Producer.findByIdAndUpdate(producerId, {
+          $push: { expiredItems: { $each: upcyclingItemIds } },
+        });
+      }
+    );
+    await Promise.all(updatePromises);
+
+    // Delete expired items from the Item collection
+    const expiredItemIds = expiredItems.map((item) => item._id);
+    await Item.deleteMany({ _id: { $in: expiredItemIds } });
+
+    console.log(
+      `Added ${expiredItems.length} expired items to Upcycling and updated Producers.`
+    );
+  } catch (error) {
+    console.error("Error adding expired items to Upcycling:", error);
+    throw error; // Re-throw the error to see it in the logs
   }
-);
+};
+
+
 
 
 
