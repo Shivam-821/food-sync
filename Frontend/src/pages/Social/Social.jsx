@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../Components/Navbar/Navbar";
 import SoicalSlider from "../../Components/SocialSlider/SocialSlider";
-import SocialNavbar from "../../Components/SocialNavbar";
-import SocialDot from "../../Components/SocialDot";
-import Blog from "../../Components/Blog";
-import Community from "../../Components/Community";
+import SocialNavbar from "../../Components/Social/SocialNavbar";
+import SocialDot from "../../Components/Social/SocialDot";
+import Blog from "../../Components/Blog/Blog";
+import Community from "../../Components/Community/Community";
 import Recipe from "../../Components/Recipe/Recipe";
 import Footer from "../../Components/Footer/Footer";
 import UserGuidelines from "../../Components/Guidelines/UserGuidelines";
@@ -50,7 +50,7 @@ const Social = () => {
   };
 
   return (
-    <div>
+    <div className="overflow-auto h-screen">
       <Navbar />
       <div className="ml-30 mr-30">
         <SoicalSlider heroCount={heroCount} />

@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import axios from "axios";
-import Navbar from "./Navbar/Navbar";
-import Footer from "./Footer/Footer";
+import Navbar from "../Navbar/Navbar";
+import Footer from "../Footer/Footer";
 
-const socket = io("http://localhost:8004"); 
+const socket = io("http://localhost:8004");
 
 function CommunityChat() {
-  const [name, setName] = useState(""); 
+  const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-
     const token = localStorage.getItem("accessToken"); // Ensure the token is stored
     if (!token) {
       console.error("No token found");
@@ -21,14 +20,17 @@ function CommunityChat() {
 
     const fetchUserName = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/community/communityName`, {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${token}`, // Attach token
-            "Content-Type": "application/json",
-          },
-        });
-        console.log(response.data)
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/v1/community/communityName`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`, // Attach token
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(response.data);
         setName(response.data.name); // Assuming the API returns { name: "User Name" }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -38,7 +40,7 @@ function CommunityChat() {
     fetchUserName();
 
     socket.on("message", (data) => {
-      setMessages((prevMessages) => [...prevMessages, data]); 
+      setMessages((prevMessages) => [...prevMessages, data]);
     });
 
     return () => {
@@ -47,37 +49,48 @@ function CommunityChat() {
   }, []);
 
   const sendMessage = () => {
-
     if (!message || !name) {
       console.error("Message or name is undefined");
       return;
     }
 
-    if (message.trim() === "" || name.trim() === "") return; 
-    
+    if (message.trim() === "" || name.trim() === "") return;
+
     const msgData = { name, message };
     socket.emit("message", msgData); // Emit message, but don't add to state manually
     setMessage(""); // Clear input field
   };
-  
 
   return (
     <div className="relative">
       <div className="absolute h-full w-full -z-10">
-        <iframe src='https://my.spline.design/holoblobs-119b1e014a3f7fd2e0f1e8fda9f927c4/' frameBorder='0' width='100%' height='100%'></iframe>
+        <iframe
+          src="https://my.spline.design/holoblobs-119b1e014a3f7fd2e0f1e8fda9f927c4/"
+          frameBorder="0"
+          width="100%"
+          height="100%"
+        ></iframe>
       </div>
 
       <Navbar />
-      <h1 className="text-3xl font-semibold text-center mt-20 mb-6">Community Chat</h1>
+      <h1 className="text-3xl font-semibold text-center mt-20 mb-6">
+        Community Chat
+      </h1>
 
       <div className="border border-gray-400 m-5 p-4 h-96 bg-white/80 overflow-y-auto mb-6 rounded-lg shadow-lg">
         {messages.map((msg, index) => (
-          <div 
-            key={index} 
-            className={`flex ${msg.name === name ? 'justify-end' : 'justify-start'}`}
+          <div
+            key={index}
+            className={`flex ${
+              msg.name === name ? "justify-end" : "justify-start"
+            }`}
           >
-            <div 
-              className={`max-w-xs p-3 m-1 rounded-lg shadow-md ${msg.name === name ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-900'}`}
+            <div
+              className={`max-w-xs p-3 m-1 rounded-lg shadow-md ${
+                msg.name === name
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-900"
+              }`}
             >
               <strong className="block text-sm mb-1">{msg.name}</strong>
               <p className="text-lg">{msg.message}</p>
@@ -87,15 +100,15 @@ function CommunityChat() {
       </div>
 
       <div className="flex flex-col mb-5 items-center gap-4">
-        <input 
-          className="bg-gray-200 rounded-lg px-4 py-2 border text-lg w-3/4 sm:w-1/3 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-          type="text" 
-          value={message} 
-          onChange={(e) => setMessage(e.target.value)} 
+        <input
+          className="bg-gray-200 rounded-lg px-4 py-2 border text-lg w-3/4 sm:w-1/3 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           placeholder="Type a message..."
         />
-        <button 
-          className="bg-blue-700 text-white w-60 text-xl px-6 py-2 rounded-full shadow-lg hover:bg-blue-600 transition-all" 
+        <button
+          className="bg-blue-700 text-white w-60 text-xl px-6 py-2 rounded-full shadow-lg hover:bg-blue-600 transition-all"
           onClick={sendMessage}
         >
           Send

@@ -18,7 +18,7 @@ import axios from "axios";
 import { ConsumerDataContext } from "../../Context/ConsumerContext";
 import { motion } from "framer-motion";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import GoogleLogin from "../../Components/GoogleLogin";
+import GoogleLogin from "../../Components/GooglrLogin/GoogleLogin";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -696,7 +696,9 @@ const SignUp = () => {
                 </motion.p>
 
                 <motion.div variants={itemVariants} className="flex space-x-4">
-                  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+                  <GoogleOAuthProvider
+                    clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+                  >
                     <GoogleLogin />
                   </GoogleOAuthProvider>
                   <button
