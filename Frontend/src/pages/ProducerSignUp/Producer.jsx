@@ -666,6 +666,7 @@ const ProducerSignUp = () => {
 
                 <motion.div variants={itemVariants} className="mb-4">
                   <button
+                  name="location"
                     type="button"
                     onClick={getLocation}
                     disabled={isLoading}

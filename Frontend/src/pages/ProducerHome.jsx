@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import Navbar from "../Components/Navbar/Navbar";
 import Footer from "../Components/Footer/Footer";
 import axios from "axios";
-import ItemsDetail from "../Components/Block/ItemsDetail";
 import { ToastContainer, toast } from "react-toastify";
+import ItemsDetail from "../Components/Block/ItemsDetail";
 import "react-toastify/dist/ReactToastify.css";
 
 const ProducerHome = () => {
@@ -57,7 +57,7 @@ const ProducerHome = () => {
 
     if (avatar) {
       const fileInput = document.querySelector('input[type="file"]');
-      const fileInput = document.querySelector('input[type="file"]');
+      //const fileInput = document.querySelector('input[type="file"]');
       const file = fileInput.files[0];
       formData.append("avatar", file); // ✅ Ensure correct file key
     }
@@ -334,11 +334,7 @@ const ProducerHome = () => {
       <Footer />
     </div>
 
-        <ItemsDetail />
-      </div>
-
-      <Footer />
-    </div>
+        
   );
 };
 
