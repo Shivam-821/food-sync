@@ -53,7 +53,7 @@ router.post("/google", async (req, res) => {
         fullname: name,
         email,
         avatar,
-        role: "consumer"
+        role: "Consumer"
       });
       await user.save();
     }
