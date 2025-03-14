@@ -28,6 +28,7 @@ import {
   Flame,
 } from "lucide-react";
 import axios from 'axios';
+import image from '../../assets/male.jpg'
 
 // Styles directly in component
 const styles = {
@@ -325,8 +326,8 @@ const GamificationPage = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showRules, setShowRules] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
-  const [topUsers, setTopUsers] = useState(mockUsers.slice(0, 3));
-  const [otherUsers, setOtherUsers] = useState(mockUsers.slice(3, 8));
+  const [topUsers, setTopUsers] = useState([]);
+  const [otherUsers, setOtherUsers] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
   const [showMiniGame, setShowMiniGame] = useState(false);
   const [gameScore, setGameScore] = useState(0);
@@ -374,8 +375,9 @@ const GamificationPage = () => {
             withCredentials: true,
           }
         );
-        setCurrentUser(response.data);
-        console.log(response.data)
+        setCurrentUser(response.data.data);
+        setTopUsers(response.data.data.gamification);
+        setOtherUsers(response.data.data.gamification.slice(3, 8))
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -385,8 +387,8 @@ const GamificationPage = () => {
     fetchFeedback();
   }, []);
 
-    useEffect(() => { 
-    }, [currentUser]); // ✅ Only logs when feedbackList updates
+    useEffect(() => {
+    }, [currentUser,topUsers,otherUsers]); // ✅ Only logs when feedbackList updates
 
   // Check screen size for responsive design
   useEffect(() => {
@@ -450,7 +452,7 @@ const GamificationPage = () => {
 
     // Award points based on score
     const pointsEarned = Math.floor(gameScore / 10);
-    const newPoints = currentUser.points + pointsEarned;
+    const newPoints = currentUser?.usergamiDetails?.points + pointsEarned;
 
     setCurrentUser((prev) => ({
       ...prev,
@@ -653,7 +655,7 @@ const GamificationPage = () => {
 
     // Award points based on score
     const pointsEarned = Math.floor(advancedGameScore / 50);
-    const newPoints = currentUser.points + pointsEarned;
+    const newPoints = currentUser?.usergamiDetails?.points + pointsEarned;
 
     setCurrentUser((prev) => ({
       ...prev,
@@ -815,7 +817,7 @@ const GamificationPage = () => {
             className={styles.pointsBadge}
           >
             <div className="w-5 h-5 rounded-full bg-yellow-400"></div>
-            <span className="font-bold">{currentUser.points}</span>
+            <span className="font-bold">{currentUser?.usergamiDetails?.points}</span>
           </motion.div>
 
           <motion.div
@@ -872,7 +874,7 @@ const GamificationPage = () => {
                       whileHover={{ scale: 1.02 }}
                     >
                       <div className={styles.statValue}>
-                        {currentUser.points}
+                        {currentUser?.usergamiDetails?.points}
                       </div>
                       <div className={styles.statLabel}>Total Points</div>
                     </motion.div>
@@ -881,16 +883,8 @@ const GamificationPage = () => {
                       className={styles.statCard}
                       whileHover={{ scale: 1.02 }}
                     >
-                      <div className={styles.statValue}>{currentUser.rank}</div>
-                      <div className={styles.statLabel}>Current Rank</div>
-                    </motion.div>
-
-                    <motion.div
-                      className={styles.statCard}
-                      whileHover={{ scale: 1.02 }}
-                    >
                       <div className={styles.statValue}>
-                        {currentUser.badge}
+                        {currentUser?.usergamiDetails?.badges}
                       </div>
                       <div className={styles.statLabel}>Current Badge</div>
                     </motion.div>
@@ -1041,17 +1035,17 @@ const GamificationPage = () => {
                           2
                         </div>
                         <img
-                          src={topUsers[1].avatar || "/placeholder.svg"}
-                          alt={topUsers[1].name}
+                          src={topUsers[1]?.user?.avatar || image}
+                          alt={topUsers[1]?.user?.fullname}
                           className="w-20 h-20 rounded-full object-cover border-2 border-white/50"
                         />
                       </div>
                     </div>
                     <p className="mt-3 text-lg font-medium">
-                      {topUsers[1].name}
+                      {topUsers[1]?.user?.fullname}
                     </p>
                     <p className="text-purple-300">
-                      {topUsers[1].points} points
+                      {topUsers[1]?.points} points
                     </p>
                   </motion.div>
 
@@ -1078,13 +1072,13 @@ const GamificationPage = () => {
                           1
                         </div>
                         <img
-                          src={topUsers[0].avatar || "/placeholder.svg"}
+                          src={topUsers[0]?.user?.avatar || image}
                           alt={topUsers[0].name}
                           className="w-full h-full rounded-full object-cover border-2 border-white/50"
                         />
                       </div>
                     </div>
-                    <p className="mt-3 text-xl font-bold">{topUsers[0].name}</p>
+                    <p className="mt-3 text-xl font-bold">{topUsers[0]?.user?.fullname}</p>
                     <p className="text-purple-300">
                       {topUsers[0].points} points
                     </p>
@@ -1103,14 +1097,14 @@ const GamificationPage = () => {
                           3
                         </div>
                         <img
-                          src={topUsers[2].avatar || "/placeholder.svg"}
-                          alt={topUsers[2].name}
+                          src={topUsers[2]?.user?.avatar || image}
+                          alt={topUsers[2]?.user?.fullname}
                           className="w-20 h-20 rounded-full object-cover border-2 border-white/50"
                         />
                       </div>
                     </div>
                     <p className="mt-3 text-lg font-medium">
-                      {topUsers[2].name}
+                      {topUsers[2]?.user?.fullname}
                     </p>
                     <p className="text-purple-300">
                       {topUsers[2].points} points
@@ -1160,14 +1154,14 @@ const GamificationPage = () => {
                           2
                         </div>
                         <img
-                          src={topUsers[1].avatar || "/placeholder.svg"}
-                          alt={topUsers[1].name}
+                          src={topUsers[1]?.user?.avatar || image}
+                          alt={topUsers[1]?.user?.fullname}
                           className="w-14 h-14 rounded-full object-cover border-2 border-white/50"
                         />
                       </div>
                     </div>
                     <p className="mt-2 text-sm font-medium">
-                      {topUsers[1].name}
+                      {topUsers[1]?.user?.fullname}
                     </p>
                   </motion.div>
 
@@ -1194,13 +1188,13 @@ const GamificationPage = () => {
                           1
                         </div>
                         <img
-                          src={topUsers[0].avatar || "/placeholder.svg"}
-                          alt={topUsers[0].name}
+                          src={topUsers[0]?.user?.avatar || image}
+                          alt={topUsers[0]?.user?.fullname}
                           className="w-full h-full rounded-full object-cover border-2 border-white/50"
                         />
                       </div>
                     </div>
-                    <p className="mt-2 font-medium">{topUsers[0].name}</p>
+                    <p className="mt-2 font-medium">{topUsers[0]?.user?.fullname}</p>
                   </motion.div>
 
                   {/* 3rd Place */}
@@ -1216,14 +1210,14 @@ const GamificationPage = () => {
                           3
                         </div>
                         <img
-                          src={topUsers[2].avatar || "/placeholder.svg"}
-                          alt={topUsers[2].name}
+                          src={topUsers[2]?.user?.avatar || "/placeholder.svg"}
+                          alt={topUsers[2]?.user?.fullname}
                           className="w-14 h-14 rounded-full object-cover border-2 border-white/50"
                         />
                       </div>
                     </div>
                     <p className="mt-2 text-sm font-medium">
-                      {topUsers[2].name}
+                      {topUsers[2]?.user?.fullname}
                     </p>
                   </motion.div>
                 </div>
@@ -1239,7 +1233,7 @@ const GamificationPage = () => {
                     <div className={styles.currentRankContainer}>
                       <div className="flex items-center gap-3">
                         <img
-                          src={currentUser.avatar || "/placeholder.svg"}
+                          src={currentUser?.usergamiDetails?.user?.avatar || image}
                           alt="Your avatar"
                           className="w-8 h-8 rounded-full object-cover border border-white/50"
                         />
@@ -1247,7 +1241,7 @@ const GamificationPage = () => {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-lg">
-                          {currentUser.points}
+                          {currentUser?.usergamiDetails?.points}
                         </span>
                         <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
                           <ArrowUp className="h-4 w-4 text-green-400" />
@@ -1262,7 +1256,7 @@ const GamificationPage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {otherUsers.map((user, index) => (
                       <motion.div
-                        key={user.id}
+                        key={user._id}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.1 * (index + 1) }}
@@ -1271,28 +1265,29 @@ const GamificationPage = () => {
                         <div className={styles.userInfo}>
                           <div className="relative">
                             <img
-                              src={user.avatar || "/placeholder.svg"}
-                              alt={user.name}
+                              src={user?.user?.avatar || image}
+                              alt={user?.user?.fullname}
                               className="w-10 h-10 rounded-full object-cover border border-white/30"
                             />
                             <div className={styles.userTypeIcon}>
-                              {userTypeIcons[user.userType]}
+                              {userTypeIcons[user?.userType]}
                             </div>
                           </div>
                           <div>
-                            <p className="font-medium">{user.name}</p>
+                            <p className="font-medium">{user?.user?.fullname}</p>
                             <div className={styles.badgeIndicator}>
                               <div
                                 className="w-2 h-2 rounded-full"
-                                style={{
-                                  backgroundColor:
-                                    badgeConfig[user.badge].color,
-                                }}
+                                // style={{
+                                //   backgroundColor:
+                                //     badgeConfig[user.badges].color,
+                                // }}
                               ></div>
-                              <span>{user.badge}</span>
+                              <span>{user.badges}</span>
                             </div>
                           </div>
                         </div>
+                        {/* //set here rank */}
                         <div className="flex items-center gap-2">
                           <span className={styles.rankNumber}>{user.rank}</span>
                           <div className={styles.trendIndicator}>

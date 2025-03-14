@@ -25,6 +25,7 @@ import Login from "./Components/Login/Login";
 import USignup from "./Components/UpcyclingSignup/USignup";
 import GamificationPage from "./pages/Gamification/gamification-page";
 import Error from "./pages/Error";
+import GoogleMapsRoute from './Components/Maps'
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
       <Route path="/upcyclesignup" element={<USignup />} />
       <Route path="/gamification" element={<GamificationPage />} />
       <Route path="/error" element={<Error />} />
+      <Route path="/maps" element={<GoogleMapsRoute />} />
     </Routes>
   );
 }

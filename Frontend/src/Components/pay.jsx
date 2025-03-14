@@ -11,7 +11,6 @@ import {
   FaMapMarkerAlt,
   FaRecycle,
 } from "react-icons/fa";
-import Maps from "../Maps";
 
 export function Pay() {
   const navigate = useNavigate();
@@ -24,7 +23,6 @@ export function Pay() {
   const [isLoading, setIsLoading] = useState(true);
   const [locationError, setLocationError] = useState("");
   const [location, setLocation] = useState(null);
-  const [map,setMap]=useState()
 
   const getLocation = () => {
     setIsLoading(true);
@@ -66,7 +64,6 @@ export function Pay() {
           }
         );
         setAmount(response.data.data.totalAmount);
-        setMap(response.data.data?.items[0]?.producer.location.coordinates)
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -438,9 +435,7 @@ export function Pay() {
                           4
                         )}, {location.coordinates[0].toFixed(4)}
                       </p>
-                      
                     </motion.div>
-                    
                   )}
                 </motion.div>
 

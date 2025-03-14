@@ -81,6 +81,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     await consumer.save();
 
     let totalAmount = cart.totalAmount - (discountPoint * 2.5).toFixed(2);
+    console.log(totalAmount)
     if (totalAmount < 0) {
       totalAmount = 0;
     }
