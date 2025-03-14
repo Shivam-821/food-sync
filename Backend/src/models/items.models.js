@@ -77,8 +77,8 @@ const itemSchema = new Schema(
     },
     status: {
       type: String,
-      enum:["Available", "Expired"],
-      default:"Available"
+      enum:["available", "expired"],
+      default:"available"
     },
     upcyclingOptions: {
       type: String,
@@ -105,7 +105,7 @@ itemSchema.plugin(mongooseAggregatePaginate);
 
 itemSchema.statics.itemExists = async function (itemId) {
   const item = await this.findById(itemId);
-  return !!item;
+  return !item;
 };
 
 itemSchema.pre("save", async function (next) {
@@ -113,12 +113,15 @@ itemSchema.pre("save", async function (next) {
 
   if (this.expiryDate < new Date()) {
     this.status = "expired";
+    console.log(`Item ${this._id} status updated to expired.`);
   }
   next();
 });
 
 itemSchema.post("save", async function (doc, next) {
+  console.log(`Post-save hook triggered for item ${doc._id}.`);
   if (doc.status === "expired") {
+    console.log(`Item ${doc._id} is expired, adding to Upcycling.`);
     await mongoose.model("UpcyclingItem").addExpiredItemsToUpcycling();
   }
   next();
