@@ -674,6 +674,7 @@ const ProducerSignUp = () => {
                   >
                     <span className="relative z-10 flex items-center justify-center">
                       {isLoading ? (
+                        
                         <>
                           <svg
                             className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
