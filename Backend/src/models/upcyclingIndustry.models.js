@@ -95,6 +95,10 @@ const upcyclingIndustrySchema = new Schema(
         ref: "Blog",
       },
     ],
+    gamification: {
+      type: Schema.Types.ObjectId,
+      ref: "Gamification",
+    },
     communityPosts: [
       {
         type: Schema.Types.ObjectId,

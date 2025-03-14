@@ -9,6 +9,7 @@ import {Gamification} from "../models/gamification.models.js";
 import { getBadge } from "../utils/gamificationUtils.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 import {ApiError} from "../utils/ApiError.js";
+import {Item } from "../models/items.models.js"
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -58,10 +59,13 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
         Math.floor((cartItem.price * cartItem.quantity) / 100) * multiplier;
     }
 
+    let discountPoint = 0
+
     let gamification = await Gamification.findOne({ user: consumer._id });
     const newCredit = Math.floor(cart.totalAmount / 100) + extraPoints;
 
     if (gamification) {
+      discountPoint = gamification.points
       gamification.points += newCredit;
       gamification.badges = getBadge(gamification.points);
       await gamification.save();
@@ -75,10 +79,18 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
       });
     }
 
+    consumer.gamification = gamification._id;
+    await consumer.save();
+
+    const totalAmount = cart.totalAmount - (discountPoint * 2.5).toFixed(2)
+    if(totalAmount < 0){
+      totalAmount = 0
+    }
+
     const order = new Order({
       consumer: consumerId,
       items: cart.items,
-      totalAmount: cart.totalAmount,
+      totalAmount: totalAmount,
       deliveryAddress: address,
       deliveryLocation: location,
       paymentMethod,
@@ -90,7 +102,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
 
     if (paymentMethod === "Online") {
       const options = {
-        amount: cart.totalAmount * 100,
+        amount: totalAmount * 100,
         currency: "INR",
         receipt: `receipt_${order._id}`,
         payment_capture: 1,
@@ -108,7 +120,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
           {
             orderId: order._id,
             razorpayOrderId: razorpayOrder.id,
-            amount: cart.totalAmount,
+            amount: totalAmount,
             currency: "INR",
             key: process.env.RAZORPAY_KEY_ID,
           },
@@ -193,27 +205,18 @@ const updateInventoryOnOrderCompletion = async (orderId) => {
     if (!order) throw new Error("Order not found");
 
     for (const cartItem of order.items) {
-      const item = cartItem.item;
-      if (!item || !item.producer) continue;
+      const item = await Item.findById(cartItem.item._id);
+      if (!item) continue;
 
-      const producer = await Producer.findById(item.producer);
-      if (!producer) continue;
-
-      const inventoryItem = producer.inventory.find((inv) =>
-        inv._id.equals(item._id)
-      );
-      if (!inventoryItem) continue;
-
-      inventoryItem.quantity -= cartItem.quantity;
-      inventoryItem.available = inventoryItem.quantity > 0;
-      await producer.save();
+      item.quantity -= cartItem.quantity;
+      item.status = item.quantity > 0 ? "Available" : "Out of Stock";
+      await item.save();
     }
-
-    console.log("Inventory updated successfully after order completion.");
   } catch (error) {
     console.error("Error updating inventory:", error.message);
   }
 };
+
 
 const getOrderDetails = asyncHandler(async (req, res) => {
   try {

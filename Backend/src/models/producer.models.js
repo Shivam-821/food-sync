@@ -26,7 +26,7 @@ const producerSchema = new Schema(
       unique: true,
       validate: {
         validator: function (value) {
-          return /^[6-9]\d{9}$/.test(value.toString()); 
+          return /^[6-9]\d{9}$/.test(value.toString());
         },
         message: (props) => `${props.value} is not a valid mobile number!`,
       },
@@ -55,8 +55,8 @@ const producerSchema = new Schema(
     expiredItems: [
       {
         type: Schema.Types.ObjectId,
-        ref: "UpcyclingItem"
-      }
+        ref: "UpcyclingItem",
+      },
     ],
     donationsMade: [
       {
@@ -69,19 +69,19 @@ const producerSchema = new Schema(
       enum: ["factory", "supermarket", "hotel", "restaurant", "farmer"],
       required: true,
     },
-    address:{
+    address: {
       type: String,
     },
     location: {
       type: {
-          type: String,
-          enum: ['Point'],
-          required: true
+        type: String,
+        enum: ["Point"],
+        required: true,
       },
       coordinates: {
-          type: [Number],
-          required: true
-      }
+        type: [Number],
+        required: true,
+      },
     },
     feedbacks: [
       {
@@ -101,6 +101,10 @@ const producerSchema = new Schema(
         ref: "Upcycling",
       },
     ],
+    gamification: {
+      type: Schema.Types.ObjectId,
+      ref: "Gamification",
+    },
     upcyclingOrders: [
       {
         type: Schema.Types.ObjectId,
@@ -156,30 +160,30 @@ producerSchema.methods.generateRefreshToken = function () {
 };
 
 // Method to update captain's location
-producerSchema.methods.updateLocation = async function(lng, lat) {
+producerSchema.methods.updateLocation = async function (lng, lat) {
   this.location = {
-      type: 'Point',
-      coordinates: [lng, lat]
+    type: "Point",
+    coordinates: [lng, lat],
   };
   await this.save();
-}
+};
 
 // Create 2dsphere index for geospatial queries
-producerSchema.index({ location: '2dsphere' });
+producerSchema.index({ location: "2dsphere" });
 
 // Function to start periodic location updates
 function startLocationUpdates(captain, updateInterval = 10000) {
   if (navigator.geolocation) {
-      const intervalId = setInterval(async () => {
-          navigator.geolocation.getCurrentPosition(async (position) => {
-              await captain.updateLocation(
-                  position.coords.longitude,
-                  position.coords.latitude
-              );
-          });
-      }, updateInterval);
+    const intervalId = setInterval(async () => {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        await captain.updateLocation(
+          position.coords.longitude,
+          position.coords.latitude
+        );
+      });
+    }, updateInterval);
 
-      return intervalId;
+    return intervalId;
   }
   return null;
 }
