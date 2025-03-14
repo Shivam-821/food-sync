@@ -263,8 +263,11 @@ function BlockList() {
             withCredentials: true,
           }
         );
-        setData(response.data.data);
-        setCartItems(response.data.data.items || []);
+  
+        // Use optional chaining and default values
+        const cartData = response.data.data || { items: [] };
+        setData(cartData);
+        setCartItems(cartData.items || []);
       } catch (err) {
         console.error("Error fetching data:", err);
       }

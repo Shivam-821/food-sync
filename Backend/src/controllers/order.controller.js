@@ -24,8 +24,7 @@ const razorpay = new Razorpay({
 const placeOrderFromCart = asyncHandler(async (req, res) => {
   try {
     const { location, address, paymentMethod } = req.body;
-
-    if (!location || !address || !paymentMethod) {
+    if (!address || !paymentMethod) {
       throw new ApiError(400, "All fields are required");
     }
 

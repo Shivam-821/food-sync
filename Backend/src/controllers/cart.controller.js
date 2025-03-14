@@ -200,23 +200,17 @@ const getCart = asyncHandler(async (req, res) => {
         select: "location email phone fullname producerType companyName",
       });
 
-    // Check if cart exists
+    // If cart is empty, return an empty object
     if (!cart) {
-      throw new ApiError(404, "Cart not found");
+      return res
+        .status(200)
+        .json(new ApiResponse(200, { items: [] }, "Cart is empty"));
     }
 
     // Return the cart details
     res.status(200).json(new ApiResponse(200, cart, "Cart fetched successfully"));
   } catch (error) {
-    console.error(`Error During getCart: ${error}`);
-
-    // Handle specific errors
-    if (error instanceof ApiError) {
-      throw error; // Re-throw custom errors
-    } else {
-      throw new ApiError(500, error?.message || "Internal server error");
-    }
+    throw new ApiError(500, "Internal server error");
   }
 });
-
 export { getCart, addToCart, removeItemFromCart };
