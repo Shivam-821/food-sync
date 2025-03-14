@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../Components/Navbar/Navbar";
 import Footer from "../Components/Footer/Footer";
 import axios from "axios";
-import ItemsDetail from "../Components/ItemsDetail";
+import ItemsDetail from "../Components/Block/ItemsDetail";
 
 const ProducerHome = () => {
   const [avatar, setAvatar] = useState(null);

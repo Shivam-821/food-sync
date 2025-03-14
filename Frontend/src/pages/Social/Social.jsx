@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../Components/Navbar/Navbar";
 import SoicalSlider from "../../Components/SocialSlider/SocialSlider";
-import SocialNavbar from "../../Components/SocialNavbar";
-import SocialDot from "../../Components/SocialDot";
+import SocialNavbar from "../../Components/Social/SocialNavbar";
+import SocialDot from "../../Components/Social/SocialDot";
 import Blog from "../../Components/Blog/Blog";
 import Community from "../../Components/Community/Community";
 import Recipe from "../../Components/Recipe/Recipe";
