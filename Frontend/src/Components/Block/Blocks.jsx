@@ -167,7 +167,7 @@ function BlockList() {
     setMessage("");
     try {
       const token = localStorage.getItem("accessToken");
-  
+
       // Add item to cart in the backend
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/v1/cart/addtocart`,
@@ -183,9 +183,9 @@ function BlockList() {
           withCredentials: true,
         }
       );
-  
+
       setMessage(response.data.message);
-  
+
       // Fetch updated cart data from the backend
       const cartResponse = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/v1/cart/getcart`,
@@ -203,7 +203,7 @@ function BlockList() {
     } finally {
       setLoading(false);
     }
-  
+
     // Trigger cart bounce animation
     setIsCartBouncing(true);
     setTimeout(() => setIsCartBouncing(false), 1000);
@@ -228,9 +228,9 @@ function BlockList() {
           withCredentials: true,
         }
       );
-  
+
       setMessage(response.data.message);
-  
+
       // Fetch updated cart data from the backend
       const cartResponse = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/v1/cart/removeitem`,
@@ -263,8 +263,11 @@ function BlockList() {
             withCredentials: true,
           }
         );
-        setData(response.data.data);
-        setCartItems(response.data.data.items || []);
+
+        // Use optional chaining and default values
+        const cartData = response.data.data || { items: [] };
+        setData(cartData);
+        setCartItems(cartData.items || []);
       } catch (err) {
         console.error("Error fetching data:", err);
       }

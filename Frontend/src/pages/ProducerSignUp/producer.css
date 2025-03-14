@@ -280,14 +280,14 @@
 }
 
 /* Remove scrollbars but keep functionality */
-* {
+/* * {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
 *::-webkit-scrollbar {
   display: none;
-}
+} */
 
 /* Select styling */
 select.glass-input {

@@ -14,15 +14,16 @@ import ProducerDetail from "./pages/ProducerDetail";
 import Social from "./pages/Social/Social";
 //import SignUp from "./pages/Signup/SignUp";
 import Producer from "./pages/ProducerSignUp/Producer";
-import CommunityChat from "./Components/CommunityChat";
-import { Pay } from "./Components/pay";
+import CommunityChat from "./Components/CommunityChat/CommunityChat";
+import { Pay } from "./Components/Block/pay";
 import ConsumerProtectWrapper from "./pages/Wrapper/ConsumerProtectedWrapper";
-import Feedback from "./Components/Feedback";
-import UserProfile from "./Components/UserProfile";
+import Feedback from "./Components/Feedback/Feedback";
+import UserProfile from "./Components/UserProfile/UserProfile";
 import ImageReview from "./pages/ImageReview";
 import ChatBot from "./pages/ChatBot";
 import Login from "./Components/Login/Login";
 import USignup from "./Components/UpcyclingSignup/USignup";
+import GamificationPage from "./pages/Gamification/gamification-page";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
       <Route path="/chat-bot" element={<ChatBot />} />
       <Route path="/login" element={<Login />} />
       <Route path="/upcyclesignup" element={<USignup />} />
+      <Route path="/gamification" element={<GamificationPage />} />
     </Routes>
   );
 }

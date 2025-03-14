@@ -4,7 +4,7 @@ import Navbar from "../Components/Navbar/Navbar";
 import Hero from "../Components/Hero/Hero";
 import ScrollingText from "../Components/ScrollingText/ScrollingText";
 import Footer from "../Components/Footer/Footer";
-import Blocks from "../Components/Blocks";
+import Blocks from "../Components/Block/Blocks";
 
 const Home = () => {
   let heroData = [
