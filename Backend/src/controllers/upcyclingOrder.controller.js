@@ -7,14 +7,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Gamification } from "../models/gamification.models.js";
+import { getBadge } from "../utils/gamificationUtils.js";
 
-const getBadge = (points) => {
-  if (points >= 151) return "Legend";
-  if (points >= 101) return "Champion";
-  if (points >= 61) return "Achiever";
-  if (points >= 21) return "Contributor";
-  return "Beginner";
-};
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -43,11 +37,41 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
     if (!cart || cart.items.length === 0) {
       throw new ApiError(400, "Cart is empty");
     }
+    
+        let gamification = await Gamification.findOne({
+          user: upcyclingIndustry._id,
+        });
+        const newCredit = Math.floor(cart.totalAmount / 100)
+
+        let discountPoint = 0
+    
+        if (gamification) {
+          discountPoint = gamification.points
+          gamification.points += newCredit;
+          gamification.badges = getBadge(gamification.points);
+          await gamification.save();
+        } else {
+          gamification = await Gamification.create({
+            user: upcyclingIndustry._id,
+            userType: "UpcyclingIndustry",
+            contribution: "Order",
+            points: newCredit,
+            badges: getBadge(newCredit),
+          });
+        }
+    
+        upcyclingIndustry.gamification = gamification._id;
+        await upcyclingIndustry.save();
+
+    const totalAmount = cart.totalAmount - (discountPoint * 2.5).toFixed(2)
+    if(totalAmount < 0){
+      totalAmount = 0
+    }
 
     const upcyclingOrder = new UpcyclingOrder({
       upcyclingIndustry: upcyclingIndustry._id,
       items: cart.items,
-      totalAmount: cart.totalAmount,
+      totalAmount: totalAmount,
       deliveryAddress,
       deliveryLocation,
       paymentMethod,
@@ -70,23 +94,6 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
       upcyclingOrder.razorpayOrderId = razorpayOrder.id;
       await upcyclingOrder.save();
 
-      let gamification = await Gamification.findOne({
-        user: upcyclingIndustry._id,
-      });
-      const newCredit = Math.floor(cart.totalAmount / 100);
-
-      if (gamification) {
-        gamification.points += newCredit;
-        gamification.badges = getBadge(gamification.points);
-        await gamification.save();
-      } else {
-        gamification = await Gamification.create({
-          user: upcyclingIndustry._id,
-          userType: "UpcyclingIndustry",
-          points: newCredit,
-          badges: getBadge(newCredit),
-        });
-      }
 
       return res.status(201).json(
         new ApiResponse(

@@ -77,11 +77,10 @@ const itemSchema = new Schema(
     },
     status: {
       type: String,
-      enum:["Available", "Expired"],
-      default:"Available"
-    },
+      ref: []
+    }
     upcyclingOptions: {
-      type: String,
+      type: [String],
       enum: {
         values: [
           "biogas",
