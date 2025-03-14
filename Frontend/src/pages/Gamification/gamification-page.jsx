@@ -27,6 +27,7 @@ import {
   Medal,
   Flame,
 } from "lucide-react";
+import axios from 'axios';
 
 // Styles directly in component
 const styles = {
@@ -323,7 +324,7 @@ const userTypeIcons = {
 const GamificationPage = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showRules, setShowRules] = useState(false);
-  const [currentUser, setCurrentUser] = useState(mockUsers[8]);
+  const [currentUser, setCurrentUser] = useState({});
   const [topUsers, setTopUsers] = useState(mockUsers.slice(0, 3));
   const [otherUsers, setOtherUsers] = useState(mockUsers.slice(3, 8));
   const [isMobile, setIsMobile] = useState(false);
@@ -347,6 +348,45 @@ const GamificationPage = () => {
   const gameLoopRef = useRef(null);
   const obstacleLoopRef = useRef(null);
   const bonusLoopRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+
+
+  //fetch gamification data from backend
+  useEffect(() => {
+    const fetchFeedback = async () => {
+      setLoading(true);
+      const token = localStorage.getItem("accessToken");
+    
+      if (!token) {
+        alert("Unauthorized: No token found. Please log in again.");
+        return;
+      }
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_BASE_URL
+          }/api/v1/gamification/get-gamification-details`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // ✅ Token sent in headers
+              "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
+          }
+        );
+        setCurrentUser(response.data);
+        console.log(response.data)
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      } finally {
+        setLoading(false); // Stop loader after fetching
+      }
+    };
+    fetchFeedback();
+  }, []);
+
+    useEffect(() => { 
+    }, [currentUser]); // ✅ Only logs when feedbackList updates
 
   // Check screen size for responsive design
   useEffect(() => {
@@ -822,15 +862,6 @@ const GamificationPage = () => {
               <div className={styles.card}>
                 <div className={styles.cardHeader}>
                   <h2 className={styles.cardTitle}>Your Dashboard</h2>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-purple-300">Level 2</span>
-                    <div className="w-32 h-2 bg-black/30 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
-                        style={{ width: "60%" }}
-                      ></div>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="p-6">
@@ -844,9 +875,6 @@ const GamificationPage = () => {
                         {currentUser.points}
                       </div>
                       <div className={styles.statLabel}>Total Points</div>
-                      <div className="mt-4 text-xs text-green-400 flex items-center gap-1">
-                        <ArrowUp className="h-3 w-3" /> 15% from last week
-                      </div>
                     </motion.div>
 
                     <motion.div
@@ -855,9 +883,6 @@ const GamificationPage = () => {
                     >
                       <div className={styles.statValue}>{currentUser.rank}</div>
                       <div className={styles.statLabel}>Current Rank</div>
-                      <div className="mt-4 text-xs text-green-400 flex items-center gap-1">
-                        <ArrowUp className="h-3 w-3" /> Up 2 positions
-                      </div>
                     </motion.div>
 
                     <motion.div
@@ -868,9 +893,6 @@ const GamificationPage = () => {
                         {currentUser.badge}
                       </div>
                       <div className={styles.statLabel}>Current Badge</div>
-                      <div className="mt-4 text-xs text-purple-300">
-                        261 points to next badge
-                      </div>
                     </motion.div>
                   </div>
 
@@ -1274,11 +1296,7 @@ const GamificationPage = () => {
                         <div className="flex items-center gap-2">
                           <span className={styles.rankNumber}>{user.rank}</span>
                           <div className={styles.trendIndicator}>
-                            {user.trend === "up" ? (
-                              <ArrowUp className="h-4 w-4 text-green-400" />
-                            ) : (
-                              <ArrowDown className="h-4 w-4 text-red-400" />
-                            )}
+                            <ArrowUp className="h-4 w-4 text-green-400" />
                           </div>
                         </div>
                       </motion.div>
