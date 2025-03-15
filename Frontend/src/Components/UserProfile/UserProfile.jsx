@@ -356,7 +356,7 @@ const UserProfile = () => {
                   }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <h2 className="text-2xl font-semibold mb-3 flex items-center">
+                  <h2 className="text-2xl font-semibold mb-10 flex items-center">
                     <i className="ri-building-line mr-2 text-blue-500"></i>
                     Consumer Type
                   </h2>
@@ -385,10 +385,10 @@ const UserProfile = () => {
                   }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <h2 className="text-2xl font-semibold mb-3 flex mt--5px ">
+                  <h2 className="text-2xl font-semibold mb-3 flex mt--5px">
                     <i className="ri-award-fill text-green-500"></i>
                     POINTS
-                    <h1 className="text-6xl pl-32 pt--50px">{getBadge()}</h1>
+                    <h1 className="text-6xl pl-40 p">{getBadge()}</h1>
                   </h2>
                   <motion.p
                     className={`text-lg ${
