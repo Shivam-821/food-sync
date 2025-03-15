@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { ConsumerDataContext } from '../../Context/ConsumerContext'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import LoadingPage from '../../Components/Loading'
 
 // const getTokenFromCookies = () => {
 //     return document.cookie
@@ -42,7 +43,7 @@ const ConsumerProtectWrapper = ({
 
     if (isLoading) {
         return (
-            <div>Loading...</div>
+            <LoadingPage />
         )
     }
 

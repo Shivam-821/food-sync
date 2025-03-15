@@ -28,36 +28,44 @@ import { Upay } from "./Components/UpProduct/Upay";
 import Error from "./pages/Error";
 import GoogleMapsRoute from "./Components/Maps";
 import StartUp from './pages/StartUp'
+import VisionComponent from "./Components/VisionStick"
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/producerHome" element={<ProducerHome />} />
-      <Route path="/donation" element={<Donation />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/recipe" element={<Recipe />} />
-      <Route path="/surplusProducer" element={<ProducerHome />} />
-      <Route path="/upcycle" element={<Upcycle />} />
-      <Route path="/signup" element={<Ask />} />
-      <Route path="/social" element={<Social />} />
-      <Route path="/producerDetail" element={<ProducerDetail />} />
-      <Route path="/producer" element={<Producer />} />
-      <Route path="/consumer" element={<SignUp />} />
-      <Route path="/communityChat" element={<CommunityChat />} />
-      <Route path="/pay" element={<Pay />} />
-      <Route path="/upcyclepay" element={<Upay />} />
-      <Route path="/feedback" element={<Feedback />} />
-      <Route path="/userProfile" element={<UserProfile />} />
-      <Route path="/image-review" element={<ImageReview />} />
-      <Route path="/chat-bot" element={<ChatBot />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/upcyclesignup" element={<USignup />} />
-      <Route path="/gamification" element={<GamificationPage />} />
-      <Route path="/error" element={<Error />} />
-      <Route path="/maps" element={<GoogleMapsRoute />} />
-      <Route path="/startUp" element={<StartUp />} />
-    </Routes>
+    <div className="relative">
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/producerHome" element={<ProducerHome />} />
+        <Route path="/donation" element={
+          <ConsumerProtectWrapper>
+            <Donation />
+          </ConsumerProtectWrapper>
+        } />
+        <Route path="/about" element={<About />} />
+        <Route path="/recipe" element={<Recipe />} />
+        <Route path="/surplusProducer" element={<ProducerHome />} />
+        <Route path="/upcycle" element={<Upcycle />} />
+        <Route path="/signup" element={<Ask />} />
+        <Route path="/social" element={<Social />} />
+        <Route path="/producerDetail" element={<ProducerDetail />} />
+        <Route path="/producer" element={<Producer />} />
+        <Route path="/consumer" element={<SignUp />} />
+        <Route path="/communityChat" element={<CommunityChat />} />
+        <Route path="/pay" element={<Pay />} />
+        <Route path="/upcyclepay" element={<Upay />} />
+        <Route path="/feedback" element={<Feedback />} />
+        <Route path="/userProfile" element={<UserProfile />} />
+        <Route path="/image-review" element={<ImageReview />} />
+        <Route path="/chat-bot" element={<ChatBot />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/upcyclesignup" element={<USignup />} />
+        <Route path="/gamification" element={<GamificationPage />} />
+        <Route path="/error" element={<Error />} />
+        <Route path="/maps" element={<GoogleMapsRoute />} />
+        <Route path="/startUp" element={<StartUp />} />
+      </Routes>
+      <VisionComponent />
+    </div>
   );
 }
 
