@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import "remixicon/fonts/remixicon.css";
 import Navbar from "../Navbar/Navbar";
@@ -7,6 +5,11 @@ import Footer from "../Footer/Footer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { MdStars } from "react-icons/md";
+import { SlBadge } from "react-icons/sl";
+import { RiShieldFlashFill } from "react-icons/ri";
+import { GiLaurelsTrophy } from "react-icons/gi";
+import { GiLaurelCrown } from "react-icons/gi";
 
 const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -30,9 +33,9 @@ const UserProfile = () => {
     consumerType: "",
     avatar: "",
     donationsMade: [],
-    feedback: [],
+    feedbacks: [],
     orders: [],
-    gamification: ""
+    gamification: "",
   });
 
   useEffect(() => {
@@ -64,11 +67,11 @@ const UserProfile = () => {
             address: user.address,
             bio: user.bio || "No bio available",
             consumerType: user.consumerType,
-            avatar: user.avatar || profileImage, 
-            feedback: user.feedback || [],
+            avatar: user.avatar || profileImage,
+            feedbacks: user.feedbacks || [],
             donationsMade: user.donationsMade || [],
             gamification: user.gamification || 0,
-            orders: user.orders || []
+            orders: user.orders || [],
           });
           setProfileImage(user.avatar || profileImage); // Update profile image
         }
@@ -85,6 +88,21 @@ const UserProfile = () => {
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
     document.body.classList.toggle("dark-mode", !isDarkMode);
+  };
+
+  //getBadge
+  const getBadge = () => {
+    if (userData.gamification.points < 21) {
+      return <MdStars />;
+    } else if (userData.gamification.points < 60) {
+      return <SlBadge />;
+    } else if (userData.gamification.points < 101) {
+      return <RiShieldFlashFill />;
+    } else if (userData.gamification.points < 151) {
+      return <GiLaurelsTrophy />;
+    } else {
+      return <GiLaurelCrown />;
+    }
   };
 
   // Handle image upload
@@ -125,7 +143,7 @@ const UserProfile = () => {
   // Confirm logout
   const confirmLogOut = () => {
     setIsLoggingOut(true);
-    localStorage.removeItem("accessToken"); // Clear the access token
+    localStorage.removeItem("accessToken");
     setTimeout(() => {
       navigate("/");
     }, 3000);
@@ -177,7 +195,7 @@ const UserProfile = () => {
             isDarkMode ? "bg-gray-800" : "bg-white"
           } shadow-md`}
         >
-          {["profile", "activity", "settings"].map((tab) => (
+          {["profile", "activity", "contacts"].map((tab) => (
             <motion.button
               key={tab}
               className={`px-6 py-2 rounded-lg capitalize font-medium transition-colors ${
@@ -216,6 +234,7 @@ const UserProfile = () => {
             transition={{ type: "spring", stiffness: 300 }}
           >
             <div className="flex flex-col items-center">
+              {/* Profile Image and Upload */}
               <motion.div
                 className="relative mb-4"
                 whileHover={{ scale: 1.05 }}
@@ -256,6 +275,7 @@ const UserProfile = () => {
                 </label>
               </motion.div>
 
+              {/* User Details */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -277,8 +297,18 @@ const UserProfile = () => {
                 >
                   {userData.email}
                 </motion.p>
+                <motion.p
+                  className={`${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  } mb-2 pl-7`}
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
+                >
+                  {userData.phone}
+                </motion.p>
               </motion.div>
 
+              {/* Location */}
               <motion.div
                 className={`flex items-center ${
                   isDarkMode ? "text-gray-400" : "text-gray-500"
@@ -289,27 +319,7 @@ const UserProfile = () => {
                 <span>{userData.location}</span>
               </motion.div>
 
-              <motion.div
-                className="relative w-full mb-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-              >
-                <motion.p
-                  className={`text-center ${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  } mb-6 px-4 relative z-10`}
-                >
-                  {userData.bio}
-                </motion.p>
-                <motion.div
-                  className="absolute -inset-4 bg-blue-500/5 rounded-xl -z-0"
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                />
-              </motion.div>
-
+              {/* Edit Profile Button */}
               <motion.button
                 className={`w-full py-2 rounded-lg transition ${
                   isDarkMode
@@ -328,452 +338,275 @@ const UserProfile = () => {
 
         {/* Right Column - Details */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Consumer Type & Address */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <motion.div
-              className={`p-6 rounded-xl shadow-md ${
-                isDarkMode ? "bg-gray-800" : "bg-white"
-              } transition-colors duration-300`}
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              whileHover={{
-                y: -5,
-                boxShadow:
-                  "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-              }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <motion.div animate={floatingAnimation}>
-                <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                  <i className="ri-building-line mr-2 text-blue-500"></i>
-                  Consumer Type
-                </h2>
+          {/* Profile Tab */}
+          {activeTab === "profile" && (
+            <div className="space-y-6">
+              {/* Consumer Type & Address */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <motion.div
-                  className={`text-lg ${
-                    isDarkMode ? "text-gray-300" : "text-gray-700"
-                  } p-3 rounded-lg ${
-                    isDarkMode ? "bg-gray-700/50" : "bg-blue-50"
-                  }`}
-                  whileHover={{ scale: 1.02 }}
+                  className={`p-6 rounded-xl shadow-md ${
+                    isDarkMode ? "bg-gray-800" : "bg-white"
+                  } transition-colors duration-300`}
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={{
+                    y: -5,
+                    boxShadow:
+                      "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                  }}
+                  transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <span className="font-medium">{userData.consumerType}</span>
-                  <motion.div className="w-full h-1 bg-blue-500/30 mt-2 rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full bg-blue-500"
-                      initial={{ width: 0 }}
-                      animate={{ width: "100%" }}
-                      transition={{ duration: 1.5, delay: 0.5 }}
-                    />
+                  <h2 className="text-2xl font-semibold mb-3 flex items-center">
+                    <i className="ri-building-line mr-2 text-blue-500"></i>
+                    Consumer Type
+                  </h2>
+                  <motion.div
+                    className={`text-lg ${
+                      isDarkMode ? "text-gray-300" : "text-gray-700"
+                    } p-3 rounded-lg ${
+                      isDarkMode ? "bg-gray-700/50" : "bg-blue-50"
+                    }`}
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    <span className="font-medium">{userData.consumerType}</span>
                   </motion.div>
                 </motion.div>
-              </motion.div>
-            </motion.div>
 
-            <motion.div
-              className={`p-6 rounded-xl shadow-md ${
-                isDarkMode ? "bg-gray-800" : "bg-white"
-              } transition-colors duration-300`}
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              whileHover={{
-                y: -5,
-                boxShadow:
-                  "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-              }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <motion.div animate={floatingAnimation}>
-                <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                  <i className="ri-map-pin-line mr-2 text-green-500"></i>
-                  Address
-                </h2>
-                <motion.p
-                  className={`text-lg ${
-                    isDarkMode ? "text-gray-300" : "text-gray-700"
-                  } p-3 rounded-lg ${
-                    isDarkMode ? "bg-gray-700/50" : "bg-green-50"
-                  }`}
-                  whileHover={{ scale: 1.02 }}
+                <motion.div
+                  className={`p-6 rounded-xl shadow-md ${
+                    isDarkMode ? "bg-gray-800" : "bg-white"
+                  } transition-colors duration-300`}
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={{
+                    y: -5,
+                    boxShadow:
+                      "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                  }}
+                  transition={{ type: "spring", stiffness: 300 }}
                 >
-                  {userData.address}
-                </motion.p>
-              </motion.div>
-            </motion.div>
-          </div>
-
-          <motion.div
-            className={`p-6 rounded-xl shadow-md ${
-              isDarkMode ? "bg-gray-800" : "bg-white"
-            } transition-colors duration-300`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            whileHover={{
-              y: -5,
-              boxShadow:
-                "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-            }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <h2 className="text-2xl font-semibold mb-4 flex items-center">
-              <i className="ri-links-line mr-2 text-purple-500"></i>
-              Connect With Me
-            </h2>
-            <div className="flex gap-5 justify-center">
-              <motion.a
-                href={`https://twitter.com/${userData.twitter}`}
-                className="text-blue-400 hover:text-blue-500 p-3 rounded-full"
-                whileHover={{
-                  scale: 1.2,
-                  backgroundColor: "rgba(29, 161, 242, 0.1)",
-                  rotate: [0, -10, 10, -10, 0],
-                }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <i className="ri-twitter-x-line text-3xl"></i>
-              </motion.a>
-              <motion.a
-                href={`https://instagram.com/${userData.instagram}`}
-                className="text-pink-500 hover:text-pink-600 p-3 rounded-full"
-                whileHover={{
-                  scale: 1.2,
-                  backgroundColor: "rgba(225, 48, 108, 0.1)",
-                  rotate: [0, -10, 10, -10, 0],
-                }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <i className="ri-instagram-line text-3xl"></i>
-              </motion.a>
-              <motion.a
-                href={`https://linkedin.com/in/${userData.linkedin}`}
-                className="text-blue-600 hover:text-blue-700 p-3 rounded-full"
-                whileHover={{
-                  scale: 1.2,
-                  backgroundColor: "rgba(0, 119, 181, 0.1)",
-                  rotate: [0, -10, 10, -10, 0],
-                }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <i className="ri-linkedin-box-fill text-3xl"></i>
-              </motion.a>
-            </div>
-          </motion.div>
-
-          {/* Activity Stats */}
-          <motion.div
-            className={`p-6 rounded-xl shadow-md ${
-              isDarkMode ? "bg-gray-800" : "bg-white"
-            } transition-colors duration-300`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            whileHover={{
-              y: -5,
-              boxShadow:
-                "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-            }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <h2 className="text-2xl font-semibold mb-4 flex items-center">
-              <i className="ri-bar-chart-box-line mr-2 text-indigo-500"></i>
-              My Activity
-            </h2>
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <motion.div
-                className={`p-4 rounded-lg ${
-                  isDarkMode ? "bg-blue-900/30" : "bg-blue-50"
-                }`}
-                whileHover={{ scale: 1.05, y: -5 }}
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.1 }}
-              >
-                <motion.p
-                  className="text-3xl font-bold text-blue-600"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2, type: "spring" }}
-                >
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{
-                      duration: 2,
-                      ease: "easeOut",
-                    }}
+                  <h2 className="text-2xl font-semibold mb-3 flex mt--5px ">
+                    <i className="ri-award-fill text-green-500"></i>
+                    POINTS
+                    <h1 className="text-6xl pl-32 pt--50px">{getBadge()}</h1>
+                  </h2>
+                  <motion.p
+                    className={`text-lg ${
+                      isDarkMode ? "text-gray-300" : "text-gray-700"
+                    } p-3 rounded-lg ${
+                      isDarkMode ? "bg-gray-700/50" : "bg-green-50"
+                    }`}
+                    whileHover={{ scale: 1.02 }}
                   >
-                    42
-                  </motion.span>
-                </motion.p>
-                <p
-                  className={`${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  Posts
-                </p>
-              </motion.div>
-              <motion.div
-                className={`p-4 rounded-lg ${
-                  isDarkMode ? "bg-green-900/30" : "bg-green-50"
-                }`}
-                whileHover={{ scale: 1.05, y: -5 }}
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <motion.p
-                  className="text-3xl font-bold text-green-600"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3, type: "spring" }}
-                >
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{
-                      duration: 2,
-                      ease: "easeOut",
-                    }}
-                  >
-                    15
-                  </motion.span>
-                </motion.p>
-                <p
-                  className={`${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  Donations
-                </p>
-              </motion.div>
-              <motion.div
-                className={`p-4 rounded-lg ${
-                  isDarkMode ? "bg-purple-900/30" : "bg-purple-50"
-                }`}
-                whileHover={{ scale: 1.05, y: -5 }}
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                <motion.p
-                  className="text-3xl font-bold text-purple-600"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.4, type: "spring" }}
-                >
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{
-                      duration: 2,
-                      ease: "easeOut",
-                    }}
-                  >
-                    27
-                  </motion.span>
-                </motion.p>
-                <p
-                  className={`${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  Contributions
-                </p>
-              </motion.div>
-            </div>
-          </motion.div>
-
-          {/* Edit Form */}
-          <AnimatePresence>
-            {isEditing && (
+                    <h1 className="text-md font-bold">
+                      {userData.gamification.points}
+                    </h1>
+                  </motion.p>
+                </motion.div>
+              </div>
               <motion.div
                 className={`p-6 rounded-xl shadow-md ${
                   isDarkMode ? "bg-gray-800" : "bg-white"
-                }`}
-                initial={{ opacity: 0, height: 0, y: 20 }}
-                animate={{ opacity: 1, height: "auto", y: 0 }}
-                exit={{ opacity: 0, height: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
+                } transition-colors duration-300`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                whileHover={{
+                  y: -5,
+                  boxShadow:
+                    "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                }}
+                transition={{ type: "spring", stiffness: 300 }}
               >
                 <h2 className="text-2xl font-semibold mb-4 flex items-center">
-                  <i className="ri-edit-line mr-2 text-yellow-500"></i>
-                  Edit Profile
+                  <i className="ri-links-line mr-2 text-purple-500"></i>
+                  Connect With Me
                 </h2>
-                <form>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <motion.div
-                      className="mb-4"
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: 0.1 }}
-                    >
-                      <label
-                        className={`block ${
-                          isDarkMode ? "text-gray-300" : "text-gray-500"
-                        }`}
-                      >
-                        Name
-                      </label>
-                      <motion.input
-                        type="text"
-                        name="name"
-                        value={userData.name}
-                        onChange={handleChange}
-                        className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500 ${
-                          isDarkMode
-                            ? "bg-gray-700 text-white border-gray-600"
-                            : ""
-                        }`}
-                        whileFocus={{ scale: 1.02 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                      />
-                    </motion.div>
-                    <motion.div
-                      className="mb-4"
-                      initial={{ x: 20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <label
-                        className={`block ${
-                          isDarkMode ? "text-gray-300" : "text-gray-500"
-                        }`}
-                      >
-                        Email
-                      </label>
-                      <motion.input
-                        type="email"
-                        name="email"
-                        value={userData.email}
-                        onChange={handleChange}
-                        className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500 ${
-                          isDarkMode
-                            ? "bg-gray-700 text-white border-gray-600"
-                            : ""
-                        }`}
-                        whileFocus={{ scale: 1.02 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                      />
-                    </motion.div>
-                    <motion.div
-                      className="mb-4"
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: 0.3 }}
-                    >
-                      <label
-                        className={`block ${
-                          isDarkMode ? "text-gray-300" : "text-gray-500"
-                        }`}
-                      >
-                        Phone
-                      </label>
-                      <motion.input
-                        type="text"
-                        name="phone"
-                        value={userData.phone}
-                        onChange={handleChange}
-                        className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500 ${
-                          isDarkMode
-                            ? "bg-gray-700 text-white border-gray-600"
-                            : ""
-                        }`}
-                        whileFocus={{ scale: 1.02 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                      />
-                    </motion.div>
-                    <motion.div
-                      className="mb-4"
-                      initial={{ x: 20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: 0.4 }}
-                    >
-                      <label
-                        className={`block ${
-                          isDarkMode ? "text-gray-300" : "text-gray-500"
-                        }`}
-                      >
-                        Address
-                      </label>
-                      <motion.input
-                        type="text"
-                        name="address"
-                        value={userData.address}
-                        onChange={handleChange}
-                        className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500 ${
-                          isDarkMode
-                            ? "bg-gray-700 text-white border-gray-600"
-                            : ""
-                        }`}
-                        whileFocus={{ scale: 1.02 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                      />
-                    </motion.div>
-                  </div>
-                  <motion.div
-                    className="mb-4"
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.5 }}
+                <div className="flex gap-5 justify-center">
+                  <motion.a
+                    href={`https://twitter.com/${userData.twitter}`}
+                    className="text-blue-400 hover:text-blue-500 p-3 rounded-full"
+                    whileHover={{
+                      scale: 1.2,
+                      backgroundColor: "rgba(29, 161, 242, 0.1)",
+                      rotate: [0, -10, 10, -10, 0],
+                    }}
+                    whileTap={{ scale: 0.9 }}
                   >
-                    <label
-                      className={`block ${
-                        isDarkMode ? "text-gray-300" : "text-gray-500"
-                      }`}
-                    >
-                      Bio
-                    </label>
-                    <motion.textarea
-                      name="bio"
-                      value={userData.bio}
-                      onChange={handleChange}
-                      className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500 ${
-                        isDarkMode
-                          ? "bg-gray-700 text-white border-gray-600"
-                          : ""
-                      }`}
-                      rows="4"
-                      whileFocus={{ scale: 1.02 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                    />
-                  </motion.div>
-                  <motion.button
-                    type="button"
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500 transition"
-                    onClick={handleEditToggle}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.6 }}
+                    <i className="ri-twitter-x-line text-3xl"></i>
+                  </motion.a>
+                  <motion.a
+                    href={`https://instagram.com/${userData.instagram}`}
+                    className="text-pink-500 hover:text-pink-600 p-3 rounded-full"
+                    whileHover={{
+                      scale: 1.2,
+                      backgroundColor: "rgba(225, 48, 108, 0.1)",
+                      rotate: [0, -10, 10, -10, 0],
+                    }}
+                    whileTap={{ scale: 0.9 }}
                   >
-                    <i className="ri-save-line mr-2"></i>
-                    Save Changes
-                  </motion.button>
-                </form>
+                    <i className="ri-instagram-line text-3xl"></i>
+                  </motion.a>
+                  <motion.a
+                    href={`https://linkedin.com/in/${userData.linkedin}`}
+                    className="text-blue-600 hover:text-blue-700 p-3 rounded-full"
+                    whileHover={{
+                      scale: 1.2,
+                      backgroundColor: "rgba(0, 119, 181, 0.1)",
+                      rotate: [0, -10, 10, -10, 0],
+                    }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <i className="ri-linkedin-box-fill text-3xl"></i>
+                  </motion.a>
+                </div>
               </motion.div>
-            )}
-          </AnimatePresence>
+              <motion.div
+                className="text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <motion.button
+                  onClick={handleLogOut}
+                  className="bg-red-600 text-white px-8 py-3 rounded-xl hover:bg-red-500 transition-all shadow-lg cursor-pointer"
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow:
+                      "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Log Out <i className="ri-logout-box-r-line ml-2"></i>
+                </motion.button>
+              </motion.div>
+            </div>
+          )}
 
-          {/* Logout Button */}
-          <motion.div
-            className="text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            <motion.button
-              onClick={handleLogOut}
-              className="bg-red-600 text-white px-8 py-3 rounded-xl hover:bg-red-500 transition-all shadow-lg"
+          {/* Activity Tab */}
+          {activeTab === "activity" && (
+            <motion.div
+              className={`p-6 rounded-xl shadow-md ${
+                isDarkMode ? "bg-gray-800" : "bg-white"
+              } transition-colors duration-300`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               whileHover={{
-                scale: 1.05,
+                y: -5,
                 boxShadow:
                   "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
               }}
-              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
-              Log Out <i className="ri-logout-box-r-line ml-2"></i>
-            </motion.button>
-          </motion.div>
+              <h2 className="text-2xl font-semibold mb-4 flex items-center">
+                <i className="ri-history-line mr-2 text-purple-500"></i>
+                Activity
+              </h2>
+              <div className="space-y-6">
+                {/* Feedback Section */}
+                {userData.feedbacks.map((feedback, index) => (
+                  <motion.div
+                    key={index}
+                    className={`p-6 rounded-xl shadow-md ${
+                      isDarkMode ? "bg-gray-700/50" : "bg-purple-50"
+                    }`}
+                    whileHover={{ scale: 1.02, y: -5 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <h3 className="text-xl font-semibold mb-2">My Feedback</h3>
+                    <p className="text-gray-600">
+                      <strong>Rating:</strong> {feedback.rating}
+                    </p>
+                    <p className="text-gray-600">
+                      <strong>Comment:</strong> {feedback.comment}
+                    </p>
+                    <p className="text-gray-500 text-sm">
+                      <strong>Date:</strong>{" "}
+                      {new Date(feedback.createdAt).toLocaleDateString()}
+                    </p>
+                  </motion.div>
+                ))}
+
+                {/* Orders Section */}
+                {userData.orders.map((order, index) => {
+                  const itemsList = order.items
+                    .map((item) => ` ${item.item.name} (${item.quantity}) `)
+                    .join(", ");
+
+                  return (
+                    <motion.div
+                      key={index}
+                      className={`p-6 rounded-xl shadow-md ${
+                        isDarkMode ? "bg-gray-700/50" : "bg-blue-50"
+                      }`}
+                      whileHover={{ scale: 1.02, y: -5 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <h3 className="text-xl font-semibold mb-2">
+                        Order #{index + 1}
+                      </h3>
+                      <p className="text-gray-600">
+                        <strong>Items:</strong> [{itemsList}]
+                      </p>
+                      <p className="text-gray-600">
+                        <strong>Total Amount:</strong> ₹{order.totalAmount}
+                      </p>
+                      <p className="text-gray-500 text-sm">
+                        <strong>Date:</strong>{" "}
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </p>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Contacts Tab */}
+          {activeTab === "contacts" && (
+            <motion.div
+              className={`p-6 rounded-xl shadow-md ${
+                isDarkMode ? "bg-gray-800" : "bg-white"
+              } transition-colors duration-300`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              whileHover={{
+                y: -5,
+                boxShadow:
+                  "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+              }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <h2 className="text-2xl font-semibold mb-4 flex items-center">
+                <i className="ri-contacts-line mr-2 text-green-500"></i>
+                Contact Information
+              </h2>
+              <motion.div
+                className={`text-lg ${
+                  isDarkMode ? "text-gray-300" : "text-gray-700"
+                } p-3 rounded-lg ${
+                  isDarkMode ? "bg-gray-700/50" : "bg-green-50"
+                }`}
+                whileHover={{ scale: 1.02 }}
+              >
+                <p>
+                  Email:{" "}
+                  <a
+                    href={`mailto:${userData.email}`}
+                    className="text-blue-600"
+                  >
+                    {userData.email}
+                  </a>
+                </p>
+                <p>
+                  Phone: <span className="text-blue-600">{userData.phone}</span>
+                </p>
+              </motion.div>
+            </motion.div>
+          )}
         </div>
       </div>
 
@@ -874,7 +707,7 @@ const UserProfile = () => {
                   repeatType: "loop",
                 }}
               >
-                Why did you leave us alone? 😢
+                Will wait for you 😃
               </motion.div>
             </motion.div>
           </motion.div>

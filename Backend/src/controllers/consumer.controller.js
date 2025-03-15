@@ -6,6 +6,7 @@ import {
   uploadOnCloudinary,
   deleteFromCloudinary,
 } from "../utils/cloudinary.js";
+import {Order} from "../models/order.models.js"
 
 const generateAccessAndRefreshToken = async (consumerId) => {
   try {
@@ -128,7 +129,16 @@ const logoutConsumer = asyncHandler(async (req, res) => {
 const consumerProfile = asyncHandler(async (req, res) => {
   const consumer = await Consumer.findById(req.consumer._id)
     .select("-password -refreshToken")
-    .populate("feedbacks donationsMade orders gamification");
+    .populate({
+      path: "feedbacks donationsMade gamification",
+    })
+    .populate({
+        path: "orders",
+        populate: {
+          path: "items.item",
+          model: "Item", 
+        },
+      })
 
   if (!consumer) {
     throw new ApiError(404, "Consumer not found");

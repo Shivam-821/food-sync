@@ -45,7 +45,7 @@ const ProducerDetail = () => {
     fullname: "",
     email: "",
     phone: "",
-    location: "", // Ensure location is a string or properly formatted
+    location: "",
     address: "",
     bio: "",
     producerType: "",
@@ -75,9 +75,7 @@ const ProducerDetail = () => {
   
         if (response.data && response.data.data) {
           const user = response.data.data;
-          console.log(user);
-  
-          // Extract donated items' names
+
           const donatedItems = user.donationsMade
             .flatMap((donation) => donation.items.map((item) => item.name))
             .join(", "); // Join names into a comma-separated string
@@ -320,27 +318,6 @@ const ProducerDetail = () => {
               >
                 <i className="ri-map-pin-line mr-2"></i>
                 <span>{producerData.location}</span>
-              </motion.div>
-
-              <motion.div
-                className="relative w-full mb-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-              >
-                <motion.p
-                  className={`text-center ${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  } mb-6 px-4 relative z-10`}
-                >
-                  {producerData.bio}
-                </motion.p>
-                <motion.div
-                  className="absolute -inset-4 bg-blue-500/5 rounded-xl -z-0"
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                />
               </motion.div>
 
               <motion.button
