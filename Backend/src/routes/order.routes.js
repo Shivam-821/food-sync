@@ -7,7 +7,7 @@ const router = Router()
 router.route("/placeorderfromcart").post(verifyJWT, placeOrderFromCart)
 router.route("/verify-payment").post(verifyJWT, verifyPayment);
 router.route("/:orderId/completed").put(verifyJWT, markOrderAsCompleted)
-router.route("/ordrId/update-inventory").put(verifyJWT, updateInventoryOnOrderCompletion)
+router.route("/update-inventory").put(verifyJWT, updateInventoryOnOrderCompletion);
 router.route("/get-order/:orderId").get(verifyJWT, getOrderDetails);
 
 

@@ -81,11 +81,12 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
 
     consumer.gamification = gamification._id;
     await consumer.save();
-
+console.log(cart.totalAmount)
+console.log(discountPoint)
     // Calculate total amount after applying discount
-    let totalAmount = cart.totalAmount - discountPoint * 2.5;
+    let totalAmount = cart.totalAmount - (discountPoint * 2.5);
     if (totalAmount < 0) {
-      totalAmount = 0;
+      totalAmount = 1;
     }
 
     const order = new Order({
@@ -113,12 +114,12 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
         receipt: `receipt_${order._id}`,
         payment_capture: 1, // Auto-capture payment
       };
-    
+     
       let razorpayOrder;
       try {
         // Create a Razorpay order
         razorpayOrder = await razorpay.orders.create(options);
-        console.log("Razorpay Order Created:", razorpayOrder);
+
     
         // Update the order with the Razorpay order ID
         order.razorpayOrderId = razorpayOrder.id;
@@ -137,12 +138,6 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
       // Delete the cart after the order is created
       await Cart.deleteOne({ buyer: consumerId, buyerType: "Consumer" });
     
-      // Log details for debugging
-      console.log("Order ID:", order._id);
-      console.log("Razorpay Order ID:", razorpayOrder.id);
-      console.log("Amount:", totalAmount);
-      console.log("Razorpay Key ID:", process.env.RAZORPAY_KEY_ID);
-    
       // Return the response to the client
       return res.status(201).json(
         new ApiResponse(
@@ -157,16 +152,17 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
           "Order placed successfully. Proceed with payment."
         )
       );
-    }
+    } else {
 
     // For Cash on Delivery (COD)
     consumer.orders.push(order._id);
     await consumer.save();
     await Cart.deleteOne({ buyer: consumerId, buyerType: "Consumer" });
-
+    
     return res
       .status(201)
       .json(new ApiResponse(201, order, "Order placed successfully"));
+  }
   } catch (err) {
     console.error("Error placing order:", err.message);
     return res
@@ -177,7 +173,6 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
 
 const verifyPayment = asyncHandler(async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-console.log(req.body);
   // Validate input
   if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
     return res.status(400).json(new ApiError(400, "Missing required payment details"));
@@ -191,7 +186,7 @@ console.log(req.body);
     }
 
     // Check if the order is already paid
-    if (order.paymentStatus === "Paid") {
+    if (order.paymentStatus === "paid") {
       return res.status(400).json(new ApiError(400, "Payment already verified"));
     }
 
@@ -213,7 +208,7 @@ console.log(req.body);
     }
 
     // Update the order status to "Paid"
-    order.paymentStatus = "Paid";
+    order.paymentStatus = "paid";
     await order.save();
 
     // Return success response
@@ -231,6 +226,7 @@ console.log(req.body);
 const markOrderAsCompleted = asyncHandler(async (req, res) => {
   try {
     const { orderId } = req.params;
+    console.log("Order ID from params:", orderId);
     const order = await Order.findById(orderId);
     if (!order) {
       return res.status(404).json(new ApiError(404, "Order not found"));
@@ -242,7 +238,7 @@ const markOrderAsCompleted = asyncHandler(async (req, res) => {
         .json(new ApiError(400, "Order cannot be completed"));
     }
 
-    order.status = "Completed";
+    order.status = "Confirmed";
     await order.save();
     await updateInventoryOnOrderCompletion(orderId);
 
@@ -267,11 +263,12 @@ const updateInventoryOnOrderCompletion = async (orderId) => {
       if (!item) continue;
 
       item.quantity -= cartItem.quantity;
-      item.status = item.quantity > 0 ? "Available" : "Out of Stock";
+      item.status = item.quantity > 0 ? "available" : "Out of Stock";
       await item.save();
     }
   } catch (error) {
     console.error("Error updating inventory:", error.message);
+    throw error; // Re-throw the error to handle it in the calling function
   }
 };
 

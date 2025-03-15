@@ -139,7 +139,18 @@ export function Pay() {
         }
       );
 
-      
+      const orderId = response.data?.data?._id;
+      //setting order completed
+      await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/order/${orderId}/completed`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
         setIsProcessing(false);
         setOrderPlaced(true);
     } catch (error) {
@@ -149,7 +160,8 @@ export function Pay() {
     }
   };
 
-  const handleRazorpayPayment = async () => {
+  const handleRazorpayPayment = async (e) => {
+    e.preventDefault();
     const token = localStorage.getItem("accessToken");
     setIsProcessing(true);
   
@@ -188,7 +200,7 @@ export function Pay() {
           withCredentials: true,
         }
       );
-      console.log('gefsdgfds')
+  
   
       // Step 2: Load Razorpay script dynamically if not already loaded
       const loadScript = (src) => {
@@ -212,15 +224,17 @@ export function Pay() {
         setIsProcessing(false);
         return;
       }
-  
       // Step 3: Initialize Razorpay payment
+      const totalAmount = Math.max(data.data.amount, 100); 
+      console.log(totalAmount)
       const options = {
-        key: `${import.meta.env.VITE_RAZORPAY_KEY_ID}`, // Use Razorpay Key ID
-        amount: data.amount, // Amount in paise (already multiplied by 100 in the backend)
+        key: data.data.key,
+        amount: data.data.amount, // Amount in paise
         currency: "INR",
-        order_id: data.razorpayOrderId,
+        order_id: data.data.razorpayOrderId,
         name: "FoodSync",
         description: "Order Payment",
+        image: "https://example.com/your_logo",
         handler: async (response) => {
           try {
             // Step 4: Verify payment
@@ -235,7 +249,18 @@ export function Pay() {
               }
             );
             alert("Payment Successful!");
-            navigate("/order-success");
+            //setting order completed
+            await axios.put(
+              `${import.meta.env.VITE_BASE_URL}/api/v1/order/${data.orderId}/completed`,
+              {},
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+                withCredentials: true,
+              }
+            );
+            setOrderPlaced(true);
           } catch (error) {
             console.error("Payment verification failed:", error);
             alert("Payment verification failed. Please contact support.");
@@ -244,14 +269,18 @@ export function Pay() {
           }
         },
         prefill: {
-          name: "Utkarsh Singh", // Replace with dynamic user data
-          email: "utkarshsingh7104@gmail.com", // Replace with dynamic user data
-          contact: "9889775335", // Replace with dynamic user data
+          name: "utkarsh singh",
+          email: "utkarshsingh7104@gmail.com",
+          contact: "9889775335",
+        },
+        notes: {
+          address: "Razorpay Corporate Office",
         },
         theme: {
           color: "#3399cc",
         },
       };
+  
   
       const rzp = new window.Razorpay(options);
       rzp.open();
