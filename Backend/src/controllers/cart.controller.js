@@ -32,10 +32,11 @@ const addToCart = asyncHandler(async (req, res) => {
   try {
     const { buyer, buyerId, buyerType } = await getBuyerAndType(req);
     const { itemId, quantity, price, addOne, deleteOne } = req.query;
+    console.log(req.query);
 
     if (!buyerId || !buyerType || !itemId || !quantity || !price) {
-      console.log(chalk.red("Addto cart: Missing required fields"));
-      throw new ApiError(400, "missing required fields");
+      console.log(chalk.red("Add to cart: Missing required fields"));
+      throw new ApiError(400, "Missing required fields");
     }
 
     const parsedQuantity = parseInt(quantity, 10);
@@ -80,23 +81,28 @@ const addToCart = asyncHandler(async (req, res) => {
       await buyer.save();
     }
 
+    // Find the existing item in the cart
     const existingItem = cart.items.find((cartItem) =>
       cartItem.item.equals(itemId)
     );
-    if (existingItem){
-      if (addOne === "add") {
-       existingItem.quantity = existingItem.quantity + 1;
-      }else if(deleteOne === "delete"){
-        existingItem.quantity = existingItem.quantity - 1
-      }
-      await cart.save()
-
-      return res.status(200).json(new ApiResponse(200, cart, "Item quantity updated successfully"))
-    }
 
     if (existingItem) {
-      existingItem.quantity += parsedQuantity;
+      // Update quantity based on addOne or deleteOne
+      if (addOne === "add") {
+        existingItem.quantity += 1;
+      } else if (deleteOne === "delete") {
+        existingItem.quantity -= 1;
+        if (existingItem.quantity <= 0) {
+          // Remove the item if quantity becomes 0 or negative
+          cart.items = cart.items.filter((cartItem) =>
+            !cartItem.item.equals(itemId)
+          );
+        }
+      } else {
+        existingItem.quantity += parsedQuantity;
+      }
     } else {
+      // Add new item to the cart
       cart.items.push({
         item: itemId,
         itemType,
@@ -105,13 +111,12 @@ const addToCart = asyncHandler(async (req, res) => {
         producer: producer._id,
       });
     }
-    await cart.save();
 
-    
+    await cart.save();
 
     return res.status(200).json({
       success: true,
-      message: "Item added to cart successfully",
+      message: existingItem ? "Item quantity updated successfully" : "Item added to cart successfully",
       cart,
     });
   } catch (error) {

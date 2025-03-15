@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Spline from '@splinetool/react-spline';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const InputSection = () => {
   const [foodItems, setFoodItems] = useState([
     { name: "", quantity: "", image: null, imagePreview: null }
   ]);
-  const [address, setAddress] = useState("");  // New state for Address
+  const [address, setAddress] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -28,7 +30,7 @@ const InputSection = () => {
   };
 
   const handleAddressChange = (e) => {
-    setAddress(e.target.value); 
+    setAddress(e.target.value);
   };
 
   const addMoreFields = () => {
@@ -41,7 +43,7 @@ const InputSection = () => {
       if (!item.name.trim()) newErrors[`name-${index}`] = "Food name is required.";
       if (!item.quantity.trim()) newErrors[`quantity-${index}`] = "Quantity is required.";
     });
-    if (!address.trim()) newErrors["address"] = "Address is required.";  
+    if (!address.trim()) newErrors["address"] = "Address is required.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -56,7 +58,7 @@ const InputSection = () => {
       formData.append(`items[${index}][name]`, item.name);
       formData.append(`items[${index}][quantity]`, item.quantity);
       if (item.image) {
-        formData.append(`images`, item.image); // Append each image file
+        formData.append(`images`, item.image);
       }
     });
 
@@ -67,7 +69,7 @@ const InputSection = () => {
     try {
       const token = localStorage.getItem("accessToken");
       if (!token) {
-        alert("You must be logged in to donate food.");
+        toast.error("You must be logged in to donate food.");
         return;
       }
 
@@ -83,22 +85,21 @@ const InputSection = () => {
       );
 
       if (response.status === 201) {
-        alert("Food donation successful!");
+        toast.success("Food donation successful!");
         setFoodItems([
           { name: "", quantity: "", image: null, imagePreview: null },
         ]);
         setAddress("");
       } else {
-        alert("Error during donation. Please try again.");
+        toast.error("Error during donation. Please try again.");
       }
     } catch (error) {
       console.error("Error during donation:", error);
-      alert("Failed to connect to server.");
+      toast.error("Failed to connect to server.");
     } finally {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="relative mt-16 min-h-[500px]">
@@ -198,6 +199,19 @@ const InputSection = () => {
           </form>
         </div>
       </div>
+
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 };

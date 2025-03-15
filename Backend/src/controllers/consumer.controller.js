@@ -128,7 +128,7 @@ const logoutConsumer = asyncHandler(async (req, res) => {
 const consumerProfile = asyncHandler(async (req, res) => {
   const consumer = await Consumer.findById(req.consumer._id)
     .select("-password -refreshToken")
-    .populate("feedbacks donationsMade gamification orders");
+    .populate("feedbacks donationsMade orders");
 
   if (!consumer) {
     throw new ApiError(404, "Consumer not found");

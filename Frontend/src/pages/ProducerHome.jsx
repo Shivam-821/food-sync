@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navbar from "../Components/Navbar/Navbar";
 import Footer from "../Components/Footer/Footer";
 import axios from "axios";
 import ItemsDetail from "../Components/Block/ItemsDetail";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProducerHome = () => {
   const [avatar, setAvatar] = useState(null);
@@ -16,8 +18,9 @@ const ProducerHome = () => {
   const [status, setStatus] = useState("");
   const [upcyclingOption, setUpcyclingOption] = useState("");
   const [description, setDescription] = useState("");
-  const [price, serPrice] = useState("");
+  const [price, setPrice] = useState("");
   const [addedItems, setAddedItems] = useState([]);
+  const [isAdding, setIsAdding] = useState(false); // Loading state for adding items
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -32,7 +35,7 @@ const ProducerHome = () => {
     const token = localStorage.getItem("accessToken");
 
     if (!token) {
-      alert("Unauthorized: No token found. Please log in again.");
+      toast.error("Unauthorized: No token found. Please log in again.");
       return;
     }
 
@@ -54,6 +57,8 @@ const ProducerHome = () => {
       formData.append("avatar", file); // ✅ Ensure correct file key
     }
 
+    setIsAdding(true); // Start loading
+
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/v1/items/create`,
@@ -67,14 +72,14 @@ const ProducerHome = () => {
         }
       );
 
-      alert("Item added successfully!");
+      toast.success("Item added successfully!");
       setAddedItems([...addedItems, response.data]);
 
       // Clear form inputs
       setItemName("");
       setQuantity("");
       setUnit("");
-      serPrice("");
+      setPrice("");
       setCategory("");
       setExpiryDate("");
       setManufacturingDate("");
@@ -84,18 +89,31 @@ const ProducerHome = () => {
       setAvatar(null);
     } catch (error) {
       console.error("Error adding item:", error);
-      alert(error.response?.data?.message || "Failed to add item");
+      toast.error(error.response?.data?.message || "Failed to add item");
+    } finally {
+      setIsAdding(false); // Stop loading
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100  font-sans overflow-auto h-screen">
+    <div className="min-h-screen bg-gray-100 font-sans">
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-center" // Set position to top-center
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+
       <Navbar />
 
-      <div className="flex items-center justify-between p-6 pt-3 pb-3 mt-16  shadow-md">
-        <h1 className="text-5xl font-extrabold text-gray-800">
-          Surplus Producer
-        </h1>
+      <div className="flex items-center justify-between p-6 pt-3 pb-3 mt-16 shadow-md">
+        <h1 className="text-5xl font-extrabold text-gray-800">Surplus Producer</h1>
         <Link to="/producerDetail">
           <img
             className="h-20 w-20 rounded-full border-4 border-gray-300 hover:shadow-lg transition duration-300"
@@ -107,19 +125,15 @@ const ProducerHome = () => {
 
       <div className="p-10 pt-5 mb-9">
         <div className="bg-[url('https://cdn.pixabay.com/photo/2016/04/02/09/43/apple-1302430_1280.jpg')] p-10 rounded-2xl">
-          <h3 className="text-3xl font-semibold text-gray-700 mb-6">
-            Add Items
-          </h3>
+          <h3 className="text-3xl font-semibold text-gray-700 mb-6">Add Items</h3>
 
           <form
             onSubmit={handleAddItem}
-            className=" rounded-xl  shadow-md p-6 bg-gray-500/80 max-w-4xl mb-15 mx-auto"
+            className="rounded-xl shadow-md p-6 bg-gray-500/80 max-w-4xl mb-15 mx-auto"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Name
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Name</label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -131,9 +145,7 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Image
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Image</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -150,9 +162,7 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Quantity
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Quantity</label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -164,9 +174,7 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Unit
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Unit</label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -178,23 +186,19 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Price
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Price</label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
                   type="text"
                   placeholder=""
                   value={price}
-                  onChange={(e) => serPrice(e.target.value)}
+                  onChange={(e) => setPrice(e.target.value)}
                 />
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Category
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Category</label>
                 <select
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -209,9 +213,7 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Manufacturing Date
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Manufacturing Date</label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -222,9 +224,7 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Description
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Description</label>
                 <textarea
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -235,9 +235,7 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Expiry Date
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Expiry Date</label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -247,10 +245,8 @@ const ProducerHome = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Status
-                </label>
+              {/* <div>
+                <label className="block text-lg font-medium text-gray-700">Status</label>
                 <select
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -262,34 +258,60 @@ const ProducerHome = () => {
                   <option value="expired">Expired</option>
                   <option value="upcycled">Upcycled</option>
                 </select>
+              </div> */}
+
+              <div>
+                <label className="block text-lg font-medium text-gray-700">Upcycling Option</label>
+                <select
+                  className="w-full p-3 border rounded-lg bg-gray-200"
+                  value={upcyclingOption}
+                  onChange={(e) => setUpcyclingOption(e.target.value)}
+                >
+                  <option value="compost">Compost</option>
+                  <option value="biogas">Biogas</option>
+                  <option value="fertilizer">Fertilizer</option>
+                  <option value="cosmetics">Cosmetics</option>
+                  <option value="smoothies">Smoothies</option>
+                  <option value="beverage">Beverage</option>
+                  <option value="animal feed">Animal Feed</option>
+                  <option value="flour">Flour</option>
+                  <option value="others">Others</option>
+                </select>
               </div>
-
-              {
-                <div>
-                  <label className="block text-lg font-medium text-gray-700">
-                    Upcycling Option
-                  </label>
-                  <select
-                    className="w-full p-3 border rounded-lg bg-gray-200"
-                    value={upcyclingOption}
-                    onChange={(e) => setUpcyclingOption(e.target.value)}
-                  >
-                    {/* <option value="">Select Upcycling Option</option> */}
-                    <option value="compost">Compost</option>
-                    <option value="biogas">Biogas</option>
-
-                    <option value="fertilizer">Fertilizer</option>
-                    <option value="cosmetics">Cosmetics</option>
-                  </select>
-                </div>
-              }
             </div>
 
             <button
               type="submit"
-              className="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-500 transition duration-300"
+              className="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-500 transition duration-300 flex items-center justify-center"
+              disabled={isAdding} // Disable button while adding
             >
-              Add Item
+              {isAdding ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 mr-3 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Adding...
+                </>
+              ) : (
+                "Add Item"
+              )}
             </button>
           </form>
         </div>

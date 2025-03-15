@@ -5,20 +5,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../Navbar/Navbar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(null);
     setIsLoading(true);
 
     try {
@@ -34,19 +33,22 @@ const Login = () => {
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
 
+      // Show success toast
+      toast.success("Login successful! Redirecting...");
+
       // Redirect based on role
       if (user.role === "consumer") {
         navigate("/", { state: { user } });
       } else if (user.role === "producer") {
-        navigate("/producerHome", { state: { user } });
+        navigate("/SurplusProducer", { state: { user } });
       } else if (user.role === "upcycling-industry") {
         navigate("/upcycling-profile", { state: { user } });
       } else {
-        setError("Invalid role received.");
+        toast.error("Invalid role received.");
       }
     } catch (err) {
       console.error("Login failed:", err);
-      setError(err.response?.data?.message || "Something went wrong");
+      toast.error(err.response?.data?.message || "Something went wrong");
     } finally {
       setIsLoading(false);
     }
@@ -96,6 +98,19 @@ const Login = () => {
     >
       {/* Animated particles */}
       <Particles />
+
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-center" // Set position to top-center
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
 
       <div className="flex items-center justify-center min-h-screen p-4 relative z-10">
         <Navbar />
@@ -239,7 +254,7 @@ const Login = () => {
             <motion.div variants={itemVariants}>
               <motion.button
                 type="submit"
-                disabled={isLoading || isSuccess}
+                disabled={isLoading}
                 className="w-full p-3 bg-white/20 text-white font-semibold rounded-lg hover:bg-white/30 transition duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 relative overflow-hidden group"
                 whileHover={{
                   scale: 1.03,
@@ -258,24 +273,10 @@ const Login = () => {
                     >
                       <i className="ri-loader-4-line animate-spin text-lg"></i>
                     </motion.div>
-                  ) : isSuccess ? (
-                    <motion.div
-                      key="success"
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="absolute inset-0 flex items-center justify-center bg-green-500/20"
-                    >
-                      <i className="ri-check-line text-lg"></i>
-                    </motion.div>
                   ) : null}
                 </AnimatePresence>
 
-                <span
-                  className={
-                    isLoading || isSuccess ? "opacity-0" : "opacity-100"
-                  }
-                >
+                <span className={isLoading ? "opacity-0" : "opacity-100"}>
                   Log In
                 </span>
 

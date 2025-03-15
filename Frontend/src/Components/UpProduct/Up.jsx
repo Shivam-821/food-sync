@@ -45,7 +45,6 @@ function BlockList() {
         );
         const data = response.data.data || [];
 
-        console.log("Fetched Data:", data);
 
         // Transform fetched data to match the expected structure
         const transformedData = data.map((item) => ({
@@ -81,7 +80,6 @@ function BlockList() {
   // Apply filters
   useEffect(() => {
     let filtered = [...products];
-    console.log("Products before filtering:", filtered);
 
     // Filter by price
     filtered = filtered.filter(
@@ -106,7 +104,6 @@ function BlockList() {
 
   // Log the updated filteredProducts whenever it changes
   useEffect(() => {
-    console.log("Updated filteredProducts:", filteredProducts);
   }, [filteredProducts]);
 
   // Handle product selection for detailed view
