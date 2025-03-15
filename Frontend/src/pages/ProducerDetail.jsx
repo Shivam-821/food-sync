@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 const ProducerDetail = () => {
   return (
-    <div className="bg-gradient-to-br from-yellow-100 to-yellow-300 min-h-screen font-sans">
+    <div className="bg-gradient-to-br from-yellow-100 to-yellow-300 min-h-screen font-sans overflow-auto h-screen">
       <Navbar />
 
       <div className="max-w-6xl mx-auto py-16 px-6">
