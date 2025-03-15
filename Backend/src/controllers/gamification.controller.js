@@ -33,7 +33,7 @@ const getGamification = asyncHandler(async (req, res) => {
     throw new ApiError(404, "User not found");
   }
 
-  const usergamiDetails = await Gamification.findOne({ user: user._id });
+  const usergamiDetails = await Gamification.findOne({ user: user._id }).populate({path:"user",select:"email phone fullname avatar"});
 
 
   const gamification = await Gamification.find()
@@ -41,7 +41,7 @@ const getGamification = asyncHandler(async (req, res) => {
     .limit(10)
     .populate({
       path: "user",
-      select: "email phone fullname",
+      select: "email phone fullname avatar",
     });
 
   if (!gamification.length) {

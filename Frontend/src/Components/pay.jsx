@@ -11,7 +11,6 @@ import {
   FaMapMarkerAlt,
   FaRecycle,
 } from "react-icons/fa";
-import Maps from "../Maps";
 
 export function Pay() {
   const navigate = useNavigate();
@@ -24,7 +23,6 @@ export function Pay() {
   const [isLoading, setIsLoading] = useState(true);
   const [locationError, setLocationError] = useState("");
   const [location, setLocation] = useState(null);
-  const [map,setMap]=useState()
 
   const getLocation = () => {
     setIsLoading(true);
@@ -66,7 +64,6 @@ export function Pay() {
           }
         );
         setAmount(response.data.data.totalAmount);
-        setMap(response.data.data?.items[0]?.producer.location.coordinates)
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -139,18 +136,7 @@ export function Pay() {
         }
       );
 
-      const orderId = response.data?.data?._id;
-      //setting order completed
-      await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/order/${orderId}/completed`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
+      
         setIsProcessing(false);
         setOrderPlaced(true);
     } catch (error) {
@@ -160,8 +146,7 @@ export function Pay() {
     }
   };
 
-  const handleRazorpayPayment = async (e) => {
-    e.preventDefault();
+  const handleRazorpayPayment = async () => {
     const token = localStorage.getItem("accessToken");
     setIsProcessing(true);
   
@@ -200,7 +185,7 @@ export function Pay() {
           withCredentials: true,
         }
       );
-  
+      console.log('gefsdgfds')
   
       // Step 2: Load Razorpay script dynamically if not already loaded
       const loadScript = (src) => {
@@ -224,17 +209,15 @@ export function Pay() {
         setIsProcessing(false);
         return;
       }
+  
       // Step 3: Initialize Razorpay payment
-      const totalAmount = Math.max(data.data.amount, 100); 
-      console.log(totalAmount)
       const options = {
-        key: data.data.key,
-        amount: data.data.amount, // Amount in paise
+        key: `${import.meta.env.VITE_RAZORPAY_KEY_ID}`, // Use Razorpay Key ID
+        amount: data.amount, // Amount in paise (already multiplied by 100 in the backend)
         currency: "INR",
-        order_id: data.data.razorpayOrderId,
+        order_id: data.razorpayOrderId,
         name: "FoodSync",
         description: "Order Payment",
-        image: "https://example.com/your_logo",
         handler: async (response) => {
           try {
             // Step 4: Verify payment
@@ -249,18 +232,7 @@ export function Pay() {
               }
             );
             alert("Payment Successful!");
-            //setting order completed
-            await axios.put(
-              `${import.meta.env.VITE_BASE_URL}/api/v1/order/${data.orderId}/completed`,
-              {},
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-                withCredentials: true,
-              }
-            );
-            setOrderPlaced(true);
+            navigate("/order-success");
           } catch (error) {
             console.error("Payment verification failed:", error);
             alert("Payment verification failed. Please contact support.");
@@ -269,18 +241,14 @@ export function Pay() {
           }
         },
         prefill: {
-          name: "utkarsh singh",
-          email: "utkarshsingh7104@gmail.com",
-          contact: "9889775335",
-        },
-        notes: {
-          address: "Razorpay Corporate Office",
+          name: "Utkarsh Singh", // Replace with dynamic user data
+          email: "utkarshsingh7104@gmail.com", // Replace with dynamic user data
+          contact: "9889775335", // Replace with dynamic user data
         },
         theme: {
           color: "#3399cc",
         },
       };
-  
   
       const rzp = new window.Razorpay(options);
       rzp.open();
@@ -404,15 +372,14 @@ export function Pay() {
               </div>
             </div>
 
-            <div className="input-group mb-4 mt-4 ml-2 mr-2">
-                <input
-                  type="text"
-                  placeholder="Enter your delivery address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-300 bg-white text-gray-700 placeholder-gray-400 shadow-sm"
-                />
-              </div>
+            <div>
+              <input
+                type="text"
+                placeholder="Address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
+            </div>
             <motion.div variants={itemVariants} className="mb-4">
                   <button
                     name="location"
@@ -468,9 +435,7 @@ export function Pay() {
                           4
                         )}, {location.coordinates[0].toFixed(4)}
                       </p>
-                      
                     </motion.div>
-                    
                   )}
                 </motion.div>
 

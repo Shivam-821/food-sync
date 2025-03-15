@@ -24,32 +24,38 @@ import ChatBot from "./pages/ChatBot";
 import Login from "./Components/Login/Login";
 import USignup from "./Components/UpcyclingSignup/USignup";
 import GamificationPage from "./pages/Gamification/gamification-page";
+import { Upay } from "./Components/UpProduct/Upay";
+import Error from "./pages/Error";
+import GoogleMapsRoute from "./Components/Maps";
 
 function App() {
   return (
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/producerHome" element={<ProducerHome />} />
-        <Route path="/donation" element={<Donation />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/recipe" element={<Recipe />} />
-        <Route path="/surplusProducer" element={<ProducerHome />} />
-        <Route path="/upcycle" element={<Upcycle />} />
-        <Route path="/signup" element={<Ask />} />
-        <Route path="/social" element={<Social />} />
-        <Route path="/producerDetail" element={<ProducerDetail />} />
-        <Route path="/producer" element={<Producer />} />
-        <Route path="/consumer" element={<SignUp />} />
-        <Route path="/communityChat" element={<CommunityChat />} />
-        <Route path="/pay" element={<Pay />} />
-        <Route path="/feedback" element={<Feedback />} />
-        <Route path="/userProfile" element={<UserProfile />} />
-        <Route path="/image-review" element={<ImageReview />} />
-        <Route path="/chat-bot" element={<ChatBot />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/upcyclesignup" element={<USignup />} />
-        <Route path="/gamification" element={<GamificationPage />} />
-      </Routes>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/producerHome" element={<ProducerHome />} />
+      <Route path="/donation" element={<Donation />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/recipe" element={<Recipe />} />
+      <Route path="/surplusProducer" element={<ProducerHome />} />
+      <Route path="/upcycle" element={<Upcycle />} />
+      <Route path="/signup" element={<Ask />} />
+      <Route path="/social" element={<Social />} />
+      <Route path="/producerDetail" element={<ProducerDetail />} />
+      <Route path="/producer" element={<Producer />} />
+      <Route path="/consumer" element={<SignUp />} />
+      <Route path="/communityChat" element={<CommunityChat />} />
+      <Route path="/pay" element={<Pay />} />
+      <Route path="/upcyclepay" element={<Upay />} />
+      <Route path="/feedback" element={<Feedback />} />
+      <Route path="/userProfile" element={<UserProfile />} />
+      <Route path="/image-review" element={<ImageReview />} />
+      <Route path="/chat-bot" element={<ChatBot />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/upcyclesignup" element={<USignup />} />
+      <Route path="/gamification" element={<GamificationPage />} />
+      <Route path="/error" element={<Error />} />
+      <Route path="/maps" element={<GoogleMapsRoute />} />
+    </Routes>
   );
 }
 

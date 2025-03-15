@@ -8,6 +8,8 @@ import CartDrawer from "./CartDrawer";
 import axios from "axios";
 import "./Blocks.css";
 import { FaShoppingCart } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Up = () => {
   return (
@@ -28,6 +30,7 @@ function BlockList() {
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCartBouncing, setIsCartBouncing] = useState(false);
+  const [data, setData] = useState({});
 
   // Filter states
   const [priceRange, setPriceRange] = useState([0, 6000]); // Adjusted price range
@@ -41,10 +44,9 @@ function BlockList() {
     const fetchBlocks = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/v1/items/getallitem`
+          `${import.meta.env.VITE_BASE_URL}/api/v1/upcyclingItem/get-upcycled-items`
         );
         const data = response.data.data || [];
-
 
         // Transform fetched data to match the expected structure
         const transformedData = data.map((item) => ({
@@ -63,48 +65,40 @@ function BlockList() {
         setBlocks(transformedData);
         setSampleProducts(transformedData);
         setProducts(transformedData);
-        setFilteredProducts(transformedData); // Initialize filteredProducts with fetched data
+
+        // Apply filters immediately after fetching data
+        let filtered = [...transformedData];
+
+        // Filter by price
+        filtered = filtered.filter(
+          (product) =>
+            product.price >= priceRange[0] && product.price <= priceRange[1]
+        );
+
+        // Filter by type
+        if (productType !== "all") {
+          filtered = filtered.filter((product) => product.type === productType);
+        }
+
+        // Filter by expiry date
+        if (expiryDateFilter) {
+          filtered = filtered.filter(
+            (product) =>
+              new Date(product.expiryDate) <= new Date(expiryDateFilter)
+          );
+        }
+
+        setFilteredProducts(filtered); // Set filteredProducts after filtering
       } catch (err) {
         console.error("Error fetching data:", err);
+        toast.error("Failed to fetch products. Please try again.");
+      } finally {
+        setLoading(false); // Set loading to false after fetching data
       }
     };
 
     fetchBlocks();
-  }, []);
-
-  // Update products when sampleProducts changes
-  useEffect(() => {
-    setProducts(sampleProducts);
-  }, [sampleProducts]);
-
-  // Apply filters
-  useEffect(() => {
-    let filtered = [...products];
-
-    // Filter by price
-    filtered = filtered.filter(
-      (product) =>
-        product.price >= priceRange[0] && product.price <= priceRange[1]
-    );
-
-    // Filter by type
-    if (productType !== "all") {
-      filtered = filtered.filter((product) => product.type === productType);
-    }
-
-    // Filter by expiry date
-    if (expiryDateFilter) {
-      filtered = filtered.filter(
-        (product) => new Date(product.expiryDate) <= new Date(expiryDateFilter)
-      );
-    }
-
-    setFilteredProducts(filtered);
-  }, [products, priceRange, productType, expiryDateFilter]);
-
-  // Log the updated filteredProducts whenever it changes
-  useEffect(() => {
-  }, [filteredProducts]);
+  }, [priceRange, productType, expiryDateFilter]); // Add filter dependencies
 
   // Handle product selection for detailed view
   const handleProductSelect = (product) => {
@@ -116,46 +110,46 @@ function BlockList() {
     setSelectedProduct(null);
   };
 
-  // Add to cart functionality
   const addToCart = async (product, quantity = 1) => {
     setLoading(true);
-    setMessage("");
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/add-to-cart`,
+
+      // Add item to cart in the backend
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/addtocart`,
         {
-          itemId: product.id,
-          quantity: 1,
-          price: product.price,
-        },
+          params: {
+            itemId: product.id,
+            quantity: quantity,
+            price: product.price,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      toast.success("Item added to cart successfully!");
+
+      // Fetch updated cart data from the backend
+      const cartResponse = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/getcart`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          withCredentials: true,
         }
       );
-
-      setMessage(response.data.message);
+      setData(cartResponse.data.data);
+      setCartItems(cartResponse.data.data.items || []);
     } catch (error) {
-      setMessage(error.response?.data?.message || "Failed to add to cart");
+      toast.error(error.response?.data?.message || "Failed to add to cart");
     } finally {
       setLoading(false);
     }
-
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
-
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.id === product.id
-            ? { ...item, cartQuantity: item.cartQuantity + quantity }
-            : item
-        );
-      } else {
-        return [...prevItems, { ...product, cartQuantity: quantity }];
-      }
-    });
 
     // Trigger cart bounce animation
     setIsCartBouncing(true);
@@ -163,23 +157,132 @@ function BlockList() {
   };
 
   // Remove from cart
-  const removeFromCart = (productId) => {
-    setCartItems((prevItems) =>
-      prevItems.filter((item) => item.id !== productId)
-    );
+  const removeFromCart = async (productId) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      // Remove item from cart in the backend
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/removeitem`,
+        {
+          params: {
+            itemId: productId,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      toast.success("Item removed from cart successfully!");
+
+      // Fetch updated cart data from the backend
+      const cartResponse = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/getcart`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      setData(cartResponse.data.data);
+      setCartItems(cartResponse.data.data.items || []);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to remove from cart");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Update cart quantity
-  const updateCartQuantity = (productId, quantity) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === productId ? { ...item, cartQuantity: quantity } : item
-      )
-    );
+  const updateCartQuantity = async (productId, quantity, action) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+  
+      // Update item quantity in the backend
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/addtocart`,
+        {
+          params: {
+            itemId: productId,
+            quantity: quantity,
+            price: data.totalAmount,
+            addOne: action === "add" ? "add" : undefined, // Add one if action is "add"
+            deleteOne: action === "delete" ? "delete" : undefined, // Delete one if action is "delete"
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+  
+      toast.success("Cart quantity updated successfully!");
+  
+      // Fetch updated cart data from the backend
+      const cartResponse = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/cart/getcart`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      setData(cartResponse.data.data);
+      setCartItems(cartResponse.data.data.items || []);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update cart quantity");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // Fetch cart data
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    const fetchCart = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/v1/cart/getcart`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          }
+        );
+
+        // Use optional chaining and default values
+        const cartData = response.data.data || { items: [] };
+        setData(cartData);
+        setCartItems(cartData.items || []);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        toast.error("Failed to fetch cart data. Please try again.");
+      }
+    };
+    fetchCart();
+  }, []);
 
   return (
     <div className="blocks-container">
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-center" // Set position to top-center
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+
       {/* Cart button with animation */}
       <div className="cart-button-container">
         <button
@@ -189,9 +292,7 @@ function BlockList() {
           onClick={() => setIsCartOpen(true)}
         >
           <FaShoppingCart className="cart-icon" />
-          <span>
-            Cart ({cartItems.reduce((acc, item) => acc + item.cartQuantity, 0)})
-          </span>
+          <span>Cart {cartItems.length}</span>
         </button>
       </div>
 
@@ -232,7 +333,8 @@ function BlockList() {
         setIsOpen={setIsCartOpen}
         cartItems={cartItems}
         removeFromCart={removeFromCart}
-        updateQuantity={updateCartQuantity}
+        updateQuantity={updateCartQuantity} // Pass the updateCartQuantity function
+        data={data}
       />
     </div>
   );

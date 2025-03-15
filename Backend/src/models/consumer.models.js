@@ -23,7 +23,7 @@ const consumerSchema = new Schema(
     phone: {
       type: Number,
       // required: true,
-      unique: true,
+      // unique: true,
       validate: {
         validator: function (value) {
           return /^[6-9]\d{9}$/.test(value.toString());
