@@ -46,7 +46,7 @@ const DonationsList = () => {
             {/* Donor Information */}
             <div className="p-4">
               <h3 className="text-xl font-semibold text-gray-900">
-                {donation.donor?.fullname || "Anonymous Donor"}
+                {donation.donor?.fullname || donation.donor?.companyName || "Unknown Donor"}
               </h3>
             </div>
 

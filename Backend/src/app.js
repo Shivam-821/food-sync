@@ -46,6 +46,7 @@ import visionRoute from './routes/vision.routes.js'
 import aiRoute from './routes/ai.routes.js'
 import authRoutes from "./routes/auth.routes.js";
 import loginRouter from './routes/loginRoute.routes.js'
+import upcyclingOrderRoute from "./routes/upcycling.routes.js"
 
 
 app.use("/api/v1/consumer", consumerRoute);
@@ -64,6 +65,6 @@ app.use('/api/v1/ai',aiRoute)
 app.use("/api/v1/auth/", loginRouter)
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/gamification", gamificationRoute)
-
+app.use("/api/v1/upcyclingOrder", upcyclingOrderRoute)
 
 export { app };

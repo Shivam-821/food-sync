@@ -1,8 +1,8 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
-import { UpcyclingOrder } from "../models/upcyclingOrder.model.js";
-import { Cart } from "../models/cart.model.js";
-import { UpcyclingIndustry } from "../models/upcyclingIndustry.model.js";
+import { UpcyclingOrder } from "../models/upcyclingOrder.models.js";
+import { Cart } from "../models/cart.models.js";
+import { UpcyclingIndustry } from "../models/upcyclingIndustry.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -18,13 +18,13 @@ const razorpay = new Razorpay({
 const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
   try {
     const { deliveryAddress, deliveryLocation, paymentMethod } = req.body;
-
+    console.log("deliverylocation: ", deliveryLocation)
     if (!deliveryAddress || !deliveryLocation || !paymentMethod) {
       throw new ApiError(400, "All fields are required");
     }
 
     const upcyclingIndustry = await UpcyclingIndustry.findById(
-      req.upcyclingIndustry._id
+      req.upcycledIndustry._id
     );
     if (!upcyclingIndustry) {
       throw new ApiError(404, "Upcycling Industry not found");
@@ -41,7 +41,7 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
         let gamification = await Gamification.findOne({
           user: upcyclingIndustry._id,
         });
-        const newCredit = Math.floor(cart.totalAmount / 100)
+        const newCredit = Math.floor(Number(cart.totalAmount) / 100)
 
         let discountPoint = 0
     
@@ -63,7 +63,7 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
         upcyclingIndustry.gamification = gamification._id;
         await upcyclingIndustry.save();
 
-    const totalAmount = cart.totalAmount - (discountPoint * 2.5).toFixed(2)
+    const totalAmount = Number(cart.totalAmount) - parseFloat((discountPoint * 2.5).toFixed(2))
     if(totalAmount < 0){
       totalAmount = 0
     }
@@ -76,7 +76,7 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
       deliveryLocation,
       paymentMethod,
       paymentStatus: paymentMethod === "cod" ? "pending" : "unpaid",
-      status: "Pending",
+      status: "pending",
     });
 
     await upcyclingOrder.save();
@@ -112,6 +112,9 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
 
     upcyclingIndustry.upcyclingOrders.push(upcyclingOrder._id);
     await upcyclingIndustry.save();
+
+    upcyclingOrder.status = "confirmed"
+    await upcyclingOrder.save()
 
     await Cart.deleteOne({
       buyer: upcyclingIndustry._id,

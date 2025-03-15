@@ -140,8 +140,7 @@ const logoutProducer = asyncHandler(async (req, res) => {
 const producerProfile = asyncHandler(async (req, res) => {
   const producer = await Producer.findById(req.producer._id)
     .select("-password -refreshToken")
-    .populate("items expiredItems")
-    .populate("feedbacks");
+    .populate("items expiredItems donationsMade")
 
   if (!producer) {
     throw new ApiError(404, "Producer not found");
