@@ -55,7 +55,7 @@ const Navbar = () => {
             scrolled ? "text-black " : "text-white"
           }  `}
         >
-          <a href="/donation">Donation</a>
+          <a href="/donation">{t("Donate")}</a>
           <div
             className={`absolute bottom-0 w-full h-1 hidden group-hover:block  transition-all duration-200 ${
               scrolled ? "bg-black" : "bg-white"
@@ -67,7 +67,7 @@ const Navbar = () => {
             scrolled ? "text-black" : "text-white"
           }  `}
         >
-          <a href="/upcycle">Upcycle</a>
+          <a href="/upcycle">{t("Upcycle")}</a>
           <div
             className={`absolute bottom-0 w-full h-1 hidden group-hover:block  transition-all duration-200 ${
               scrolled ? "bg-black" : "bg-white"
@@ -79,7 +79,7 @@ const Navbar = () => {
             scrolled ? "text-black" : "text-white"
           } `}
         >
-          <a href="/SurplusProducer">Surplus Producer</a>
+          <a href="/SurplusProducer">{t("Surplus Producer")}</a>
           <div
             className={`absolute bottom-0 w-full h-1 hidden group-hover:block  transition-all duration-200 ${
               scrolled ? "bg-black" : "bg-white"
@@ -91,7 +91,7 @@ const Navbar = () => {
             scrolled ? "text-black" : "text-white"
           }  `}
         >
-          <a href="/social">Social</a>
+          <a href="/social">{t("Social")}</a>
           <div
             className={`absolute bottom-0 w-full h-1 hidden group-hover:block  transition-all duration-200 ${
               scrolled ? "bg-black" : "bg-white"
@@ -103,7 +103,7 @@ const Navbar = () => {
             scrolled ? "text-black" : "text-white"
           } `}
         >
-          <a href="/about">About</a>
+          <a href="/about">{t("About")}</a>
           <div
             className={`absolute bottom-0 w-full h-1 hidden group-hover:block  transition-all duration-200 ${
               scrolled ? "bg-black" : "bg-white"

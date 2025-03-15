@@ -1,25 +1,56 @@
 {
   "welcome": "फूडसिंक में आपका स्वागत है!",
-  "Donation": "दान",
+  "Donate": "दान",
   "Upcycle": "अपसायकल",
   "Surplus Producer": "अतिरिक्त उत्पादक",
   "Social": "सामाजिक",
   "About": "हमारे बारे में",
 
   
-    "Save_food_save_planet": "भोजन बचाओ, ग्रह बचाओ!",
-    "Think_before_throw": "फेंकने से पहले सोचो!",
-    "Waste_less_feed_more": "कम बर्बाद करो, अधिक खिलाओ।",
-    "Love_food_hate_waste": "भोजन से प्यार करो, बर्बादी से नफरत!",
-    "Every_bite_counts": "हर कौर कीमती है—इसे बर्बाद मत करो!",
-    "Be_smart_waste_apart": "समझदारी से जियो, बर्बादी से बचो!",
-    "Eat_take": "जितना लो, उतना खाओ।",
-    "Reduce_food_waste": "भोजन की बर्बादी कम करें, भविष्य को पोषण दें!",
-    "Stop_wasting_start_saving": "बर्बादी बंद करो, बचत शुरू करो!",
-    "Respect_food_respect_nature": "भोजन का सम्मान करें, प्रकृति का आदर करें।",
+    "Save food save planet": "भोजन बचाओ, ग्रह बचाओ!",
+    "Think before throw": "फेंकने से पहले सोचो!",
+    "Waste less feed more": "कम बर्बाद करो, अधिक खिलाओ।",
+    "Love food hate waste": "भोजन से प्यार करो, बर्बादी से नफरत!",
+    "Every bite counts": "हर कौर कीमती है—इसे बर्बाद मत करो!",
+    "Be smart waste apart": "समझदारी से जियो, बर्बादी से बचो!",
+    "Eat take": "जितना लो, उतना खाओ।",
+    "Reduce food waste": "भोजन की बर्बादी कम करें, भविष्य को पोषण दें!",
+    "Stop wasting start saving": "बर्बादी बंद करो, बचत शुरू करो!",
+    "Respect food respect nature": "भोजन का सम्मान करें, प्रकृति का आदर करें।",
     "Food You Should Purchase": "भोजन आपको खरीदना चाहिए ",
-    "Before it Wastes": "इसके पहले, इसकी बर्बादी हो जाती है"
+    "Before it Wastes": "इसके पहले, इसकी बर्बादी हो जाती है",
+    "Plate it, don't waste it": "थाली भरो, बर्बाद मत करो",
+  "Leftovers are treasures": "बची हुई खाने की चीज़ें खजाना हैं",
+  "Plan smart, waste apart": "समझदारी से योजना बनाएं, बर्बादी दूर भगाएं",
+  "Food is precious": "भोजन अनमोल है",
+  "Finish your plate": "अपनी थाली खत्म करो",
+  "Waste less, taste more": "कम बर्बाद करें, अधिक स्वाद लें",
+  "Don't let good food go bad": "अच्छे खाने को खराब मत होने दो",
+  "Shop wise, store right": "बुद्धिमानी से खरीदें, सही से रखें",
+  "Food is for eating": "भोजन खाने के लिए है",
+  "Use it up, don't throw it out": "इसे पूरा उपयोग करें, फेंके नहीं",
   
+    
+      
+      
+      "Enter your email": "अपना ईमेल दर्ज करें...",
+      "Explore More": "और जानें",
+      "Company": "कंपनी",
+      "About Us": "हमारे बारे में",
+      "Our Stories": "हमारी कहानियां",
+      "User Testimonials": "उपयोगकर्ता प्रशंसापत्र",
+      "Support": "सहायता",
+      "FAQ": "सामान्य प्रश्न",
+      "User Policy": "उपयोगकर्ता नीति",
+      "Customer Support": "ग्राहक सहायता",
+      "Contact": "संपर्क करें",
+      "Phone": "फ़ोन",
+      "Email": "ईमेल",
+      "Location": "स्थान",
+      "Privacy Policy": "गोपनीयता नीति",
+      "Terms & Conditions": "नियम और शर्तें",
+      "All rights reserved": "सर्वाधिकार सुरक्षित"
+    
     
   
 }
