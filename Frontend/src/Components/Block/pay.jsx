@@ -404,14 +404,15 @@ export function Pay() {
               </div>
             </div>
 
-            <div>
-              <input
-                type="text"
-                placeholder="Address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-              />
-            </div>
+            <div className="input-group mb-4 mt-4 ml-2 mr-2">
+                <input
+                  type="text"
+                  placeholder="Enter your delivery address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-300 bg-white text-gray-700 placeholder-gray-400 shadow-sm"
+                />
+              </div>
             <motion.div variants={itemVariants} className="mb-4">
                   <button
                     name="location"

@@ -24,8 +24,9 @@ import ChatBot from "./pages/ChatBot";
 import Login from "./Components/Login/Login";
 import USignup from "./Components/UpcyclingSignup/USignup";
 import GamificationPage from "./pages/Gamification/gamification-page";
+import { Upay } from "./Components/UpProduct/Upay";
 import Error from "./pages/Error";
-import GoogleMapsRoute from './Components/Maps'
+import GoogleMapsRoute from "./Components/Maps";
 import StartUp from './pages/StartUp'
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
       <Route path="/consumer" element={<SignUp />} />
       <Route path="/communityChat" element={<CommunityChat />} />
       <Route path="/pay" element={<Pay />} />
+      <Route path="/upcyclepay" element={<Upay />} />
       <Route path="/feedback" element={<Feedback />} />
       <Route path="/userProfile" element={<UserProfile />} />
       <Route path="/image-review" element={<ImageReview />} />
