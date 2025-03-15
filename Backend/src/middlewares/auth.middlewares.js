@@ -13,7 +13,7 @@ const verifyJWT =asyncHandler( async (req, res, next) => {
   try {
     const decodedToken = jwt.verify(gettoken, process.env.ACCESS_TOKEN_SECRET);
     const consumer = await Consumer.findById(decodedToken?._id).select(
-      "phone email"
+      "email"
     );
  
     if (!consumer) {

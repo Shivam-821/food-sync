@@ -33,15 +33,13 @@ const registerConsumer = asyncHandler(async (req, res) => {
 
   if (
     [fullname, email, password, consumerType].some(
-      (field) => !field?.trim() || !phone
+      (field) => !field?.trim()
     )
   ) {
     throw new ApiError(400, "All fields are required");
   }
 
-  const existingConsumer = await Consumer.findOne({
-    $or: [{ email }, {phone}],
-  });
+  const existingConsumer = await Consumer.findOne({email});
   if (existingConsumer) {
     throw new ApiError(
       409,
@@ -61,7 +59,7 @@ const registerConsumer = asyncHandler(async (req, res) => {
       fullname,
       avatar: avatar?.url || "",
       email,
-      phone,
+      phone: phone || 9000000000,
       role: "consumer",
       password,
       location: location || "",

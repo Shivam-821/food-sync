@@ -20,7 +20,7 @@ const verifyUnified = asyncHandler(async (req, res, next) => {
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
     let user = await Consumer.findById(decodedToken._id).select(
-      "phone email"
+      "email"
     );
     if (user) {
       req.consumer = user;
