@@ -27,7 +27,7 @@ const Feedback = () => {
   const [userType, setUserType] = useState("individual");
     const [loading, setLoading] = useState(false);
 
-  // Load feedback from localStorage on component mount
+  // Load feedback  on component mount
   useEffect(() => {
     const fetchFeedback = async () => {
       setLoading(true);
@@ -51,9 +51,6 @@ const Feedback = () => {
       setIsDarkMode(savedTheme === "true");
     }
   }, []);
-
-  useEffect(() => {
-  }, [feedbackList]); // ✅ Only logs when feedbackList updates
   
 
   // Update body class when dark mode changes
