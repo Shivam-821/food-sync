@@ -34,6 +34,11 @@ const Login = () => {
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
 
+      const userId = response.data.data.user._id;
+      if (userId) {
+        localStorage.setItem("userId", userId);
+      }
+
       // Redirect based on role
       if (user.role === "consumer") {
         navigate("/", { state: { user } });
