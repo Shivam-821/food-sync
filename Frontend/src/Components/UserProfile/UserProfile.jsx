@@ -20,7 +20,6 @@ const UserProfile = () => {
   const [isImageHovered, setIsImageHovered] = useState(false);
   const navigate = useNavigate();
 
-  // State to store user data fetched from the backend
   const [userData, setUserData] = useState({
     fullname: "",
     email: "",
@@ -30,9 +29,12 @@ const UserProfile = () => {
     bio: "",
     consumerType: "",
     avatar: "",
+    donationsMade: [],
+    feedback: [],
+    orders: [],
+    gamification: ""
   });
 
-  // Fetch user profile data from the backend
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -62,7 +64,11 @@ const UserProfile = () => {
             address: user.address,
             bio: user.bio || "No bio available",
             consumerType: user.consumerType,
-            avatar: user.avatar || profileImage, // Use default image if avatar is not available
+            avatar: user.avatar || profileImage, 
+            feedback: user.feedback || [],
+            donationsMade: user.donationsMade || [],
+            gamification: user.gamification || 0,
+            orders: user.orders || []
           });
           setProfileImage(user.avatar || profileImage); // Update profile image
         }
