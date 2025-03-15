@@ -48,8 +48,15 @@ const upcyclingOrderSchema = new Schema(
       required: true,
     },
     deliveryLocation: {
-      lat: { type: Number, required: true },
-      lng: { type: Number, required: true },
+      type: {
+          type: String,
+          enum: ['Point'],
+          required: true
+      },
+      coordinates: {
+          type: [Number],
+          required: true
+      }
     },
     orderDate: {
       type: Date,

@@ -24,16 +24,16 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     if (!address || !paymentMethod) {
       throw new ApiError(400, "All fields are required");
     }
-
-    const consumer = await Consumer.findById(req.consumer.id);
+    const consumer = await Consumer.findById(req.consumer._id);
+    
     if (!consumer) {
       return res.status(404).json(new ApiError(404, "Consumer not found"));
     }
-
+  
     const consumerId = consumer._id;
     const cart = await Cart.findOne({
       buyer: consumerId,
-      buyerType: "Consumer",
+      buyerType: "Consumer"
     }).populate("items.item");
 
     if (!cart || cart.items.length === 0) {
@@ -61,7 +61,6 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     }
 
     let discountPoint = 0;
-
     let gamification = await Gamification.findOne({ user: consumer._id });
     const newCredit = Math.floor(cart.totalAmount / 100) + extraPoints;
 
@@ -82,11 +81,12 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
 
     consumer.gamification = gamification._id;
     await consumer.save();
-
+console.log(cart.totalAmount)
+console.log(discountPoint)
     // Calculate total amount after applying discount
-    let totalAmount = cart.totalAmount - discountPoint * 2.5;
+    let totalAmount = cart.totalAmount - (discountPoint * 2.5);
     if (totalAmount < 0) {
-      totalAmount = 0;
+      totalAmount = 1;
     }
 
     const order = new Order({
@@ -102,7 +102,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
 
     await order.save();
 
-    if (paymentMethod === "Online") {
+    if (paymentMethod === "razorpay") {
       // Validate Razorpay configuration
       if (!razorpay) {
         throw new ApiError(500, "Razorpay is not configured");
@@ -112,17 +112,33 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
         amount: totalAmount * 100, // Amount in paise
         currency: "INR",
         receipt: `receipt_${order._id}`,
-        payment_capture: 1,
+        payment_capture: 1, // Auto-capture payment
       };
+     
+      let razorpayOrder;
+      try {
+        // Create a Razorpay order
+        razorpayOrder = await razorpay.orders.create(options);
 
-      // Create Razorpay order
-      const razorpayOrder = await razorpay.orders.create(options);
-      order.razorpayOrderId = razorpayOrder.id;
-      await order.save();
-
-      // Clear the cart after successful order creation
+    
+        // Update the order with the Razorpay order ID
+        order.razorpayOrderId = razorpayOrder.id;
+        await order.save();
+      } catch (error) {
+        console.error("Razorpay API Error:", error);
+    
+        // Handle specific Razorpay API errors
+        if (error.error && error.error.description) {
+          throw new ApiError(500, `Razorpay API Error: ${error.error.description}`);
+        } else {
+          throw new ApiError(500, "Failed to create Razorpay order");
+        }
+      }
+    
+      // Delete the cart after the order is created
       await Cart.deleteOne({ buyer: consumerId, buyerType: "Consumer" });
-
+    
+      // Return the response to the client
       return res.status(201).json(
         new ApiResponse(
           201,
@@ -131,58 +147,86 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
             razorpayOrderId: razorpayOrder.id,
             amount: totalAmount,
             currency: "INR",
-            key: process.env.RAZORPAY_KEY_ID,
+            key: process.env.RAZORPAY_KEY_ID || "razorpay_key_id_missing", // Fallback for missing key
           },
           "Order placed successfully. Proceed with payment."
         )
       );
-    }
+    } else {
 
     // For Cash on Delivery (COD)
     consumer.orders.push(order._id);
     await consumer.save();
     await Cart.deleteOne({ buyer: consumerId, buyerType: "Consumer" });
-
+    
     return res
       .status(201)
       .json(new ApiResponse(201, order, "Order placed successfully"));
-  } catch (error) {
-    console.error("Error placing order:", error.message);
+  }
+  } catch (err) {
+    console.error("Error placing order:", err.message);
     return res
+      .status(500)
+      .json(new ApiError(500, err.message || "Internal Server Error"));
+  }
+});
+
+const verifyPayment = asyncHandler(async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+  // Validate input
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+    return res.status(400).json(new ApiError(400, "Missing required payment details"));
+  }
+ 
+  try {
+    // Find the order by razorpay_order_id
+    const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
+    if (!order) {
+      return res.status(404).json(new ApiError(404, "Order not found"));
+    }
+
+    // Check if the order is already paid
+    if (order.paymentStatus === "paid") {
+      return res.status(400).json(new ApiError(400, "Payment already verified"));
+    }
+
+    // Generate the expected signature
+    const generatedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest("hex");
+
+    // Verify the signature
+    if (generatedSignature !== razorpay_signature) {
+      console.error("Invalid payment signature:", {
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        generatedSignature,
+      });
+      return res.status(400).json(new ApiError(400, "Invalid payment signature"));
+    }
+
+    // Update the order status to "Paid"
+    order.paymentStatus = "paid";
+    await order.save();
+
+    // Return success response
+    res
+      .status(200)
+      .json(new ApiResponse(200, order, "Payment verified successfully"));
+  } catch (error) {
+    console.error("Error verifying payment:", error);
+    res
       .status(500)
       .json(new ApiError(500, error.message || "Internal Server Error"));
   }
 });
 
-const verifyPayment = asyncHandler(async (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-    req.body;
-
-  const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
-  if (!order) {
-    return res.status(404).json(new ApiError(404, "Order not found"));
-  }
-
-  const generatedSignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_SECRET)
-    .update(razorpay_order_id + "|" + razorpay_payment_id)
-    .digest("hex");
-
-  if (generatedSignature !== razorpay_signature) {
-    return res.status(400).json(new ApiError(400, "Invalid payment signature"));
-  }
-
-  order.paymentStatus = "Paid";
-  await order.save();
-
-  res
-    .status(200)
-    .json(new ApiResponse(200, order, "Payment verified successfully"));
-});
-
 const markOrderAsCompleted = asyncHandler(async (req, res) => {
   try {
     const { orderId } = req.params;
+    console.log("Order ID from params:", orderId);
     const order = await Order.findById(orderId);
     if (!order) {
       return res.status(404).json(new ApiError(404, "Order not found"));
@@ -194,7 +238,7 @@ const markOrderAsCompleted = asyncHandler(async (req, res) => {
         .json(new ApiError(400, "Order cannot be completed"));
     }
 
-    order.status = "Completed";
+    order.status = "Confirmed";
     await order.save();
     await updateInventoryOnOrderCompletion(orderId);
 
@@ -219,11 +263,12 @@ const updateInventoryOnOrderCompletion = async (orderId) => {
       if (!item) continue;
 
       item.quantity -= cartItem.quantity;
-      item.status = item.quantity > 0 ? "Available" : "Out of Stock";
+      item.status = item.quantity > 0 ? "available" : "Out of Stock";
       await item.save();
     }
   } catch (error) {
     console.error("Error updating inventory:", error.message);
+    throw error; // Re-throw the error to handle it in the calling function
   }
 };
 

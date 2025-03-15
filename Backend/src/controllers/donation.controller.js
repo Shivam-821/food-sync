@@ -20,21 +20,25 @@ const getBadge = (points) => {
 };
 
 const getDonorAndType = async (req) => {
-  if (req.consumer)
+  if (req.consumer){
+    console.log(req.consumer)
     return {
       donor: await Consumer.findById(req.consumer._id),
       donorType: "Consumer",
     };
-  if (req.producer)
+  }if (req.producer){
+    console.log(req.producer)
     return {
       donor: await Producer.findById(req.producer._id),
       donorType: "Producer",
     };
-  if (req.upcyclingIndustry)
+  }if (req.upcycledIndustry){
+    console.log(req.upcycledIndustry)
     return {
-      donor: await UpcyclingIndustry.findById(req.upcyclingIndustry._id),
+      donor: await UpcyclingIndustry.findById(req.upcycledIndustry._id),
       donorType: "UpcyclingIndustry",
     };
+  }
   return { donor: null, donorType: null };
 };
 
@@ -43,6 +47,7 @@ const createDonation = asyncHandler(async (req, res) => {
 
   try {
     const { donor, donorType } = await getDonorAndType(req);
+    console.log("donor: ", donor)
     if (!donor) throw new ApiError(400, "Donor not found");
 
     const { pickupLocation } = req.body;
@@ -80,7 +85,7 @@ const createDonation = asyncHandler(async (req, res) => {
     if (!donation) throw new ApiError(500, "Failed to create donation");
 
     let gamification = await Gamification.findOne({ user: donor._id });
-    const newCredit = ((processedItems.length * totalQuantity)/12).toFixed(2)
+    const newCredit = Number(((processedItems.length * totalQuantity)/12).toFixed(2))
 
     if (gamification) {
       gamification.points += newCredit;
@@ -102,10 +107,20 @@ const createDonation = asyncHandler(async (req, res) => {
     donor.donationsMade.push(donation._id);
     await donor.save();
 
-    const createdDonation = await Donation.findById(donation._id).populate({
-      path: "donor",
-      select: "email phone location fullname",
-    });
+    let createdDonation
+    if(donorType === "UpcyclingIndustry"){
+       createdDonation = await Donation.findById(donation._id).populate({
+        path: "donor",
+        select: "email phone location companyName",
+      });
+    }
+    else{
+      createdDonation = await Donation.findById(donation._id).populate({
+        path: "donor",
+        select: "email phone location fullname",
+      });
+    }
+     
 
     return res
       .status(201)
@@ -130,7 +145,7 @@ const getAllDonations = asyncHandler(async (req, res) => {
     if (!donor || !donorType) throw new ApiError(400, "Donor not found");
 
     const donations = await Donation.find({ donor: donor._id })
-      .populate({ path: "donor", select: "email phone fullname" })
+      .populate({ path: "donor", select: "email phone fullname companyName" })
       .select("-pickupLocation");
 
     return res
@@ -160,7 +175,7 @@ const getDonationById = asyncHandler(async (req, res) => {
 const getUniversalDonations = asyncHandler(async (req, res) => {
   try {
     const donations = await Donation.find()
-      .populate({ path: "donor", select: "email phone fullname" })
+      .populate({ path: "donor", select: "email phone fullname companyName" })
       .select("-pickupLocation");
 
     return res

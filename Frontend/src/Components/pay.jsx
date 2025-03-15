@@ -11,7 +11,6 @@ import {
   FaMapMarkerAlt,
   FaRecycle,
 } from "react-icons/fa";
-import Maps from "../Maps";
 
 export function Pay() {
   const navigate = useNavigate();
@@ -24,7 +23,6 @@ export function Pay() {
   const [isLoading, setIsLoading] = useState(true);
   const [locationError, setLocationError] = useState("");
   const [location, setLocation] = useState(null);
-  const [map, setMap] = useState();
 
   const getLocation = () => {
     setIsLoading(true);
@@ -66,7 +64,6 @@ export function Pay() {
           }
         );
         setAmount(response.data.data.totalAmount);
-        setMap(response.data.data?.items[0]?.producer.location.coordinates);
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -84,6 +81,7 @@ export function Pay() {
       transition: { type: "spring", stiffness: 100 },
     },
   };
+
 
   useEffect(() => {
     // Trigger entrance animation
@@ -121,13 +119,14 @@ export function Pay() {
       return;
     }
 
+
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/v1/order/placeorderfromcart`,
         {
           address: address,
           paymentMethod: paymentMethod,
-          location,
+          location
         },
         {
           headers: {
@@ -137,20 +136,9 @@ export function Pay() {
         }
       );
 
-      const orderId = response.data?.data?._id;
-      //setting order completed
-      await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/order/${orderId}/completed`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-      setIsProcessing(false);
-      setOrderPlaced(true);
+      
+        setIsProcessing(false);
+        setOrderPlaced(true);
     } catch (error) {
       console.error("Error placing order:", error);
       alert("Failed to place order. Please try again.");
@@ -158,30 +146,29 @@ export function Pay() {
     }
   };
 
-  const handleRazorpayPayment = async (e) => {
-    e.preventDefault();
+  const handleRazorpayPayment = async () => {
     const token = localStorage.getItem("accessToken");
     setIsProcessing(true);
-
+  
     // Validate user input
     if (!token) {
       alert("Please log in to place an order");
       navigate("/login");
       return;
     }
-
+  
     if (!paymentMethod) {
       alert("Please select a payment method");
       setIsProcessing(false);
       return;
     }
-
+  
     if (!address) {
       alert("Please enter your delivery address");
       setIsProcessing(false);
       return;
     }
-
+  
     try {
       // Step 1: Request the backend to create a Razorpay order
       const { data } = await axios.post(
@@ -198,7 +185,8 @@ export function Pay() {
           withCredentials: true,
         }
       );
-
+      console.log('gefsdgfds')
+  
       // Step 2: Load Razorpay script dynamically if not already loaded
       const loadScript = (src) => {
         return new Promise((resolve) => {
@@ -213,27 +201,23 @@ export function Pay() {
           document.body.appendChild(script);
         });
       };
-
-      const isRazorpayLoaded = await loadScript(
-        "https://checkout.razorpay.com/v1/checkout.js"
-      );
-
+  
+      const isRazorpayLoaded = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+  
       if (!isRazorpayLoaded) {
         alert("Razorpay SDK failed to load. Please check your connection.");
         setIsProcessing(false);
         return;
       }
+  
       // Step 3: Initialize Razorpay payment
-      const totalAmount = Math.max(data.data.amount, 100);
-      console.log(totalAmount);
       const options = {
-        key: data.data.key,
-        amount: data.data.amount, // Amount in paise
+        key: `${import.meta.env.VITE_RAZORPAY_KEY_ID}`, // Use Razorpay Key ID
+        amount: data.amount, // Amount in paise (already multiplied by 100 in the backend)
         currency: "INR",
-        order_id: data.data.razorpayOrderId,
+        order_id: data.razorpayOrderId,
         name: "FoodSync",
         description: "Order Payment",
-        image: "https://example.com/your_logo",
         handler: async (response) => {
           try {
             // Step 4: Verify payment
@@ -248,20 +232,7 @@ export function Pay() {
               }
             );
             alert("Payment Successful!");
-            //setting order completed
-            await axios.put(
-              `${import.meta.env.VITE_BASE_URL}/api/v1/order/${
-                data.orderId
-              }/completed`,
-              {},
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-                withCredentials: true,
-              }
-            );
-            setOrderPlaced(true);
+            navigate("/order-success");
           } catch (error) {
             console.error("Payment verification failed:", error);
             alert("Payment verification failed. Please contact support.");
@@ -270,28 +241,21 @@ export function Pay() {
           }
         },
         prefill: {
-          name: "utkarsh singh",
-          email: "utkarshsingh7104@gmail.com",
-          contact: "9889775335",
-        },
-        notes: {
-          address: "Razorpay Corporate Office",
+          name: "Utkarsh Singh", // Replace with dynamic user data
+          email: "utkarshsingh7104@gmail.com", // Replace with dynamic user data
+          contact: "9889775335", // Replace with dynamic user data
         },
         theme: {
           color: "#3399cc",
         },
       };
-
+  
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
       console.error("Payment error:", error);
       if (error.response) {
-        alert(
-          `Error: ${
-            error.response.data.message || "Something went wrong. Try again!"
-          }`
-        );
+        alert(`Error: ${error.response.data.message || "Something went wrong. Try again!"}`);
       } else if (error.request) {
         alert("Network error. Please check your internet connection.");
       } else {
@@ -353,9 +317,7 @@ export function Pay() {
               <div className="success-rays"></div>
             </div>
             <h2>Order Placed Successfully!</h2>
-            <p>
-              Thank you for your purchase. Your delicious food is on its way!
-            </p>
+            <p>Thank you for your purchase. Your delicious food is on its way!</p>
             <div className="order-details">
               <div className="order-detail-item">
                 <span>Order Amount:</span>
@@ -364,9 +326,7 @@ export function Pay() {
               <div className="order-detail-item">
                 <span>Payment Method:</span>
                 <span>
-                  {paymentMethod === "cod"
-                    ? "Cash on Delivery"
-                    : "Online Payment"}
+                  {paymentMethod === "cod" ? "Cash on Delivery" : "Online Payment"}
                 </span>
               </div>
               <div className="order-detail-item">
@@ -412,82 +372,74 @@ export function Pay() {
               </div>
             </div>
 
-            <div className="input-group mb-4 mt-4 ml-2 mr-2">
+            <div>
               <input
                 type="text"
-                placeholder="Enter your delivery address"
+                placeholder="Address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-300 bg-white text-gray-700 placeholder-gray-400 shadow-sm"
               />
             </div>
             <motion.div variants={itemVariants} className="mb-4">
-              <button
-                name="location"
-                type="button"
-                onClick={getLocation}
-                disabled={isLoading}
-                className="glass-button location-button"
-              >
-                <span className="relative z-10 flex items-center justify-center">
-                  {isLoading ? (
-                    <>
-                      <svg
-                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Getting Location...
-                    </>
-                  ) : (
-                    <>
-                      <FaMapMarkerAlt className="mr-2" /> Get My Location
-                    </>
+                  <button
+                    name="location"
+                    type="button"
+                    onClick={getLocation}
+                    disabled={isLoading}
+                    className="glass-button location-button"
+                  >
+                    <span className="relative z-10 flex items-center justify-center">
+                      {isLoading ? (
+                        <>
+                          <svg
+                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Getting Location...
+                        </>
+                      ) : (
+                        <>
+                          <FaMapMarkerAlt className="mr-2" /> Get My Location
+                        </>
+                      )}
+                    </span>
+                  </button>
+                  {locationError && (
+                    <p className="text-red-300 text-sm mb-2">{locationError}</p>
                   )}
-                </span>
-              </button>
-              {locationError && (
-                <p className="text-red-300 text-sm mb-2">{locationError}</p>
-              )}
-              {location && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-sm text-blue-100 bg-blue-900/30 p-2 rounded-lg border border-blue-500/30 backdrop-blur-sm mt-2"
-                >
-                  <p className="flex items-center">
-                    <FaMapMarkerAlt className="text-blue-300 mr-2" />
-                    Location captured: {location.coordinates[1].toFixed(
-                      4
-                    )}, {location.coordinates[0].toFixed(4)}
-                  </p>
+                  {location && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-sm text-blue-100 bg-blue-900/30 p-2 rounded-lg border border-blue-500/30 backdrop-blur-sm mt-2"
+                    >
+                      <p className="flex items-center">
+                        <FaMapMarkerAlt className="text-blue-300 mr-2" />
+                        Location captured: {location.coordinates[1].toFixed(
+                          4
+                        )}, {location.coordinates[0].toFixed(4)}
+                      </p>
+                    </motion.div>
+                  )}
                 </motion.div>
-              )}
-            </motion.div>
 
-            <form
-              onSubmit={
-                paymentMethod === "cod"
-                  ? handlePaymentSubmit
-                  : handleRazorpayPayment
-              }
-              className="payment-form"
-            >
+            <form onSubmit={paymentMethod==="cod"? handlePaymentSubmit : handleRazorpayPayment} className="payment-form">
               <h2>Select Payment Method</h2>
 
               <div className="payment-options">
