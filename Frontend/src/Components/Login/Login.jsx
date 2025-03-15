@@ -143,6 +143,12 @@ const Login = () => {
                   Forgot Password
                 </a>
               </div>
+              <div>
+                If you don't have an account!
+                <a href="signup" className="text-blue-600">
+                  Signup
+                </a>
+              </div>
 
               <motion.button
                 whileHover={{ scale: 1.02 }}
