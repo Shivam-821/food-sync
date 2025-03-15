@@ -16,7 +16,7 @@ const getBadge = (points) => {
   if (points >= 101) return "Champion";
   if (points >= 61) return "Achiever";
   if (points >= 21) return "Contributor";
-  return "Beginner";
+  return "Rookie";
 };
 
 const getDonorAndType = async (req) => {
@@ -91,6 +91,7 @@ const createDonation = asyncHandler(async (req, res) => {
         user: donor._id,
         userType: donorType,
         points: newCredit,
+        contribution: "donation",
         badges: getBadge(newCredit),
       });
     }

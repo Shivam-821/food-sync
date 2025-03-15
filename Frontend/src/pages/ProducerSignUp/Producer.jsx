@@ -670,6 +670,7 @@ const ProducerSignUp = () => {
 
                 <motion.div variants={itemVariants} className="mb-4">
                   <button
+                  name="location"
                     type="button"
                     onClick={getLocation}
                     disabled={isLoading}
@@ -677,6 +678,7 @@ const ProducerSignUp = () => {
                   >
                     <span className="relative z-10 flex items-center justify-center">
                       {isLoading ? (
+                        
                         <>
                           <svg
                             className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"

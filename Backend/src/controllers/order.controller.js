@@ -19,6 +19,8 @@ const razorpay = new Razorpay({
 const placeOrderFromCart = asyncHandler(async (req, res) => {
   try {
     const { location, address, paymentMethod } = req.body;
+
+    // Validate input data
     if (!address || !paymentMethod) {
       throw new ApiError(400, "All fields are required");
     }
@@ -58,13 +60,13 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
         Math.floor((cartItem.price * cartItem.quantity) / 100) * multiplier;
     }
 
-    let discountPoint = 0
+    let discountPoint = 0;
 
     let gamification = await Gamification.findOne({ user: consumer._id });
     const newCredit = Math.floor(cart.totalAmount / 100) + extraPoints;
 
     if (gamification) {
-      discountPoint = gamification.points
+      discountPoint = gamification.points;
       gamification.points += newCredit;
       gamification.badges = getBadge(gamification.points);
       await gamification.save();
@@ -81,9 +83,10 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     consumer.gamification = gamification._id;
     await consumer.save();
 
-    const totalAmount = cart.totalAmount - (discountPoint * 2.5).toFixed(2)
-    if(totalAmount < 0){
-      totalAmount = 0
+    // Calculate total amount after applying discount
+    let totalAmount = cart.totalAmount - discountPoint * 2.5;
+    if (totalAmount < 0) {
+      totalAmount = 0;
     }
 
     const order = new Order({
@@ -100,17 +103,24 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     await order.save();
 
     if (paymentMethod === "Online") {
+      // Validate Razorpay configuration
+      if (!razorpay) {
+        throw new ApiError(500, "Razorpay is not configured");
+      }
+
       const options = {
-        amount: totalAmount * 100,
+        amount: totalAmount * 100, // Amount in paise
         currency: "INR",
         receipt: `receipt_${order._id}`,
         payment_capture: 1,
       };
 
+      // Create Razorpay order
       const razorpayOrder = await razorpay.orders.create(options);
       order.razorpayOrderId = razorpayOrder.id;
       await order.save();
 
+      // Clear the cart after successful order creation
       await Cart.deleteOne({ buyer: consumerId, buyerType: "Consumer" });
 
       return res.status(201).json(
@@ -128,6 +138,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
       );
     }
 
+    // For Cash on Delivery (COD)
     consumer.orders.push(order._id);
     await consumer.save();
     await Cart.deleteOne({ buyer: consumerId, buyerType: "Consumer" });

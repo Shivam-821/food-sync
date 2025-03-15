@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import "./CartDrawer.css";
 import { FaShoppingCart, FaTimes, FaTrash } from "react-icons/fa";
-import { Link } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function CartDrawer({
@@ -39,7 +38,7 @@ function CartDrawer({
   };
 
   const totalPrice = cartItems.reduce(
-    (total, item) => total + item.price * item.cartQuantity,
+    (total, item) => total + item.price * item.quantity,
     0
   );
 
@@ -59,7 +58,11 @@ function CartDrawer({
             <FaShoppingCart className="cart-icon" />
             Your Cart
           </h2>
-          <button className="close-button" onClick={handleClose}>
+          <button
+            className="close-button"
+            onClick={handleClose}
+            aria-label="Close cart"
+          >
             <FaTimes />
           </button>
         </div>
@@ -96,6 +99,7 @@ function CartDrawer({
                       <button
                         className="remove-item-button"
                         onClick={() => removeFromCart(item.item._id)}
+                        aria-label="Remove item"
                       >
                         <FaTrash />
                       </button>
@@ -107,11 +111,9 @@ function CartDrawer({
                       <button
                         className="btn btn-outline btn-icon quantity-btn"
                         onClick={() =>
-                          updateQuantity(
-                            item.item._id,
-                            Math.max(1, item.quantity - 1)
-                          )
+                          updateQuantity(item.item._id, item.quantity, "delete")
                         }
+                        aria-label="Decrease quantity"
                       >
                         -
                       </button>
@@ -122,16 +124,19 @@ function CartDrawer({
                         onChange={(e) =>
                           updateQuantity(
                             item.item._id,
-                            Number.parseInt(e.target.value) || 1
+                            parseInt(e.target.value, 10),
+                            "update"
                           )
                         }
                         className="input input-number"
+                        aria-label="Quantity"
                       />
                       <button
                         className="btn btn-outline btn-icon quantity-btn"
                         onClick={() =>
-                          updateQuantity(item.item._id, item.quantity + 1)
+                          updateQuantity(item.item._id, item.quantity, "add")
                         }
+                        aria-label="Increase quantity"
                       >
                         +
                       </button>
@@ -144,7 +149,7 @@ function CartDrawer({
             <div className="cart-footer">
               <div className="cart-total">
                 <span>Total:</span>
-                <span>₹{data.totalAmount}</span>
+                <span>₹{data.totalAmount.toFixed(2)}</span>
               </div>
               <button
                 className="btn btn-primary btn-full checkout-btn"
