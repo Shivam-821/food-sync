@@ -174,7 +174,8 @@ const Feedback = () => {
   };
 
   // Fetch feedback on component mount
-  useEffect(() => {}, [feedbackList]);
+  useEffect(() => {
+  }, [feedbackList]);
 
   // Handle dark mode toggle
   useEffect(() => {
@@ -295,56 +296,22 @@ const Feedback = () => {
         </div>
 
         {/* User info input */}
-        <div
+        {/* <div
           className={`mb-6 p-6 rounded-xl ${
             isDarkMode
               ? "bg-gray-800/70 backdrop-blur-md border border-gray-700/50"
               : "bg-white/40 backdrop-blur-md border border-white/50 shadow-xl"
           }`}
         >
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block mb-2 font-medium">Your Name:</label>
-              <input
-                type="text"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                className={`w-full p-3 rounded-lg border ${
-                  isDarkMode
-                    ? "bg-gray-700/70 border-gray-600 text-white"
-                    : "bg-white/70 border-gray-200 text-gray-800"
-                } backdrop-blur-sm focus:ring-2 focus:ring-green-500 transition-all duration-300`}
-                placeholder="Enter your name"
-              />
-            </div>
-            <div>
-              <label className="block mb-2 font-medium">You are:</label>
-              <select
-                value={userType}
-                onChange={(e) => setUserType(e.target.value)}
-                className={`w-full p-3 rounded-lg border ${
-                  isDarkMode
-                    ? "bg-gray-700/70 border-gray-600 text-white"
-                    : "bg-white/70 border-gray-200 text-gray-800"
-                } backdrop-blur-sm focus:ring-2 focus:ring-green-500 transition-all duration-300`}
-              >
-                <option value="individual">Individual Consumer</option>
-                <option value="restaurant">Restaurant/Food Business</option>
-                <option value="ngo">NGO/Food Bank</option>
-                <option value="farm">Farm/Producer</option>
-                <option value="other">Other Organization</option>
-              </select>
-            </div>
-          </div>
-        </div>
+        </div> */}
 
         {/* Feedback form */}
         <form
           onSubmit={handleSubmitFeedback}
           className={`mb-8 p-6 rounded-xl transition-all duration-500 transform hover:scale-[1.01] ${
             isDarkMode
-              ? "bg-gray-800/70 backdrop-blur-md border border-gray-700/50"
-              : "bg-white/40 backdrop-blur-md border border-white/50 shadow-xl"
+              ? "bg-gray-800/70 border border-gray-700/50"
+              : "bg-white/40 border border-white/50 shadow-xl"
           }`}
         >
           <h2 className="text-xl font-semibold mb-4 flex items-center">
@@ -387,7 +354,7 @@ const Feedback = () => {
                 isDarkMode
                   ? "bg-gray-700/70 border-gray-600 text-white"
                   : "bg-white/70 border-gray-200 text-gray-800"
-              } backdrop-blur-sm focus:ring-2 focus:ring-green-500`}
+              } focus:ring-2 focus:ring-green-500`}
               rows={4}
               placeholder="Share how FoodSync has helped you reduce food waste..."
               required
