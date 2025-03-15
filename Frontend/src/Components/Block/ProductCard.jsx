@@ -29,7 +29,7 @@ function ProductCard({ product, onImageClick, onAddToCart }) {
         )}
         <div
           className={`product-detail-hint ${isHovered ? "visible" : ""}`}
-          style={{ backgroundColor: "#f87171"}}
+          style={{ backgroundColor: "#f87171" }}
         >
           Click for details
         </div>

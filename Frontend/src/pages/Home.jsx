@@ -7,7 +7,7 @@ import Hero from "../Components/Hero/Hero";
 import ScrollingText from "../Components/ScrollingText/ScrollingText";
 import Footer from "../Components/Footer/Footer";
 import Blocks from "../Components/Block/Blocks";
-import "./Home.css";
+//import "./Home.css";
 
 const Home = () => {
   const heroData = [
