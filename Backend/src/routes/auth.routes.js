@@ -3,6 +3,7 @@ import passport from "passport";
 import jwt from "jsonwebtoken";
 import { Consumer } from "../models/consumer.models.js"; // Adjust the import path as needed
 
+
 // Initialize the router
 const router = express.Router();
 

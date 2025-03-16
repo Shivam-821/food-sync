@@ -28,7 +28,6 @@ const UpcyclingProtectWrapper = ({ children }) => {
         })
         .catch(err => {
             console.log("Upcycling Industry auth failed:", err);
-            localStorage.removeItem('accessToken');
             navigate('/signup');
         });
     }, [token, navigate, setUpcyclingIndustry]);

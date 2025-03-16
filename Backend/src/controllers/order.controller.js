@@ -60,12 +60,10 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
         Math.floor((cartItem.price * cartItem.quantity) / 100) * multiplier;
     }
 
-    let discountPoint = 0;
     let gamification = await Gamification.findOne({ user: consumer._id });
     const newCredit = Math.floor(cart.totalAmount / 100) + extraPoints;
 
     if (gamification) {
-      discountPoint = gamification.points;
       gamification.points += newCredit;
       gamification.badges = getBadge(gamification.points);
       await gamification.save();
@@ -81,11 +79,8 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
 
     consumer.gamification = gamification._id;
     await consumer.save();
-    // Calculate total amount after applying discount
-    let totalAmount = cart.totalAmount - (discountPoint * 2.5);
-    if (totalAmount < 0) {
-      totalAmount = 1;
-    }
+
+    let totalAmount = parseFloat((parseFloat(cart.finalAmount)).toFixed(2));
 
     const order = new Order({
       consumer: consumerId,

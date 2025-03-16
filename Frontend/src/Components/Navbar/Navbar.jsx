@@ -44,13 +44,12 @@ const Navbar = () => {
   const token = localStorage.getItem('accessToken');
   //backend logic route for consumer and producer
   useEffect(() => {
-    
     if (!token) {
         return;
     }
 
     const roleEndpoints = [
-        { type: 'consumer', url: '/api/v1/consumer/profile'},
+        { type: 'consumer', url: '/api/v1/consumer/profile' },
         { type: 'producer', url: '/api/v1/producer/profile' },
     ];
 
@@ -59,15 +58,15 @@ const Navbar = () => {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_BASE_URL}${role.url}`, {
                     headers: { Authorization: `Bearer ${token}` },
-                    withCredentials: true
+                    withCredentials: true,
                 });
 
                 if (response.status === 200) {
-                  setIsLogin(response.data.data.role);
+                    setIsLogin(response.data.data.role);
                     return; // Stop checking once we find a valid profile
                 }
             } catch (error) {
-                console.log(`Failed for ${role.type}:`, error.response?.status || error.message);
+                // Suppress all errors (no logging)
             }
         }
     };

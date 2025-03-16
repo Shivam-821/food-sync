@@ -185,7 +185,7 @@ const UserProfile = () => {
 
       {/* Tab Navigation */}
       <motion.div
-        className="max-w-7xl mx-auto pt-6 px-6"
+        className="max-w-7xl mx-auto px-6"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}

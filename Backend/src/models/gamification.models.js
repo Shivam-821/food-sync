@@ -16,6 +16,10 @@ const gamificationSchema = new Schema(
       type: Number,
       default: 0,
     },
+    discountPoints: {
+      type: Number,
+      default: 0,
+    },
     badges: {
       type: String,
       enum: ["Rookie", "Contributor", "Achiever", "Champion", "Legend"],

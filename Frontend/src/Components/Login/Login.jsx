@@ -164,7 +164,7 @@ const Login = () => {
                 </div>
               </div>
 
-              <div className="flex justify-center space-x-4">
+              {/* <div className="flex justify-center space-x-4">
                 {[FaGoogle, FaFacebook].map((Icon, i) => (
                   <motion.button
                     key={i}
@@ -176,7 +176,7 @@ const Login = () => {
                     <Icon className="w-5 h-5" />
                   </motion.button>
                 ))}
-              </div>
+              </div> */}
             </form>
           </motion.div>
         </div>

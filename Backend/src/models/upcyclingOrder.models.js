@@ -11,7 +11,7 @@ const upcyclingOrderSchema = new Schema(
       {
         item: {
           type: Schema.Types.ObjectId,
-          ref: "Item",
+          ref: "UpcyclingItem",
           required: true,
         },
         producer: {
@@ -29,6 +29,10 @@ const upcyclingOrderSchema = new Schema(
         },
       },
     ],
+    paymentMethod: {
+      type: String,
+      enum: ["cod", "razorpay"],
+    },
     totalAmount: {
       type: Number,
       required: true,
@@ -42,6 +46,18 @@ const upcyclingOrderSchema = new Schema(
       type: String,
       enum: ["pending", "paid","unpaid", "failed"],
       default: "pending",
+    },
+    razorpayOrderId: {
+      type: String,
+      default: null,
+    },
+    paymentReference: {
+      type: String,
+      default: null,
+    },
+    razorpaySignature: {
+      type: String,
+      default: null,
     },
     deliveryAddress: {
       type: String,

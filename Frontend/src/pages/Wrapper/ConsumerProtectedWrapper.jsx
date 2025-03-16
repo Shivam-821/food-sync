@@ -36,7 +36,6 @@ const ConsumerProtectWrapper = ({
         })
             .catch(err => {
                 console.log(err)
-                localStorage.removeItem('accessToken')
                 navigate('/login')
             })
     }, [ token ])
