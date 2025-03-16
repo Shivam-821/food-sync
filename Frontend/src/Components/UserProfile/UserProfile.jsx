@@ -161,7 +161,7 @@ const UserProfile = () => {
 
   return (
     <div
-      className={`min-h-screen font-sans relative mt-9 transition-colors duration-500 overflow-auto h-screen ${
+      className={`min-h-screen font-sans relative mt-9 transition-colors duration-500 ${
         isDarkMode ? "bg-gray-900 text-white" : "bg-blue-50 text-gray-900"
       }`}
     >

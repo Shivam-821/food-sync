@@ -11,6 +11,7 @@ import UserGuidelines from "../../Components/Guidelines/UserGuidelines";
 import NgoGuidelines from "../../Components/Guidelines/NgoGuidelines";
 import ProducerGuidelines from "../../Components/Guidelines/ProducerGuidelines";
 import UpcyleingGuidelines from "../../Components/Guidelines/UpcyleingGuidelines";
+import "./Social.css";
 
 const Social = () => {
   const [heroCount, setHeroCount] = useState(0);
@@ -50,7 +51,7 @@ const Social = () => {
   };
 
   return (
-    <div className="overflow-auto h-screen">
+    <div className="">
       <Navbar />
       <div className="ml-30 mr-30">
         <SoicalSlider heroCount={heroCount} />
