@@ -10,6 +10,7 @@ import "./Blocks.css";
 import { FaShoppingCart } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const Up = () => {
   return (
@@ -38,6 +39,8 @@ function BlockList() {
   const [expiryDateFilter, setExpiryDateFilter] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  const navigate = useNavigate();
 
   // Fetch data from the backend
   useEffect(() => {
@@ -114,6 +117,11 @@ function BlockList() {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
+      if(!token){
+        navigate('/login')
+        console.error("No token found");
+        return;
+      }
 
       // Add item to cart in the backend
       const response = await axios.get(

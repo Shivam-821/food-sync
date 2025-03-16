@@ -317,11 +317,10 @@ const USignup = () => {
                     <option value="" disabled>
                       Select Upcycling Method
                     </option>
-                    <option value="Compost">Compost</option>
-                    <option value="Bio gas">Bio gas</option>
-                    <option value="Cosmetics">Cosmetics</option>
-                    <option value="Energy">Energy</option>
-                    <option value="Other">Other</option>
+                    <option value="compost">Compost</option>
+                    <option value="biogas">Bio gas</option>
+                    <option value="cosmetics">Cosmetics</option>
+                   <option value="fertilizer">Energy</option>
                   </select>
                 </div>
               </div>
