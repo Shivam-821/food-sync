@@ -33,7 +33,8 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
     const cart = await Cart.findOne({
       buyer: upcyclingIndustry._id,
       buyerType: "UpcyclingIndustry",
-    });
+    }).populate("items.item")
+
     if (!cart || cart.items.length === 0) {
       throw new ApiError(400, "Cart is empty");
     }
@@ -41,12 +42,12 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
         let gamification = await Gamification.findOne({
           user: upcyclingIndustry._id,
         });
-        const newCredit = Math.floor(Number(cart.totalAmount) / 100)
+        const newCredit = parseFloat(Math.floor(parseFloat(cart.totalAmount) / 100))
 
         let discountPoint = 0
     
         if (gamification) {
-          discountPoint = gamification.points
+          discountPoint = parseFloat(gamification.points)
           gamification.points += newCredit;
           gamification.badges = getBadge(gamification.points);
           await gamification.save();
@@ -63,12 +64,12 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
         upcyclingIndustry.gamification = gamification._id;
         await upcyclingIndustry.save();
 
-    let totalAmount = Number(cart.totalAmount) - parseFloat((discountPoint * 2.5).toFixed(2))
+    let totalAmount = parseFloat((parseFloat(cart.totalAmount) -(discountPoint * 2.5)).toFixed(2))
     if(totalAmount < 0){
       totalAmount = 1
     }
 
-    const upcyclingOrder = new UpcyclingOrder({
+    const upcyclingorder = new UpcyclingOrder({
       upcyclingIndustry: upcyclingIndustry._id,
       items: cart.items,
       totalAmount: totalAmount,
@@ -79,7 +80,7 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
       status: "pending",
     });
 
-    await upcyclingOrder.save();
+    await upcyclingorder.save();
 
     if (paymentMethod === "razorpay") {
 
@@ -90,15 +91,26 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
       const options = {
         amount: totalAmount * 100,
         currency: "INR",
-        receipt: `receipt_${upcyclingOrder._id}`,
+        receipt: `receipt_${upcyclingorder._id}`,
         payment_capture: 1,
       };
-
-      const razorpayOrder = await razorpay.orders.create(options);
-console.log(razorpayOrder)
-      upcyclingOrder.razorpayOrderId = razorpayOrder.id;
-      await upcyclingOrder.save();
-console.log(upcyclingOrder.razorpayOrderId)
+      let razorpayOrder
+      try {
+              // Create a Razorpay order
+              razorpayOrder = await razorpay.orders.create(options);
+              // Update the order with the Razorpay order ID
+              upcyclingorder.razorpayOrderId = razorpayOrder.id;
+              await upcyclingorder.save();
+            } catch (error) {
+              console.error("Razorpay API Error:", error);
+          
+              // Handle specific Razorpay API errors
+              if (error.error && error.error.description) {
+                throw new ApiError(500, `Razorpay API Error: ${error.error.description}`);
+              } else {
+                throw new ApiError(500, "Failed to create Razorpay order");
+              }
+            }
       // Delete the cart after the order is created
       await Cart.deleteOne({ buyer: upcyclingIndustry._id, buyerType: "UpcyclingIndustry" });
 
@@ -106,9 +118,9 @@ console.log(upcyclingOrder.razorpayOrderId)
         new ApiResponse(
           201,
           {
-            orderId: upcyclingOrder._id,
+            orderId: upcyclingorder._id,
             razorpayOrderId: razorpayOrder.id,
-            amount: cart.totalAmount,
+            amount: totalAmount,
             currency: "INR",
             key: process.env.RAZORPAY_KEY_ID,
           },
@@ -117,7 +129,7 @@ console.log(upcyclingOrder.razorpayOrderId)
       );
     } else {
 
-    upcyclingIndustry.upcyclingOrders.push(upcyclingOrder._id);
+    upcyclingIndustry.upcyclingOrders.push(upcyclingorder._id);
     await upcyclingIndustry.save();
 
     await Cart.deleteOne({
@@ -130,7 +142,7 @@ console.log(upcyclingOrder.razorpayOrderId)
       .json(
         new ApiResponse(
           201,
-          upcyclingOrder,
+          upcyclingorder,
           "Upcycling order placed successfully"
         )
       );
@@ -151,19 +163,19 @@ console.log("1")
     }
   try {
     console.log("2")
-    const upcyclingOrder = await UpcyclingOrder.findOne({
+    const upcyclingorder = await UpcyclingOrder.findOne({
       razorpayOrderId: razorpay_order_id,
     });
     console.log(razorpay_order_id)
-    console.log(upcyclingOrder)
-    if (!upcyclingOrder) {
+    console.log(upcyclingorder)
+    if (!upcyclingorder) {
       return res
         .status(404)
         .json(new ApiError(404, "Upcycling order not found"));
     }
     console.log("4")
     // Check if the order is already paid
-    if (upcyclingOrder.paymentStatus === "paid") {
+    if (upcyclingorder.paymentStatus === "paid") {
       return res.status(400).json(new ApiError(400, "Payment already verified"));
     }
     console.log("5")
@@ -184,16 +196,16 @@ console.log("1")
         .json(new ApiError(400, "Payment verification failed"));
     }
     console.log("7")
-    upcyclingOrder.paymentStatus = "Paid";
-    upcyclingOrder.razorpayPaymentId = razorpay_payment_id;
-    await upcyclingOrder.save();
+    upcyclingorder.paymentStatus = "paid";
+    upcyclingorder.razorpayPaymentId = razorpay_payment_id;
+    await upcyclingorder.save();
 
     return res
       .status(200)
       .json(
         new ApiResponse(
           200,
-          upcyclingOrder,
+          upcyclingorder,
           "Payment verified successfully"
         )
       );
@@ -239,16 +251,17 @@ const updateInventoryOnOrderCompletion = async (orderId) => {
   try {
     const order = await UpcyclingOrder.findById(orderId).populate("items.item");
     if (!order) throw new Error("Order not found");
-console.log(order)
-    for (const cartItem of order.items) {
-      console.log(cartItem)
-      const item = await UpcyclingItem.findById(cartItem._id);
-      if (!item) continue;
 
-      item.quantity -= cartItem.quantity;
-      item.status = item.quantity > 0 ? "available" : "Out of Stock";
-      await item.save();
-    }
+    for (const cartItem of order.items) {
+  
+  const item = await UpcyclingItem.findById(cartItem.item._id);
+  if (!item) continue;
+
+  item.quantity -= cartItem.quantity;
+  item.status = item.quantity > 0 ? "available" : "Out of Stock";
+  await item.save();
+}
+
   } catch (error) {
     console.error("Error updating inventory:", error.message);
     throw error; // Re-throw the error to handle it in the calling function
