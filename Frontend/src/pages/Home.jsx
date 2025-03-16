@@ -34,13 +34,13 @@ const Home = () => {
       <Background playStatus={playStatus} heroCount={heroCount} />
       <div className="content-wrapper">
         <Navbar />
-        {/* <Hero
+        <Hero
           setPlayStatus={setPlayStatus}
           heroData={heroData[heroCount]}
           heroCount={heroCount}
           setHeroCount={setHeroCount}
           playStatus={playStatus}
-        /> */}
+        />
         <ScrollingText />
         <div className="blocks-container">
           <Blocks />

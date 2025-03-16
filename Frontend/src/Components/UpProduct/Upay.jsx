@@ -136,13 +136,20 @@ export function Upay() {
           withCredentials: true,
         }
       );
-
-      if (paymentMethod === "razorpay") {
-        handleRazorpayPayment(response.data);
-      } else {
-        setIsProcessing(false);
-        setOrderPlaced(true);
-      }
+      const orderId = response.data?.data?._id;
+      //setting order completed
+      await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/upcyclingOrder/${orderId}/completed`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      setIsProcessing(false);
+      setOrderPlaced(true);
     } catch (error) {
       console.error("Error placing order:", error);
       alert("Failed to place order. Please try again.");
@@ -150,37 +157,149 @@ export function Upay() {
     }
   };
 
-  const handleRazorpayPayment = (data) => {
-    const options = {
-      key: data.key,
-      amount: data.amount,
-      currency: data.currency,
-      order_id: data.razorpayOrderId,
-      name: "Your Company Name",
-      description: "Payment for your order",
-      handler: function (response) {
-        alert("Payment successful!");
-        setIsProcessing(false);
-        setOrderPlaced(true);
-      },
-      prefill: {
-        name: "Customer Name",
-        email: "customer@example.com",
-        contact: "9999999999",
-      },
-      theme: {
-        color: "#F37254",
-      },
-    };
+  const handleRazorpayPayment = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("accessToken");
+    setIsProcessing(true);
 
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+    // Validate user input
+    if (!token) {
+      alert("Please log in to place an order");
+      navigate("/login");
+      return;
+    }
+
+    if (!paymentMethod) {
+      alert("Please select a payment method");
+      setIsProcessing(false);
+      return;
+    }
+
+    if (!address) {
+      alert("Please enter your delivery address");
+      setIsProcessing(false);
+      return;
+    }
+
+    try {
+      // Step 1: Request the backend to create a Razorpay order
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/upcyclingOrder/placeOrder`,
+        {
+          deliveryAddress: address,
+          paymentMethod: paymentMethod,
+          deliveryLocation: location
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      // Step 2: Load Razorpay script dynamically if not already loaded
+      const loadScript = (src) => {
+        return new Promise((resolve) => {
+          const script = document.createElement("script");
+          script.src = src;
+          script.onload = () => {
+            resolve(true);
+          };
+          script.onerror = () => {
+            resolve(false);
+          };
+          document.body.appendChild(script);
+        });
+      };
+
+      const isRazorpayLoaded = await loadScript(
+        "https://checkout.razorpay.com/v1/checkout.js"
+      );
+
+      if (!isRazorpayLoaded) {
+        alert("Razorpay SDK failed to load. Please check your connection.");
+        setIsProcessing(false);
+        return;
+      }
+      // Step 3: Initialize Razorpay payment
+      const options = {
+        key: data.data.key,
+        amount: data.data.amount, // Amount in paise
+        currency: "INR",
+        order_id: data.data.razorpayOrderId,
+        name: "FoodSync",
+        description: "Order Payment",
+        image: "https://example.com/your_logo",
+        handler: async (response) => {
+          try {
+            // Step 4: Verify payment
+            await axios.post(
+              `${import.meta.env.VITE_BASE_URL}/api/v1/upcyclingOrder/verifyPayment`,
+              response,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+                withCredentials: true,
+              }
+            );
+            alert("Payment Successful!");
+            //setting order completed
+            await axios.put(
+              `${import.meta.env.VITE_BASE_URL}/api/v1/upcyclingOrder/${data.data.orderId}/completed`,
+              {},
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+                withCredentials: true,
+               }
+            );
+            setOrderPlaced(true);
+          } catch (error) {
+            console.error("Payment verification failed:", error);
+            alert("Payment verification failed. Please contact support.");
+          } finally {
+            setIsProcessing(false);
+          }
+        },
+        prefill: {
+          name: "utkarsh singh",
+          email: "utkarshsingh7104@gmail.com",
+          contact: "9889775335",
+        },
+        notes: {
+          address: "Razorpay Corporate Office",
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Payment error:", error);
+      if (error.response) {
+        alert(
+          `Error: ${
+            error.response.data.message || "Something went wrong. Try again!"
+          }`
+        );
+      } else if (error.request) {
+        alert("Network error. Please check your internet connection.");
+      } else {
+        alert("Something went wrong. Try again!");
+      }
+      setIsProcessing(false);
+    }
   };
 
   const handleBackToHome = () => {
     setAnimateIn(false);
     setTimeout(() => {
-      navigate("/");
+      navigate("/upcycle");
     }, 500);
   };
 
@@ -238,7 +357,7 @@ export function Upay() {
               <div className="order-detail-item">
                 <span>Payment Method:</span>
                 <span>
-                  {paymentMethod === "cod" ? "Cash on Delivery" : "Online Payment"}
+                  {paymentMethod === "cod" ? "Cash on Delivery" : "razorpay"}
                 </span>
               </div>
               <div className="order-detail-item">
@@ -352,7 +471,9 @@ export function Upay() {
                   )}
                 </motion.div>
 
-            <form onSubmit={handlePaymentSubmit} className="payment-form">
+            <form onSubmit={paymentMethod === "cod"
+                  ? handlePaymentSubmit
+                  : handleRazorpayPayment} className="payment-form">
               <h2>Select Payment Method</h2>
 
               <div className="payment-options">

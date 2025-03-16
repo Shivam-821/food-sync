@@ -40,7 +40,7 @@ const upcyclingOrderSchema = new Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "failed"],
+      enum: ["pending", "paid","unpaid", "failed"],
       default: "pending",
     },
     deliveryAddress: {

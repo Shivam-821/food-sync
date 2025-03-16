@@ -80,7 +80,7 @@ export default function ChatComponent() {
       <div className="p-4 mt-16 text-center text-xl font-bold bg-gray-800">Chat Assistant</div>
       
       {/* Watermark */}
-      <div className="absolute flex justify-center items-center h-full w-full text-8xl text-amber-50/30 pointer-events-none">
+      <div className="absolute flex justify-center items-center h-full w-full text-8xl text-amber-50/10 pointer-events-none font-serif">
         FoodSync
       </div>
 

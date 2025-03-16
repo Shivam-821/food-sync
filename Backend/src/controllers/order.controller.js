@@ -81,8 +81,6 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
 
     consumer.gamification = gamification._id;
     await consumer.save();
-console.log(cart.totalAmount)
-console.log(discountPoint)
     // Calculate total amount after applying discount
     let totalAmount = cart.totalAmount - (discountPoint * 2.5);
     if (totalAmount < 0) {

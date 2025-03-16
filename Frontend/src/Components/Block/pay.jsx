@@ -120,7 +120,7 @@ export function Pay() {
       alert("Please enter your delivery address");
       return;
     }
-
+    setIsProcessing(true);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/v1/order/placeorderfromcart`,
@@ -224,8 +224,6 @@ export function Pay() {
         return;
       }
       // Step 3: Initialize Razorpay payment
-      const totalAmount = Math.max(data.data.amount, 100);
-      console.log(totalAmount);
       const options = {
         key: data.data.key,
         amount: data.data.amount, // Amount in paise
@@ -250,16 +248,14 @@ export function Pay() {
             alert("Payment Successful!");
             //setting order completed
             await axios.put(
-              `${import.meta.env.VITE_BASE_URL}/api/v1/order/${
-                data.orderId
-              }/completed`,
+              `${import.meta.env.VITE_BASE_URL}/api/v1/order/${data.data.orderId}/completed`,
               {},
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
                 },
                 withCredentials: true,
-              }
+               }
             );
             setOrderPlaced(true);
           } catch (error) {

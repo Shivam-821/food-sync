@@ -75,6 +75,14 @@ const Navbar = () => {
     fetchUserType();
 }, [token, isLogin]);
 
+const handleClick = () => {
+  if (isLogin === "consumer") {
+    navigate("/userProfile");
+  } else {
+    navigate("/producerDetail");
+  }
+};
+
   return (
     <div
       className={`nav z-10 fixed top-0 left-0 w-full  ${
@@ -196,7 +204,7 @@ const Navbar = () => {
             {isProfileMenuOpen && (
               <ul className="absolute right-0  mt-2 w-48 bg-gray-700 border border-gray-500 shadow-lg rounded-lg overflow-hidden animate-fadeIn z-20">
                 <li
-                  onClick={() => navigate("/userprofile")}
+                  onClick={handleClick}
                   className="p-3 cursor-pointer hover:bg-gray-500 transition flex items-center"
                 >
                   📄 <span className="ml-2 text-white">Profile</span>
