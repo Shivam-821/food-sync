@@ -66,7 +66,7 @@ const ImprovedSurplusFoodSharing = () => {
     },
     {
       icon: "🗑️",
-      text: "Stakeholder action is the only solution to tackle the ironical problem on food wastage and hunger.",
+      text: "FoodSync aims to reduce food waste and provide nutritious food to those in need.",
       color: "#e74c3c",
     },
     {
