@@ -1,93 +1,228 @@
-import axios from 'axios';
-import fs from 'fs';
-import dotenv from 'dotenv';
+import axios from "axios";
+import fs from "fs";
+import dotenv from "dotenv";
+import exp from "constants";
 
-dotenv.config();  // Load environment variables
+dotenv.config();
 
-const API_KEY = process.env.GOOGLE_MAPS_API; // Load API key from .env
+const API_KEY = process.env.GOOGLE_MAPS_API;
 
-// Function to analyze an uploaded image
 const analyzeImage = async (imagePath) => {
   try {
-    // Convert the image to base64
-    const imageBase64 = fs.readFileSync(imagePath, { encoding: 'base64' });
+    const imageBase64 = fs.readFileSync(imagePath, { encoding: "base64" });
 
     const requestBody = {
       requests: [
         {
-          image: { content: imageBase64 }, // Sending image as base64
+          image: { content: imageBase64 },
           features: [
-            { type: "LABEL_DETECTION" },  // Detects food type (e.g., apple, bread)
-            { type: "IMAGE_PROPERTIES" }, // Analyzes color & freshness changes
-            { type: "OBJECT_LOCALIZATION" } // Identifies food items in the image
-          ]
-        }
-      ]
+            { type: "LABEL_DETECTION" },
+            { type: "IMAGE_PROPERTIES" },
+            { type: "OBJECT_LOCALIZATION" },
+            { type: "TEXT_DETECTION" },
+          ],
+        },
+      ],
     };
 
     const visionApiUrl = `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`;
     const response = await axios.post(visionApiUrl, requestBody);
 
-    return analyzeFoodQuality(response.data);  // Call food quality function
-
+    return analyzeFoodQuality(response.data);
   } catch (error) {
     console.error("Error processing image:", error);
     throw new Error("Image analysis failed.");
   }
 };
 
-// Function to analyze food quality based on response
 const analyzeFoodQuality = (data) => {
-  const labels = data.responses[0]?.labelAnnotations?.map(label => label.description.toLowerCase()) || [];
-  const colors = data.responses[0]?.imagePropertiesAnnotation?.dominantColors?.colors || [];
+  const labels =
+    data.responses[0]?.labelAnnotations?.map((label) =>
+      label.description.toLowerCase()
+    ) || [];
+  const colors =
+    data.responses[0]?.imagePropertiesAnnotation?.dominantColors?.colors || [];
+  const detectedText =
+    data.responses[0]?.textAnnotations?.[0]?.description || "";
 
   let quality = "Unknown";
   let expiryDate = "Not determined";
+  let foodType = "Unknown";
 
-  // Define freshness indicators
-  const freshIndicators = ["fresh", "ripe", "green", "juicy", "healthy"];
-  const badIndicators = ["mold", "rotten", "spoiled", "decayed", "mushy", "stale", "fungus"];
-
-  // Check for bad food labels
-  if (labels.some(label => badIndicators.includes(label))) {
-    quality = "Bad";
-    expiryDate = "Expired";
-  } 
-  // Check for fresh food labels
-  else if (labels.some(label => freshIndicators.includes(label))) {
-    quality = "Good";
-    expiryDate = "5-7 days from today";
-  } 
-  // If food is detected but no freshness indicator found
-  else if (labels.includes("food") || labels.includes("produce") || labels.includes("vegetable")) {
-    quality = "Average";
-    expiryDate = "2-3 days from today";
+  const freshIndicators = [
+    "fresh",
+    "ripe",
+    "green",
+    "juicy",
+    "crisp",
+    "firm",
+    "vibrant",
+    "glossy",
+  ];
+  const badIndicators = [
+    "mold",
+    "rotten",
+    "spoiled",
+    "decayed",
+    "mushy",
+    "stale",
+    "fungus",
+    "soggy",
+    "discolored",
+  ];
+  const fewDaysfood = [
+    "vegetable",
+    "meat",
+    "dairy",
+    "milk",
+    "yogurt",
+    "cheese",
+    "eggs",
+    "seafood",
+    "berries",
+    "mushroom",
+    "pancake"
+  ];
+  const nonPerishable = [
+    "canned food",
+    "dried food",
+    "grains",
+    "nuts",
+    "seeds",
+    "oil",
+    "vinegar",
+    "spices",
+    "cereal",
+    "tea",
+    "coffee",
+    "lentils",
+    "sugar",
+    "pasta",
+    "packed"
+  ];
+  const cookedItems = [
+    "chicken",
+    "rice",
+    "bread",
+    "fish",
+    "cooked vegetable",
+    "soup",
+    "juice",
+    "curry",
+    "stew",
+    "roasted",
+    "noodles",
+    "pastry",
+    "meat"
+  ];
+  const beverages = [
+    "milk",
+    "juice",
+    "wine",
+    "beer",
+    "soft drink",
+    "tea",
+    "coffee",
+    "liqour",
+    "cocktail"
+  ];
+  const fermentedFoods = [
+    "kimchi",
+    "yogurt",
+    "cheese",
+    "pickles",
+    "miso",
+    "kombucha",
+  ];
+while(true){
+  if (labels.some((label) => badIndicators.includes(label))) {
+    quality = "Bad 👎";
+    expiryDate = "Expired - Use FoodSync's chatbot for upcycling ideas";
+    foodType = "Perishable";
+    break;
   }
+  if (labels.some((label) => nonPerishable.includes(label))) {
+    quality = "Excellent";
+    expiryDate = "Long shelf life (months/years)";
+    foodType = "Non-Perishable";
+    break;
+  }
+  if (labels.some((label) => freshIndicators.includes(label))) {
+      quality = "Good";
+      expiryDate = "5-7 days from today";
+      break;
+  }
+  
+  if (labels.some((label) => beverages.includes(label))) {
+    quality = "Varies";
+    expiryDate = "Beverage varies in expiry. Check packaging for expiry details";
+    foodType = "Beverage";
+    break;
+  }
+  if (labels.some((label) => fermentedFoods.includes(label))) {
+    quality = "Stable - Fermented foods last longer";
+    expiryDate = "Weeks to months - Check smell & texture";
+    foodType = "Fermented Food";
+    break;
+  }
+  if (labels.some((label) => fewDaysfood.includes(label))) {
+      quality = "Average";
+      expiryDate = "3-4 days - Consume soon!";
+      break;
+  }
+  if (labels.some((label) => cookedItems.includes(label))) {
+    quality = "Consume ASAP";
+    expiryDate = "1-2 days - Best eaten fresh";
+    foodType = "Cooked";
+    break;
+  }
+  else{
+    quality =
+      "I am extremly sorry, I am unable to give the quality of this item. FoodSync is trying it\'s best to serve better. We will look into the matter";
+    expiryDate = "Not able to Detect";
+    break;
+  }
+}
 
-  // Analyze color changes for spoilage detection
   let darkColors = 0;
   let lightColors = 0;
-
-  colors.forEach(colorData => {
+  colors.forEach((colorData) => {
     const { red, green, blue } = colorData.color;
-    const brightness = (red + green + blue) / 3; // Calculate average brightness
-
-    if (brightness < 60) darkColors++;  // Dark colors suggest spoilage
-    if (brightness > 200) lightColors++; // Fresh food is usually bright
+    const brightness = (red + green + blue) / 3;
+    if (brightness < 80) darkColors++;
+    if (brightness > 180) lightColors++;
   });
-
-  // If there are too many dark colors, assume the food is spoiling
   if (darkColors > lightColors && darkColors > 5) {
     quality = "Bad";
-    expiryDate = "Expired";
+    expiryDate = "Expired - Discard or upcycle";
+    foodType = "Perishable";
+  }
+
+  if (
+    detectedText.match(
+      /(exp|expiry|best before|use by)\s*[:\-]?\s*(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/i
+    )
+  ) {
+    expiryDate = `Detected Expiry: ${RegExp.$2}`;
   }
 
   return {
     labels,
     colors,
     quality,
-    expiryDate
+    expiryDate,
+    foodType,
+    suggestion: generateSuggestion(quality, foodType),
   };
+};
+
+const generateSuggestion = (quality, foodType) => {
+  if (quality === "Bad") return "Consider composting or upcycling!";
+  if (foodType === "Perishable" && quality === "Good")
+    return "Store in fridge to extend freshness!";
+  if (foodType === "Cooked") return "Best eaten within a day!";
+  if (foodType === "Non-Perishable") return "Store in a cool, dry place!";
+  return "Check packaging for expiry details!";
 };
 
 export { analyzeImage };
