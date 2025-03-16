@@ -346,8 +346,8 @@ export function Pay() {
 
         {orderPlaced ? (
           <div className="order-success">
-            <div className="success-icon-container">
-              <div className="success-icon">
+            <div className="success-icon-container pt-2.5">
+              <div className="success-icon mt-12">
                 <div className="checkmark"></div>
               </div>
               <div className="success-rays"></div>
