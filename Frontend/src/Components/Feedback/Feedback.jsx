@@ -1,4 +1,3 @@
-"use client";
 import "./feedback.css";
 import axios from "axios";
 
@@ -25,7 +24,7 @@ const Feedback = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [userName, setUserName] = useState("Guest User");
   const [userType, setUserType] = useState("individual");
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Load feedback  on component mount
   useEffect(() => {
@@ -33,9 +32,7 @@ const Feedback = () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          `${
-            import.meta.env.VITE_BASE_URL
-          }/api/v1/feedback/getallfeedback`
+          `${import.meta.env.VITE_BASE_URL}/api/v1/feedback/getallfeedback`
         );
         setFeedbackList(response.data.data);
       } catch (err) {
@@ -45,13 +42,12 @@ const Feedback = () => {
       }
     };
     fetchFeedback();
-    
+
     const savedTheme = localStorage.getItem("darkMode");
     if (savedTheme) {
       setIsDarkMode(savedTheme === "true");
     }
   }, []);
-  
 
   // Update body class when dark mode changes
   useEffect(() => {
@@ -81,7 +77,7 @@ const Feedback = () => {
 
     const updatedFeedback = [feedback, ...feedbackList];
     setFeedbackList(updatedFeedback);
-    
+
     try {
       const token = localStorage.getItem("accessToken");
       if (!token) {
@@ -171,8 +167,7 @@ const Feedback = () => {
   };
 
   // Fetch feedback on component mount
-  useEffect(() => {
-  }, [feedbackList]);
+  useEffect(() => {}, [feedbackList]);
 
   // Handle dark mode toggle
   useEffect(() => {
@@ -321,7 +316,7 @@ const Feedback = () => {
             <div className="flex space-x-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
-                name="rating"
+                  name="rating"
                   key={star}
                   type="button"
                   onClick={() =>
@@ -440,7 +435,9 @@ const Feedback = () => {
                 <div className="flex-1">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-semibold text-lg">{feedback.user.fullname}</h3>
+                      <h3 className="font-semibold text-lg">
+                        {feedback.user.fullname}
+                      </h3>
                       <div className="flex items-center mt-1">
                         {renderStars(feedback.rating)}
                         <span
@@ -472,7 +469,7 @@ const Feedback = () => {
                       } hover:scale-110`}
                     >
                       <Heart size={18} className="fill-current" />
-                      <span>{feedback.likes||9}</span>
+                      <span>{feedback.likes || 9}</span>
                     </button>
 
                     <button

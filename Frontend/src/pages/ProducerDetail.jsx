@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import "remixicon/fonts/remixicon.css";
 import Navbar from "../Components/Navbar/Navbar";

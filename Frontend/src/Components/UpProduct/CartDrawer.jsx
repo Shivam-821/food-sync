@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import "./CartDrawer.css";
 import { FaShoppingCart, FaTimes, FaTrash } from "react-icons/fa";
@@ -154,7 +152,9 @@ function CartDrawer({
               <button
                 className="btn btn-primary btn-full checkout-btn"
                 onClick={() =>
-                  navigate("/upcyclepay", { state: { totalAmount: totalPrice } })
+                  navigate("/upcyclepay", {
+                    state: { totalAmount: totalPrice },
+                  })
                 }
               >
                 Proceed to Checkout

@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import "./FilterSection.css";
 import { FaSearch, FaChevronDown, FaChevronUp } from "react-icons/fa";
