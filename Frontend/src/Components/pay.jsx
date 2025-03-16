@@ -185,7 +185,6 @@ export function Pay() {
           withCredentials: true,
         }
       );
-      console.log('gefsdgfds')
   
       // Step 2: Load Razorpay script dynamically if not already loaded
       const loadScript = (src) => {

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AiOutlineLike } from "react-icons/ai";
 import { TfiCommentAlt } from "react-icons/tfi";
 import male from "../../assets/male.jpg";
+import CommunityChat from "../CommunityChat/CommunityChat";
 
 const Community = () => {
   return (
@@ -99,7 +100,10 @@ const CommunityActivity = () => {
 
 const Sidebar = () => {
   return (
-    <div className="w-80 flex-shrink-0 p-4">
+    <div className=" w-140 flex-shrink-0 p-4">
+      <div className="mb-4 border-gray-300 border rounded-md shadow-md">
+        <CommunityChat/>
+      </div>
       <div className="mb-4 border-gray-300 border rounded-md shadow-md ">
         <h2 className="text-lg font-semibold rounded-md flex justify-center items-center h-13 bg-gray-100">
           Good to know information
