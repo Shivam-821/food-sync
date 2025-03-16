@@ -29,7 +29,7 @@ const ScrollingText = () => {
   ];
 
   return (
-    <div className="mt-6 cursor-default pt-20 mb-20 font-light overflow-hidden whitespace-nowrap py-2">
+    <div className="cursor-default pt-210 mb-20 font-light overflow-hidden whitespace-nowrap py-2">
       <div className="flex animate-scroll">
         {phrases.map((phrase, index) => (
           <div key={index} className="px-6 text-3xl text-teal-900">

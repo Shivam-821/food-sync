@@ -29,37 +29,66 @@ import Error from "./pages/Error";
 import GoogleMapsRoute from "./Components/Maps";
 import StartUp from './pages/StartUp'
 import VisionComponent from "./Components/VisionStick"
+import AuthProtectWrapper from './pages/Wrapper/UniProtectedWrapper'
+import ProducerProtectWrapper from './pages/Wrapper/ProducerProtectedWrapper'
+import UpcyclingProtectWrapper from './pages/Wrapper/UpcyclingProtectedWrapper'
 
 function App() {
   return (
     <div className="relative">
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/producerHome" element={<ProducerHome />} />
+        <Route path="/producerHome" element={
+          <ProducerProtectWrapper>
+          <ProducerHome />
+          </ProducerProtectWrapper>
+        } />
         <Route path="/donation" element={
-          <ConsumerProtectWrapper>
+          <AuthProtectWrapper>
             <Donation />
-          </ConsumerProtectWrapper>
+          </AuthProtectWrapper>
         } />
         <Route path="/about" element={<About />} />
         <Route path="/recipe" element={<Recipe />} />
-        <Route path="/surplusProducer" element={<ProducerHome />} />
+        <Route path="/surplusProducer" element={
+          <ProducerProtectWrapper>
+            <ProducerHome />
+          </ProducerProtectWrapper>
+        } />
         <Route path="/upcycle" element={<Upcycle />} />
         <Route path="/signup" element={<Ask />} />
         <Route path="/social" element={<Social />} />
-        <Route path="/producerDetail" element={<ProducerDetail />} />
-        <Route path="/producer" element={<Producer />} />
+        <Route path="/producerDetail" element={
+          <ProducerProtectWrapper>
+            <ProducerDetail />
+          </ProducerProtectWrapper>
+        } />
+        <Route path="/producer" element={
+            <Producer />
+        } />
         <Route path="/consumer" element={<SignUp />} />
         <Route path="/communityChat" element={<CommunityChat />} />
         <Route path="/pay" element={<Pay />} />
         <Route path="/upcyclepay" element={<Upay />} />
-        <Route path="/feedback" element={<Feedback />} />
-        <Route path="/userProfile" element={<UserProfile />} />
+        <Route path="/feedback" element={
+          <AuthProtectWrapper>
+          <Feedback />
+          </AuthProtectWrapper>
+        } />
+        <Route path="/userProfile" element={
+          <AuthProtectWrapper>
+          <UserProfile />
+          </AuthProtectWrapper>
+        } />
         <Route path="/image-review" element={<ImageReview />} />
         <Route path="/chat-bot" element={<ChatBot />} />
         <Route path="/login" element={<Login />} />
         <Route path="/upcyclesignup" element={<USignup />} />
-        <Route path="/gamification" element={<GamificationPage />} />
+        <Route path="/gamification" element={
+          <AuthProtectWrapper>
+            <GamificationPage />
+          </AuthProtectWrapper>
+        } />
         <Route path="/error" element={<Error />} />
         <Route path="/maps" element={<GoogleMapsRoute />} />
         <Route path="/startUp" element={<StartUp />} />

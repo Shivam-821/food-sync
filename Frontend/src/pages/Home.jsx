@@ -27,13 +27,13 @@ const Home = () => {
     <div>
       <Background playStatus={playStatus} heroCount={heroCount} />
       <Navbar />
-      <Hero
+      {/* <Hero
         setPlayStatus={setPlayStatus}
         heroData={heroData[heroCount]}
         heroCount={heroCount}
         setHeroCount={setHeroCount}
         playStatus={playStatus}
-      ></Hero>
+      ></Hero> */}
       <ScrollingText />
       <Blocks />
       <Footer />

@@ -21,7 +21,7 @@ const ConsumerProtectWrapper = ({
 
     useEffect(() => {
         if (!token) {
-            navigate('/signup')
+            navigate('/login')
         }
         axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/consumer/profile`, {
             headers:{
@@ -37,7 +37,7 @@ const ConsumerProtectWrapper = ({
             .catch(err => {
                 console.log(err)
                 localStorage.removeItem('accessToken')
-                navigate('/signup')
+                navigate('/login')
             })
     }, [ token ])
 
