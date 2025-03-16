@@ -19,41 +19,19 @@ const ProducerDetail = () => {
   const [isImageHovered, setIsImageHovered] = useState(false);
   const navigate = useNavigate();
 
-  // State to store producer data fetched from the backend
-  // const [producerData, setProducerData] = useState({
-  //   fullname: "John Doe",
-  //   email: "john.doe@foodsync.com",
-  //   location: "United States",
-  //   bio: "Passionate about reducing food waste and promoting sustainability.",
-  //   producerType: "Food Manufacturer",
-  //   donation: "10,000 meals donated",
-  //   rating: "4.5/5",
-  //   history: [
-  //     { item: "Burger", amount: "₹3457", date: "2022-02-20" },
-  //     { item: "Vegetables", amount: "₹1200", date: "2021-12-15" },
-  //     { item: "Chocolate", amount: "₹2500", date: "2021-10-10" },
-  //     { item: "Pizza", amount: "₹4000", date: "2021-08-05" },
-  //   ],
-  //   contact: {
-  //     email: "contact@foodsync.com",
-  //     phone: "+1 (555) 123-4567",
-  //   },
-  // });
-
-  
   const [producerData, setProducerData] = useState({
     fullname: "",
     email: "",
     phone: "",
-    location: "", // Ensure location is a string or properly formatted
+    location: "",
     address: "",
     bio: "",
     producerType: "",
-    companyName:"",
+    companyName: "",
     avatar: "",
     history: [],
   });
-  
+
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -63,7 +41,7 @@ const ProducerDetail = () => {
           navigate("/login");
           return;
         }
-  
+
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/v1/producer/profile`,
           {
@@ -72,49 +50,47 @@ const ProducerDetail = () => {
             },
           }
         );
-  
+
         if (response.data && response.data.data) {
           const user = response.data.data;
-          console.log(user);
-  
-          // Extract donated items' names
+
           const donatedItems = user.donationsMade
             .flatMap((donation) => donation.items.map((item) => item.name))
-            .join(", "); // Join names into a comma-separated string
-  
+            .join(", ");
+
+          const savedBio = localStorage.getItem("producerBio") || user.bio || "No bio available";
+
           setProducerData({
             fullname: user.fullname,
             email: user.email,
-            donation: donatedItems || "No donations yet", // Set donated items' names
+            donation: donatedItems || "No donations yet",
             history: user.items,
             phone: user.phone,
             companyName: user.companyName,
             location: user.location
-              ? `${user.location.coordinates[1]}, ${user.location.coordinates[0]}` // Format location as a string
+              ? `${user.location.coordinates[1]}, ${user.location.coordinates[0]}`
               : "Location not available",
             address: user.address,
-            bio: user.bio || "No bio available",
+            bio: savedBio,
             producerType: user.producerType,
-            avatar: user.avatar || profileImage, // Use default image if avatar is not available
+            avatar: user.avatar || profileImage,
           });
-          setProfileImage(user.avatar || profileImage); // Update profile image
+          setProfileImage(user.avatar || profileImage);
         }
       } catch (error) {
         console.error("Error fetching user profile:", error);
         alert("Failed to fetch user profile. Please try again.");
       }
     };
-  
+
     fetchUserProfile();
   }, [navigate]);
 
-  // Toggle dark mode
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
     document.body.classList.toggle("dark-mode", !isDarkMode);
   };
 
-  // Handle image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -126,7 +102,6 @@ const ProducerDetail = () => {
     }
   };
 
-  // Handle input changes in the edit form
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProducerData((prevData) => ({
@@ -135,19 +110,19 @@ const ProducerDetail = () => {
     }));
   };
 
-  // Toggle edit mode
   const handleEditToggle = () => {
+    if (isEditing) {
+      localStorage.setItem("producerBio", producerData.bio);
+    }
     setIsEditing(!isEditing);
   };
 
-  // Handle logout
   const handleLogOut = () => {
     setShowLogoutModal(true);
   };
 
-  // Confirm logout
   const confirmLogOut = () => {
-    localStorage.removeItem("accessToken"); // Clear the access token
+    localStorage.removeItem("accessToken");
     navigate("/");
   };
 
@@ -167,7 +142,6 @@ const ProducerDetail = () => {
         isDarkMode ? "bg-gray-900 text-white" : "bg-yellow-50 text-gray-900"
       }`}
     >
-      {/* Theme Toggle Button */}
       <motion.button
         className={`fixed top-2 right-4 z-50 p-3 rounded-full shadow-lg ${
           isDarkMode ? "bg-yellow-400 text-gray-900" : "bg-gray-800 text-white"
@@ -185,7 +159,6 @@ const ProducerDetail = () => {
 
       <Navbar />
 
-      {/* Tab Navigation */}
       <motion.div
         className="max-w-7xl mx-auto pt-6 px-6"
         initial={{ opacity: 0, y: -20 }}
@@ -219,9 +192,7 @@ const ProducerDetail = () => {
         </div>
       </motion.div>
 
-      {/* Profile Content */}
       <div className="max-w-7xl mx-auto py-6 px-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column - Profile Card */}
         <motion.div
           className="lg:col-span-1"
           initial={{ opacity: 0, x: -50 }}
@@ -307,10 +278,7 @@ const ProducerDetail = () => {
                 >
                   {producerData.companyName}
                 </motion.p>
-
               </motion.div>
-
-              
 
               <motion.div
                 className={`flex items-center ${
@@ -328,13 +296,26 @@ const ProducerDetail = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                <motion.p
-                  className={`text-center ${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  } mb-6 px-4 relative z-10`}
-                >
-                  {producerData.bio}
-                </motion.p>
+                {isEditing ? (
+                  <textarea
+                    name="bio"
+                    value={producerData.bio}
+                    onChange={handleChange}
+                    className={`w-full p-2 rounded-lg ${
+                      isDarkMode ? "bg-gray-700 text-white" : "bg-gray-100 text-gray-900"
+                    }`}
+                    rows="4"
+                    placeholder="Enter your bio..."
+                  />
+                ) : (
+                  <motion.p
+                    className={`text-center ${
+                      isDarkMode ? "text-gray-400" : "text-gray-500"
+                    } mb-6 px-4 relative z-10`}
+                  >
+                    {producerData.bio}
+                  </motion.p>
+                )}
                 <motion.div
                   className="absolute -inset-4 bg-blue-500/5 rounded-xl -z-0"
                   initial={{ scale: 0.8, opacity: 0 }}
@@ -353,15 +334,13 @@ const ProducerDetail = () => {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
               >
-                {isEditing ? "Cancel Editing" : "Edit Profile"}
+                {isEditing ? "Save Changes" : "Edit Profile"}
               </motion.button>
             </div>
           </motion.div>
         </motion.div>
 
-        {/* Right Column - Details */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Donation, Rating, and Producer Type */}
           {activeTab === "profile" && (
             <div className="space-y-6">
               <motion.div
@@ -418,46 +397,6 @@ const ProducerDetail = () => {
               >
                 <motion.div animate={floatingAnimation}>
                   <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                    <i className="ri-star-line mr-2 text-yellow-500"></i>
-                    Rating
-                  </h2>
-                  <motion.div
-                    className={`text-lg ${
-                      isDarkMode ? "text-gray-300" : "text-gray-700"
-                    } p-3 rounded-lg ${
-                      isDarkMode ? "bg-gray-700/50" : "bg-yellow-50"
-                    }`}
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    <span className="font-medium">{producerData.rating}</span>
-                    <motion.div className="w-full h-1 bg-yellow-500/30 mt-2 rounded-full overflow-hidden">
-                      <motion.div
-                        className="h-full bg-yellow-500"
-                        initial={{ width: 0 }}
-                        animate={{ width: "100%" }}
-                        transition={{ duration: 1.5, delay: 0.5 }}
-                      />
-                    </motion.div>
-                  </motion.div>
-                </motion.div>
-              </motion.div>
-
-              {/* Producer Type Section */}
-              <motion.div
-                className={`p-6 rounded-xl shadow-md ${
-                  isDarkMode ? "bg-gray-800" : "bg-white"
-                } transition-colors duration-300`}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{
-                  y: -5,
-                  boxShadow:
-                    "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-                }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <motion.div animate={floatingAnimation}>
-                  <h2 className="text-2xl font-semibold mb-3 flex items-center">
                     <i className="ri-building-line mr-2 text-blue-500"></i>
                     Producer Type
                   </h2>
@@ -482,25 +421,23 @@ const ProducerDetail = () => {
                     </motion.div>
                   </motion.div>
                 </motion.div>
-
-                {/* Logout Button */}
-                <motion.button
-                  className={`w-full py-2 rounded-lg transition ${
-                    isDarkMode
-                      ? "bg-red-600 hover:bg-red-500"
-                      : "bg-red-600 hover:bg-red-500 text-white"
-                  } mt-4`}
-                  onClick={handleLogOut}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                >
-                  Log Out
-                </motion.button>
               </motion.div>
+
+              <motion.button
+                className={`w-50  py-2 rounded-lg transition ${
+                  isDarkMode
+                    ? "bg-red-600 hover:bg-red-500"
+                    : "bg-red-600 hover:bg-red-500 text-white"
+                } mt-4`}
+                onClick={handleLogOut}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                Log Out
+              </motion.button>
             </div>
           )}
 
-          {/* History Section */}
           {activeTab === "history" && (
             <motion.div
               className={`p-6 rounded-xl shadow-md ${
@@ -540,7 +477,6 @@ const ProducerDetail = () => {
             </motion.div>
           )}
 
-          {/* Contact Information */}
           {activeTab === "contact" && (
             <motion.div
               className={`p-6 rounded-xl shadow-md ${
@@ -588,7 +524,6 @@ const ProducerDetail = () => {
         </div>
       </div>
 
-      {/* Logout Modal */}
       <AnimatePresence>
         {showLogoutModal && (
           <motion.div

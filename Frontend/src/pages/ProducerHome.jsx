@@ -6,6 +6,7 @@ import axios from "axios";
 import ItemsDetail from "../Components/Block/ItemsDetail";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { motion } from "framer-motion";
 
 const ProducerHome = () => {
   const [avatar, setAvatar] = useState(null);
@@ -112,7 +113,12 @@ const ProducerHome = () => {
 
       <Navbar />
 
-      <div className="flex items-center justify-between p-6 pt-3 pb-3 mt-16 shadow-md">
+      <motion.div
+        className="flex items-center justify-between p-6 pt-3 pb-3 mt-16 shadow-md"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <h1 className="text-5xl font-extrabold text-gray-800">Surplus Producer</h1>
         <Link to="/producerDetail">
           <img
@@ -121,15 +127,23 @@ const ProducerHome = () => {
             alt="User Profile"
           />
         </Link>
-      </div>
+      </motion.div>
 
       <div className="p-10 pt-5 mb-9">
-        <div className="bg-[url('https://cdn.pixabay.com/photo/2016/04/02/09/43/apple-1302430_1280.jpg')] p-10 rounded-2xl">
+        <motion.div
+          className="bg-[url('https://cdn.pixabay.com/photo/2016/04/02/09/43/apple-1302430_1280.jpg')] p-10 rounded-2xl"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
           <h3 className="text-3xl font-semibold text-gray-700 mb-6">Add Items</h3>
 
-          <form
+          <motion.form
             onSubmit={handleAddItem}
             className="rounded-xl shadow-md p-6 bg-gray-500/80 max-w-4xl mb-15 mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
@@ -245,21 +259,6 @@ const ProducerHome = () => {
                 />
               </div>
 
-              {/* <div>
-                <label className="block text-lg font-medium text-gray-700">Status</label>
-                <select
-                  required
-                  className="w-full p-3 border rounded-lg bg-gray-200"
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                >
-                  <option value="">Select Status</option>
-                  <option value="available">Available</option>
-                  <option value="expired">Expired</option>
-                  <option value="upcycled">Upcycled</option>
-                </select>
-              </div> */}
-
               <div>
                 <label className="block text-lg font-medium text-gray-700">Upcycling Option</label>
                 <select
@@ -280,10 +279,12 @@ const ProducerHome = () => {
               </div>
             </div>
 
-            <button
+            <motion.button
               type="submit"
               className="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-500 transition duration-300 flex items-center justify-center"
               disabled={isAdding} // Disable button while adding
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               {isAdding ? (
                 <>
@@ -312,9 +313,9 @@ const ProducerHome = () => {
               ) : (
                 "Add Item"
               )}
-            </button>
-          </form>
-        </div>
+            </motion.button>
+          </motion.form>
+        </motion.div>
 
         <ItemsDetail />
       </div>

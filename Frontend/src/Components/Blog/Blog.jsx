@@ -111,10 +111,7 @@ const Blog = () => {
             <p className="mt-2 font-light font-stretch-semi-condensed">
               {post.excerpt}
             </p>
-            <h2 className="mt-4 inline-block font-semibold">Read More</h2>
-            <a href={post.link} className="text-blue-500 inline-block text-sm">
-              {post.linkText}
-            </a>
+            <a href={post.link}className="mt-4 inline-block font-semibold">Read More</a>
           </div>
         ))}
       </div>

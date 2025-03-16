@@ -1802,7 +1802,7 @@ const GamificationPage = () => {
                   <div>
                     <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
                       <ShoppingBag className="h-5 w-5 text-purple-300" /> For
-                      Consumers
+                      Badge Levels and Points
                     </h3>
                     <ul className={styles.rulesList}>
                       <li className={styles.ruleItem}>
@@ -1811,7 +1811,7 @@ const GamificationPage = () => {
                             <ChevronRight className="h-3 w-3" />
                           </div>
                         </div>
-                        <span>+10 points for every purchase</span>
+                        <span>Rookie: Earn 0 to 20 points to start your journey</span>
                       </li>
                       <li className={styles.ruleItem}>
                         <div className={styles.ruleBullet}>
@@ -1819,7 +1819,7 @@ const GamificationPage = () => {
                             <ChevronRight className="h-3 w-3" />
                           </div>
                         </div>
-                        <span>+5 points for writing product reviews</span>
+                        <span>Contributor: Reach 21 to 60 points to become a valued contributor</span>
                       </li>
                       <li className={styles.ruleItem}>
                         <div className={styles.ruleBullet}>
@@ -1827,7 +1827,7 @@ const GamificationPage = () => {
                             <ChevronRight className="h-3 w-3" />
                           </div>
                         </div>
-                        <span>+20 points for referring new users</span>
+                        <span>Champion: Accumulate 101 to 150 points to rise as a champion</span>
                       </li>
                       <li className={styles.ruleItem}>
                         <div className={styles.ruleBullet}>
@@ -1836,7 +1836,7 @@ const GamificationPage = () => {
                           </div>
                         </div>
                         <span>
-                          +15 points for participating in recycling programs
+                        Legend: Surpass 151+ points to earn the legendary status
                         </span>
                       </li>
                     </ul>
@@ -1844,8 +1844,7 @@ const GamificationPage = () => {
 
                   <div>
                     <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                      <Truck className="h-5 w-5 text-purple-300" /> For
-                      Producers
+                      <Truck className="h-5 w-5 text-purple-300" /> Credit Points
                     </h3>
                     <ul className={styles.rulesList}>
                       <li className={styles.ruleItem}>
@@ -1854,7 +1853,7 @@ const GamificationPage = () => {
                             <ChevronRight className="h-3 w-3" />
                           </div>
                         </div>
-                        <span>+15 points for every product listed</span>
+                        <span>Credit points are calculated based on the total amount spent in the cart and additional factors like item price, quantity, and a multiplier.</span>
                       </li>
                       <li className={styles.ruleItem}>
                         <div className={styles.ruleBullet}>
@@ -1862,7 +1861,7 @@ const GamificationPage = () => {
                             <ChevronRight className="h-3 w-3" />
                           </div>
                         </div>
-                        <span>+10 points for each sale</span>
+                        <span>Earn 1 credit point for every ₹100 spent in the cart.</span>
                       </li>
                       <li className={styles.ruleItem}>
                         <div className={styles.ruleBullet}>
@@ -1870,7 +1869,7 @@ const GamificationPage = () => {
                             <ChevronRight className="h-3 w-3" />
                           </div>
                         </div>
-                        <span>+25 points for using sustainable packaging</span>
+                        <span>Additional points are earned for each item in the cart, calculated using the item's price, quantity, and a predefined multiplier.</span>
                       </li>
                       <li className={styles.ruleItem}>
                         <div className={styles.ruleBullet}>
@@ -1879,59 +1878,35 @@ const GamificationPage = () => {
                           </div>
                         </div>
                         <span>
-                          +20 points for verified eco-friendly products
+                        The total credit points are the sum of the base points (from the total cart amount) and the extra points (from individual items).
+                        </span>
+                      </li>
+
+                      <li className={styles.ruleItem}>
+                        <div className={styles.ruleBullet}>
+                          <div className={styles.ruleBulletInner}>
+                            <ChevronRight className="h-3 w-3" />
+                          </div>
+                        </div>
+                        <span>
+                        For a ₹5000 cart with 2 items, you earn 50 base points (₹5000 / 100) and 60 extra points (from items), totaling 110 credit points
+                        </span>
+                      </li>
+
+                      <li className={styles.ruleItem}>
+                        <div className={styles.ruleBullet}>
+                          <div className={styles.ruleBulletInner}>
+                            <ChevronRight className="h-3 w-3" />
+                          </div>
+                        </div>
+                        <span>
+                        These credit points are added to your gamification profile, helping you progress through badge levels like Rookie, Contributor, Achiever, Champion, and Legend
                         </span>
                       </li>
                     </ul>
                   </div>
 
-                  <div>
-                    <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                      <Recycle className="h-5 w-5 text-purple-300" /> For
-                      Upcycling Industry
-                    </h3>
-                    <ul className={styles.rulesList}>
-                      <li className={styles.ruleItem}>
-                        <div className={styles.ruleBullet}>
-                          <div className={styles.ruleBulletInner}>
-                            <ChevronRight className="h-3 w-3" />
-                          </div>
-                        </div>
-                        <span>
-                          +20 points for each recycling service offered
-                        </span>
-                      </li>
-                      <li className={styles.ruleItem}>
-                        <div className={styles.ruleBullet}>
-                          <div className={styles.ruleBulletInner}>
-                            <ChevronRight className="h-3 w-3" />
-                          </div>
-                        </div>
-                        <span>+15 points for each material processed</span>
-                      </li>
-                      <li className={styles.ruleItem}>
-                        <div className={styles.ruleBullet}>
-                          <div className={styles.ruleBulletInner}>
-                            <ChevronRight className="h-3 w-3" />
-                          </div>
-                        </div>
-                        <span>
-                          +30 points for innovative upcycling solutions
-                        </span>
-                      </li>
-                      <li className={styles.ruleItem}>
-                        <div className={styles.ruleBullet}>
-                          <div className={styles.ruleBulletInner}>
-                            <ChevronRight className="h-3 w-3" />
-                          </div>
-                        </div>
-                        <span>
-                          +25 points for educational content about recycling
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
-
+                 
                   <div>
                     <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
                       <Trophy className="h-5 w-5 text-purple-300" /> Leaderboard

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios"; // ✅ Import axios
 import rehypeHighlight from "rehype-highlight"
 import Markdown from "react-markdown"
+import { Navigate } from "react-router-dom";
 
 export default function ChatComponent() {
   const [messages, setMessages] = useState([]);
@@ -37,6 +38,7 @@ export default function ChatComponent() {
         setMessages((prev) => [...prev, formattedResponse]);
       }, 1000);
     } catch (err) {
+      Navigate("/error")
       console.error("Error fetching data:", err);
       setMessages((prev) => [
         ...prev,
