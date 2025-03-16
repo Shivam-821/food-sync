@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useCallback, useState } from 'react';
 
 export const UpcyclingIDataContext = createContext();
 
@@ -13,9 +13,9 @@ const UpcyclingIContext = ({ children }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const updateUpcyclingI = (upcyclingIData) => {
+    const updateUpcyclingI = useCallback((upcyclingIData) => {
         setUpcyclingI(upcyclingIData);
-    };
+    },[]);
 
     const value = {
         upcyclingI,

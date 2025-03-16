@@ -28,7 +28,6 @@ const ProducerProtectWrapper = ({ children }) => {
         })
         .catch(err => {
             console.log("Producer auth failed:", err);
-            localStorage.removeItem('accessToken');
             navigate('/login');
         });
     }, [token, navigate, setProducer]);

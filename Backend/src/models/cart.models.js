@@ -39,7 +39,11 @@ const cartSchema = new Schema(
         },
       },
     ],
-    totalAmount: { type: Number, default: 0 },
+    totalAmount: { type: Number, default: 1 },
+    finalAmount: {
+      type: Number,
+      default: 1,
+    }
   },
   { timestamps: true }
 );

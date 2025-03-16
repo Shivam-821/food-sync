@@ -13,7 +13,7 @@ const AuthProtectWrapper = ({ children }) => {
     // Contexts for different user roles
     const { setConsumer } = useContext(ConsumerDataContext);
     const { setProducer } = useContext(ProducerDataContext);
-    const { setUpcyclingIndustry } = useContext(UpcyclingIDataContext);
+    const { updateUpcyclingI } = useContext(UpcyclingIDataContext);
 
     const [isLoading, setIsLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -27,7 +27,7 @@ const AuthProtectWrapper = ({ children }) => {
         const roleEndpoints = [
             { type: 'consumer', url: '/api/v1/consumer/profile', setter: setConsumer },
             { type: 'producer', url: '/api/v1/producer/profile', setter: setProducer },
-            { type: 'upcyclingIndustry', url: '/api/v1/upcyclingIndustry/profile', setter: setUpcyclingIndustry }
+            { type: 'upcyclingIndustry', url: '/api/v1/upcyclingIndustry/profile', setter: updateUpcyclingI }
         ];
 
         const checkAuthentication = async () => {
@@ -49,13 +49,11 @@ const AuthProtectWrapper = ({ children }) => {
                 }
             }
 
-            // If no valid role found, redirect to signup
-            localStorage.removeItem('accessToken');
             navigate('/login');
         };
 
         checkAuthentication();
-    }, [token, navigate, setConsumer, setProducer, setUpcyclingIndustry]);
+    }, [token, navigate, setConsumer, setProducer, updateUpcyclingI]);
 
     if (isLoading) {
         return <LoadingPage />;

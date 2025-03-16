@@ -161,7 +161,7 @@ const UserProfile = () => {
 
   return (
     <div
-      className={`min-h-screen font-sans relative mt-9 transition-colors duration-500 overflow-auto h-screen ${
+      className={`min-h-screen font-sans relative mt-16 transition-colors duration-500 overflow-auto h-screen ${
         isDarkMode ? "bg-gray-900 text-white" : "bg-blue-50 text-gray-900"
       }`}
     >
@@ -185,7 +185,7 @@ const UserProfile = () => {
 
       {/* Tab Navigation */}
       <motion.div
-        className="max-w-7xl mx-auto pt-6 px-6"
+        className="max-w-7xl mx-auto px-6"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}

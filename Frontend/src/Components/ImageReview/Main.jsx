@@ -50,7 +50,7 @@ const Main = () => {
       </div>
       <div className="p-5 flex-1 flex flex-col justify-evenly items-center relative">
         <h2 className="text-4xl font-semibold font-serif text-white">Let's Know About Your Food</h2>
-        <p className="text-xl text-white">Do you know till when you can eat any food</p>
+        <p className="text-xl text-white">Do you know till when you can eat your food</p>
         <form onSubmit={handleSubmit} className="p-4 h-[250px] w-[250px] pl-1 pr-1 bg-gray-800/70 mt-8 rounded-[40px] shadow-md flex flex-col justify-center items-center gap-3">
         <div className="flex justify-evenly items-center mb-4">
 
