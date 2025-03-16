@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState, useRef } from "react";
 import "./ImprovedSurplusFoodSharing.css";
 
@@ -25,12 +23,8 @@ const ImprovedSurplusFoodSharing = () => {
       if (goalsRef.current) {
         const goalsRect = goalsRef.current.getBoundingClientRect();
         if (goalsRect.top < window.innerHeight * 0.8 && goalsRect.bottom > 0) {
-          setActiveGoal(1);
-          setTimeout(() => setActiveGoal(2), 300);
-          setTimeout(() => setActiveGoal(3), 600);
-          setTimeout(() => setActiveGoal(4), 900);
-          setTimeout(() => setActiveGoal(5), 1200);
-          setTimeout(() => setActiveGoal(6), 1500);
+          // Activate all goals at once to prevent blinking
+          setActiveGoal(6);
         }
       }
     };
@@ -70,7 +64,7 @@ const ImprovedSurplusFoodSharing = () => {
     },
     {
       icon: "🗑️",
-      text: "FoodySync has the solution to this problem by reducing food waste and providing surplus food to those in need.",
+      text: "FoodSync aims to reduce food waste and provide nutritious food to those in need.",
       color: "#e74c3c",
     },
     {

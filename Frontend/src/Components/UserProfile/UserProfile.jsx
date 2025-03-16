@@ -92,13 +92,13 @@ const UserProfile = () => {
 
   //getBadge
   const getBadge = () => {
-    if (userData.gamification.points < 21) {
+    if (userData.gamification.points < 31) {
       return <MdStars />;
-    } else if (userData.gamification.points < 60) {
+    } else if (userData.gamification.points < 81) {
       return <SlBadge />;
-    } else if (userData.gamification.points < 101) {
+    } else if (userData.gamification.points < 121) {
       return <RiShieldFlashFill />;
-    } else if (userData.gamification.points < 151) {
+    } else if (userData.gamification.points < 201) {
       return <GiLaurelsTrophy />;
     } else {
       return <GiLaurelCrown />;
@@ -161,7 +161,7 @@ const UserProfile = () => {
 
   return (
     <div
-      className={`min-h-screen font-sans relative mt-16 transition-colors duration-500 overflow-auto h-screen ${
+      className={`min-h-screen font-sans relative mt-9 transition-colors duration-500 ${
         isDarkMode ? "bg-gray-900 text-white" : "bg-blue-50 text-gray-900"
       }`}
     >
@@ -398,8 +398,9 @@ const UserProfile = () => {
                     }`}
                     whileHover={{ scale: 1.02 }}
                   >
-                    <h1 className="text-md font-bold">
-                      {userData.gamification.points}
+                    <h1 className="text-md font-bold flex justify-between">
+                      <h2>{userData.gamification.points}</h2>
+                      <h2>{userData.gamification.badges}</h2>
                     </h1>
                   </motion.p>
                 </motion.div>

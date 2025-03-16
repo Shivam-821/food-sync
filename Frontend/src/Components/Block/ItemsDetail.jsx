@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
-import image1 from "../../assets/producer1.jpeg";
-import image2 from "../../assets/producer2.jpeg";
-import image3 from "../../assets/producer3.jpeg";
-import image4 from "../../assets/producer4.jpeg";
+import { motion } from "framer-motion";
+import { Navigate } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ItemsDetail = () => {
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <div className="font-semibold flex mb-5 justify-center text-rose-800 font-serif text-5xl">
-        Your Added Items
+      <div className="font-semibold flex justify-center text-rose-800 font-serif text-5xl">
+        Added Items
       </div>
       <ItemsList />
     </div>
@@ -19,6 +18,7 @@ const ItemsDetail = () => {
 export default ItemsDetail;
 
 const ItemsList = () => {
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
 
   useEffect(() => {
@@ -42,9 +42,7 @@ const ItemsList = () => {
           }
         );
 
-        console.log(response.data.data);
         setItems(response.data.data.items || []);
-        console.log(response.data.data.items);
       } catch (err) {
         console.error("Error fetching data:", err);
       }
@@ -53,28 +51,77 @@ const ItemsList = () => {
     fetchItems();
   }, []);
 
+  // Animation variants for Framer Motion
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2, // Staggered animation for each item
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 120, damping: 20 },
+    },
+    hover: {
+      scale: 1.05,
+      boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.2)",
+      transition: { duration: 0.3 },
+    },
+  };
+
   return (
-    <div className="flex flex-wrap gap-9">
+    <motion.div
+      className="flex flex-wrap gap-6 p-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {items.length > 0 ? (
         items.map((item, index) => (
-          <div
+          <motion.div
             key={index}
-            className="flex border bg-white border-gray-400 hover:border-gray-600 rounded-4xl transform transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-2xl flex-col items-center"
+            className="flex flex-col items-center border border-gray-300 bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transform transition-transform duration-300 ease-in-out"
+            variants={itemVariants}
+            whileHover="hover"
           >
             <img
-              className="h-60 w-60 rounded-4xl"
+              className="h-60 w-60 object-cover rounded-t-3xl"
               src={item.avatar}
               alt={item.name}
             />
-            <div className="flex gap-10 font-semibold mt-1">
-              <h3 className="flex">{item.name || "Unnamed Item"}</h3>
-              <p className="flex">{item.quantity || "N/A"}kg</p>
+            <div className="flex bg-yellow-400 justify-between gap-8 p-4  w-full">
+              <h3 className="text-lg font-semibold text-gray-800">
+                {item.name || "Unnamed Item"}
+              </h3>
+              <p className="text-lg font-semibold text-gray-600">
+                {item.quantity || "N/A"} kg
+              </p>
+              
             </div>
-          </div>
+            <div className="flex bg-yellow-400 justify-between gap-8 p-4 w-full">
+              <h3>{item.category}</h3>
+              <p className="font-bold">₹{item.price}</p>
+            </div>
+           
+          </motion.div>
         ))
       ) : (
-        <p>No items available.</p>
+        <motion.p
+          className="text-xl text-gray-600"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          No items available.
+        </motion.p>
       )}
-    </div>
+    </motion.div>
   );
 };

@@ -1,6 +1,9 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
+
+import { MdStars } from "react-icons/md"; // Rookie
+import { SlBadge } from "react-icons/sl"; // Contributor
+import { RiShieldFlashFill } from "react-icons/ri"; // Achiever
+import { GiLaurelsTrophy, GiLaurelCrown } from "react-icons/gi";
 import "remixicon/fonts/remixicon.css";
 import Navbar from "../Components/Navbar/Navbar";
 import Footer from "../Components/Footer/Footer";
@@ -19,39 +22,29 @@ const ProducerDetail = () => {
   const [isImageHovered, setIsImageHovered] = useState(false);
   const navigate = useNavigate();
 
-  // State to store producer data fetched from the backend
-  // const [producerData, setProducerData] = useState({
-  //   fullname: "John Doe",
-  //   email: "john.doe@foodsync.com",
-  //   location: "United States",
-  //   bio: "Passionate about reducing food waste and promoting sustainability.",
-  //   producerType: "Food Manufacturer",
-  //   donation: "10,000 meals donated",
-  //   rating: "4.5/5",
-  //   history: [
-  //     { item: "Burger", amount: "₹3457", date: "2022-02-20" },
-  //     { item: "Vegetables", amount: "₹1200", date: "2021-12-15" },
-  //     { item: "Chocolate", amount: "₹2500", date: "2021-10-10" },
-  //     { item: "Pizza", amount: "₹4000", date: "2021-08-05" },
-  //   ],
-  //   contact: {
-  //     email: "contact@foodsync.com",
-  //     phone: "+1 (555) 123-4567",
-  //   },
-  // });
-
   const [producerData, setProducerData] = useState({
     fullname: "",
     email: "",
     phone: "",
     location: "",
+    location: "",
     address: "",
     bio: "",
     producerType: "",
     companyName: "",
+    companyName: "",
     avatar: "",
     history: [],
   });
+
+  const getBadgeDetails = (points) => {
+    if (points < 31) return { icon: <MdStars className="text-yellow-500" />, name: "Rookie" };
+    if (points < 81) return { icon: <SlBadge className="text-blue-500" />, name: "Contributor" };
+    if (points < 151) return { icon: <RiShieldFlashFill className="text-green-500" />, name: "Achiever" };
+    if (points < 201) return { icon: <GiLaurelsTrophy className="text-purple-500" />, name: "Champion" };
+    return { icon: <GiLaurelCrown className="text-red-500" />, name: "Legend" };
+  };
+
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -62,7 +55,7 @@ const ProducerDetail = () => {
           navigate("/login");
           return;
         }
-
+  
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/v1/producer/profile`,
           {
@@ -71,49 +64,51 @@ const ProducerDetail = () => {
             },
           }
         );
-
+  
         if (response.data && response.data.data) {
           const user = response.data.data;
-          console.log(user);
-
-          // Extract donated items' names
+  
           const donatedItems = user.donationsMade
             .flatMap((donation) => donation.items.map((item) => item.name))
-            .join(", "); // Join names into a comma-separated string
-
+            .join(", ");
+  
+          const savedBio = localStorage.getItem("producerBio") || user.bio || "No bio available";
+  
+          // Extract gamification points
+          const gamificationPoints = user.gamification?.points || 0;
+  
           setProducerData({
             fullname: user.fullname,
             email: user.email,
-            donation: donatedItems || "No donations yet", // Set donated items' names
+            donation: donatedItems || "No donations yet",
             history: user.items,
             phone: user.phone,
             companyName: user.companyName,
             location: user.location
-              ? `${user.location.coordinates[1]}, ${user.location.coordinates[0]}` // Format location as a string
+              ? `${user.location.coordinates[1]}, ${user.location.coordinates[0]}`
               : "Location not available",
             address: user.address,
-            bio: user.bio || "No bio available",
+            bio: savedBio,
             producerType: user.producerType,
-            avatar: user.avatar || profileImage, // Use default image if avatar is not available
+            avatar: user.avatar || profileImage,
+            points: gamificationPoints, // Add gamification points to state
           });
-          setProfileImage(user.avatar || profileImage); // Update profile image
+          setProfileImage(user.avatar || profileImage);
         }
       } catch (error) {
         console.error("Error fetching user profile:", error);
         alert("Failed to fetch user profile. Please try again.");
       }
     };
-
+  
     fetchUserProfile();
   }, [navigate]);
 
-  // Toggle dark mode
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
     document.body.classList.toggle("dark-mode", !isDarkMode);
   };
 
-  // Handle image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -125,7 +120,6 @@ const ProducerDetail = () => {
     }
   };
 
-  // Handle input changes in the edit form
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProducerData((prevData) => ({
@@ -134,19 +128,19 @@ const ProducerDetail = () => {
     }));
   };
 
-  // Toggle edit mode
   const handleEditToggle = () => {
+    if (isEditing) {
+      localStorage.setItem("producerBio", producerData.bio);
+    }
     setIsEditing(!isEditing);
   };
 
-  // Handle logout
   const handleLogOut = () => {
     setShowLogoutModal(true);
   };
 
-  // Confirm logout
   const confirmLogOut = () => {
-    localStorage.removeItem("accessToken"); // Clear the access token
+    localStorage.removeItem("accessToken");
     navigate("/");
   };
 
@@ -166,7 +160,6 @@ const ProducerDetail = () => {
         isDarkMode ? "bg-gray-900 text-white" : "bg-yellow-50 text-gray-900"
       }`}
     >
-      {/* Theme Toggle Button */}
       <motion.button
         className={`fixed top-2 right-4 z-50 p-3 rounded-full shadow-lg ${
           isDarkMode ? "bg-yellow-400 text-gray-900" : "bg-gray-800 text-white"
@@ -184,7 +177,6 @@ const ProducerDetail = () => {
 
       <Navbar />
 
-      {/* Tab Navigation */}
       <motion.div
         className="max-w-7xl mx-auto pt-6 px-6"
         initial={{ opacity: 0, y: -20 }}
@@ -218,9 +210,7 @@ const ProducerDetail = () => {
         </div>
       </motion.div>
 
-      {/* Profile Content */}
       <div className="max-w-7xl mx-auto py-6 px-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column - Profile Card */}
         <motion.div
           className="lg:col-span-1"
           initial={{ opacity: 0, x: -50 }}
@@ -276,206 +266,204 @@ const ProducerDetail = () => {
               </motion.div>
 
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <motion.h1
-                  className="text-3xl font-bold mb-1"
-                  whileHover={{ scale: 1.05, color: "#3b82f6" }}
-                  transition={{ type: "spring", stiffness: 500 }}
-                >
-                  {producerData.fullname}
-                </motion.h1>
-                <motion.p
-                  className={`${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  } mb-2`}
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
-                >
-                  {producerData.email}
-                </motion.p>
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.2 }}
+>
+  {/* Full Name */}
+  <motion.h1
+    className="text-3xl font-bold mb-1"
+    whileHover={{ scale: 1.05, color: "#3b82f6" }}
+    transition={{ type: "spring", stiffness: 500 }}
+  >
+    {producerData.fullname}
+  </motion.h1>
 
-                <motion.p
-                  className={`${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  } mb-2`}
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
-                >
-                  {producerData.companyName}
-                </motion.p>
-              </motion.div>
+  {/* Email */}
+  <motion.p
+    className={`${isDarkMode ? "text-gray-400" : "text-gray-800"} mb-2 pl-9 font-bold`}
+    // animate={{ opacity: [0.5, 1, 0.5] }}
+    transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
+  >
+    {producerData.email}
+  </motion.p>
 
-              <motion.div
-                className={`flex items-center ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
-                } mb-4`}
-                whileHover={{ scale: 1.05, x: 5 }}
-              >
-                <i className="ri-map-pin-line mr-2"></i>
-                <span>{producerData.location}</span>
-              </motion.div>
+  {/* Company Name */}
+  <motion.div
+    className="flex items-center gap-2 mb-2"
+    
+    transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
+  >
+    <span className={`${isDarkMode ? "text-gray-400" : "text-gray-800"} font-semibold pl-2`} >
+      Company Name:
+    </span>
+    <motion.span
+      className={`${isDarkMode ? "text-gray-300" : "text-gray-700"} font-medium`}
+    >
+      {producerData.companyName}
+    </motion.span>
+  </motion.div>
+</motion.div>
 
-              <motion.button
-                className={`w-full py-2 rounded-lg transition ${
-                  isDarkMode
-                    ? "bg-blue-600 hover:bg-blue-500"
-                    : "bg-blue-600 hover:bg-blue-500 text-white"
-                }`}
-                onClick={handleEditToggle}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                {isEditing ? "Cancel Editing" : "Edit Profile"}
-              </motion.button>
             </div>
           </motion.div>
         </motion.div>
 
-        {/* Right Column - Details */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Donation, Rating, and Producer Type */}
           {activeTab === "profile" && (
             <div className="space-y-6">
-              <motion.div
-                className={`p-6 rounded-xl shadow-md ${
-                  isDarkMode ? "bg-gray-800" : "bg-white"
-                } transition-colors duration-300`}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{
-                  y: -5,
-                  boxShadow:
-                    "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-                }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <motion.div animate={floatingAnimation}>
-                  <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                    <i className="ri-heart-line mr-2 text-red-500"></i>
-                    Donation
-                  </h2>
-                  <motion.div
-                    className={`text-lg ${
-                      isDarkMode ? "text-gray-300" : "text-gray-700"
-                    } p-3 rounded-lg ${
-                      isDarkMode ? "bg-gray-700/50" : "bg-red-50"
-                    }`}
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    <span className="font-medium">{producerData.donation}</span>
-                    <motion.div className="w-full h-1 bg-red-500/30 mt-2 rounded-full overflow-hidden">
-                      <motion.div
-                        className="h-full bg-red-500"
-                        initial={{ width: 0 }}
-                        animate={{ width: "100%" }}
-                        transition={{ duration: 1.5, delay: 0.5 }}
-                      />
-                    </motion.div>
-                  </motion.div>
-                </motion.div>
-              </motion.div>
+<div className="space-y-6">
+  {/* Donation Section */}
+  <motion.div
+    className={`p-6 rounded-xl shadow-md ${
+      isDarkMode ? "bg-gray-800" : "bg-white"
+    } transition-colors duration-300`}
+    initial={{ opacity: 0, y: 50 }}
+    animate={{ opacity: 1, y: 0 }}
+    whileHover={{
+      y: -5,
+      boxShadow:
+        "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+    }}
+    transition={{ type: "spring", stiffness: 300 }}
+  >
+    <motion.div animate={floatingAnimation}>
+      <h2 className="text-2xl font-semibold mb-3 flex items-center">
+        <i className="ri-heart-line mr-2 text-red-500"></i>
+        Donation
+      </h2>
+      <motion.div
+        className={`text-lg ${
+          isDarkMode ? "text-gray-300" : "text-gray-700"
+        } p-3 rounded-lg ${
+          isDarkMode ? "bg-gray-700/50" : "bg-red-50"
+        }`}
+        whileHover={{ scale: 1.02 }}
+      >
+        <span className="font-medium">{producerData.donation}</span>
+        <motion.div className="w-full h-1 bg-red-500/30 mt-2 rounded-full overflow-hidden">
+          <motion.div
+            className="h-full bg-red-500"
+            initial={{ width: 0 }}
+            animate={{ width: "100%" }}
+            transition={{ duration: 1.5, delay: 0.5 }}
+          />
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  </motion.div>
 
-              <motion.div
-                className={`p-6 rounded-xl shadow-md ${
-                  isDarkMode ? "bg-gray-800" : "bg-white"
-                } transition-colors duration-300`}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{
-                  y: -5,
-                  boxShadow:
-                    "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-                }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <motion.div animate={floatingAnimation}>
-                  <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                    <i className="ri-star-line mr-2 text-yellow-500"></i>
-                    Rating
-                  </h2>
-                  <motion.div
-                    className={`text-lg ${
-                      isDarkMode ? "text-gray-300" : "text-gray-700"
-                    } p-3 rounded-lg ${
-                      isDarkMode ? "bg-gray-700/50" : "bg-yellow-50"
-                    }`}
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    <span className="font-medium">{producerData.rating}</span>
-                    <motion.div className="w-full h-1 bg-yellow-500/30 mt-2 rounded-full overflow-hidden">
-                      <motion.div
-                        className="h-full bg-yellow-500"
-                        initial={{ width: 0 }}
-                        animate={{ width: "100%" }}
-                        transition={{ duration: 1.5, delay: 0.5 }}
-                      />
-                    </motion.div>
-                  </motion.div>
-                </motion.div>
-              </motion.div>
+  {/* Gamification Points Section */}
+  <motion.div
+    className={`p-6 rounded-xl shadow-md ${
+      isDarkMode ? "bg-gray-800" : "bg-gradient-to-r from-purple-50 to-indigo-50"
+    } transition-colors duration-300`}
+    initial={{ opacity: 0, y: 50 }}
+    animate={{ opacity: 1, y: 0 }}
+    whileHover={{
+      y: -5,
+      boxShadow:
+        "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+    }}
+    transition={{ type: "spring", stiffness: 300 }}
+  >
+    <motion.div animate={floatingAnimation}>
+      <h2 className="text-2xl font-semibold mb-3 flex items-center">
+        <i className="ri-trophy-line mr-2 text-purple-500"></i>
+        Gamification Points
+      </h2>
+      <motion.div
+        className={`text-lg ${
+          isDarkMode ? "text-gray-300" : "text-gray-800"
+        } p-4 rounded-lg ${
+          isDarkMode ? "bg-gray-700/50" : "bg-white shadow-sm"
+        }`}
+        whileHover={{ scale: 1.02 }}
+      >
+        <div className="flex items-center gap-3 mb-3">
+          {getBadgeDetails(producerData.points).icon}
+          <span className="font-medium text-lg">
+            {getBadgeDetails(producerData.points).name}
+          </span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="font-medium text-purple-600">
+            {producerData.points} Points
+          </span>
+          <span className="text-sm text-gray-500">
+            Next Level: {151 - producerData.points} Points
+          </span>
+        </div>
+        <motion.div className="w-full h-2 bg-purple-200/50 mt-2 rounded-full overflow-hidden">
+          <motion.div
+            className="h-full bg-gradient-to-r from-purple-500 to-indigo-500"
+            initial={{ width: 0 }}
+            animate={{ width: `${(producerData.points / 151) * 100}%` }}
+            transition={{ duration: 1.5, delay: 0.5 }}
+          />
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  </motion.div>
 
-              {/* Producer Type Section */}
-              <motion.div
-                className={`p-6 rounded-xl shadow-md ${
-                  isDarkMode ? "bg-gray-800" : "bg-white"
-                } transition-colors duration-300`}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{
-                  y: -5,
-                  boxShadow:
-                    "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-                }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <motion.div animate={floatingAnimation}>
-                  <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                    <i className="ri-building-line mr-2 text-blue-500"></i>
-                    Producer Type
-                  </h2>
-                  <motion.div
-                    className={`text-lg ${
-                      isDarkMode ? "text-gray-300" : "text-gray-700"
-                    } p-3 rounded-lg ${
-                      isDarkMode ? "bg-gray-700/50" : "bg-blue-50"
-                    }`}
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    <span className="font-medium">
-                      {producerData.producerType}
-                    </span>
-                    <motion.div className="w-full h-1 bg-blue-500/30 mt-2 rounded-full overflow-hidden">
-                      <motion.div
-                        className="h-full bg-blue-500"
-                        initial={{ width: 0 }}
-                        animate={{ width: "100%" }}
-                        transition={{ duration: 1.5, delay: 0.5 }}
-                      />
-                    </motion.div>
-                  </motion.div>
-                </motion.div>
+  {/* Producer Type Section */}
+  <motion.div
+    className={`p-6 rounded-xl shadow-md ${
+      isDarkMode ? "bg-gray-800" : "bg-white"
+    } transition-colors duration-300`}
+    initial={{ opacity: 0, y: 50 }}
+    animate={{ opacity: 1, y: 0 }}
+    whileHover={{
+      y: -5,
+      boxShadow:
+        "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+    }}
+    transition={{ type: "spring", stiffness: 300 }}
+  >
+    <motion.div animate={floatingAnimation}>
+      <h2 className="text-2xl font-semibold mb-3 flex items-center">
+        <i className="ri-building-line mr-2 text-blue-500"></i>
+        Producer Type
+      </h2>
+      <motion.div
+        className={`text-lg ${
+          isDarkMode ? "text-gray-300" : "text-gray-700"
+        } p-3 rounded-lg ${
+          isDarkMode ? "bg-gray-700/50" : "bg-blue-50"
+        }`}
+        whileHover={{ scale: 1.02 }}
+      >
+        <span className="font-medium">
+          {producerData.producerType}
+        </span>
+        <motion.div className="w-full h-1 bg-blue-500/30 mt-2 rounded-full overflow-hidden">
+          <motion.div
+            className="h-full bg-blue-500"
+            initial={{ width: 0 }}
+            animate={{ width: "100%" }}
+            transition={{ duration: 1.5, delay: 0.5 }}
+          />
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  </motion.div>
+</div>
 
-                {/* Logout Button */}
-                <motion.button
-                  className={`w-full py-2 rounded-lg transition ${
-                    isDarkMode
-                      ? "bg-red-600 hover:bg-red-500"
-                      : "bg-red-600 hover:bg-red-500 text-white"
-                  } mt-4`}
-                  onClick={handleLogOut}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                >
-                  Log Out
-                </motion.button>
-              </motion.div>
+              <motion.button
+                className={`w-50  py-2 rounded-lg transition ml-70 ${
+                  isDarkMode
+                    ? "bg-red-600 hover:bg-red-500"
+                    : "bg-red-600 hover:bg-red-500 text-white"
+                } mt-4`}
+                onClick={handleLogOut}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                Log Out
+              </motion.button>
             </div>
           )}
 
-          {/* History Section */}
           {activeTab === "history" && (
             <motion.div
               className={`p-6 rounded-xl shadow-md ${
@@ -515,7 +503,6 @@ const ProducerDetail = () => {
             </motion.div>
           )}
 
-          {/* Contact Information */}
           {activeTab === "contact" && (
             <motion.div
               className={`p-6 rounded-xl shadow-md ${
@@ -553,7 +540,9 @@ const ProducerDetail = () => {
                 </p>
                 <p>
                   Phone:{" "}
-                  <span className="text-blue-600">{producerData.phone}</span>
+                  <span className="text-blue-600">
+                    {producerData.phone}
+                  </span>
                 </p>
               </motion.div>
             </motion.div>
@@ -561,7 +550,6 @@ const ProducerDetail = () => {
         </div>
       </div>
 
-      {/* Logout Modal */}
       <AnimatePresence>
         {showLogoutModal && (
           <motion.div

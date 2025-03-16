@@ -4,10 +4,12 @@
   gap: 24px;
 }
 
+/* Add this to your CSS file (e.g., Blocks.css) */
 .cart-button-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 10px;
+  position: fixed;
+  bottom: 100px; /* Adjust as needed */
+  right: 20px; /* Adjust as needed */
+  z-index: 1000; /* Ensure it stays above other content */
 }
 
 .cart-button {

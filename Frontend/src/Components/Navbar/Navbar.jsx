@@ -41,46 +41,49 @@ const Navbar = () => {
     i18n.changeLanguage(lng);
     setIsDropdownOpen(false);
   };
-  const token = localStorage.getItem('accessToken');
+  const token = localStorage.getItem("accessToken");
   //backend logic route for consumer and producer
   useEffect(() => {
     if (!token) {
-        return;
+      return;
     }
 
     const roleEndpoints = [
-        { type: 'consumer', url: '/api/v1/consumer/profile' },
-        { type: 'producer', url: '/api/v1/producer/profile' },
+      { type: "consumer", url: "/api/v1/consumer/profile" },
+      { type: "producer", url: "/api/v1/producer/profile" },
     ];
 
     const fetchUserType = async () => {
-        for (const role of roleEndpoints) {
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_BASE_URL}${role.url}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                    withCredentials: true,
-                });
-
-                if (response.status === 200) {
-                    setIsLogin(response.data.data.role);
-                    return; // Stop checking once we find a valid profile
-                }
-            } catch (error) {
-                // Suppress all errors (no logging)
+      for (const role of roleEndpoints) {
+        try {
+          const response = await axios.get(
+            `${import.meta.env.VITE_BASE_URL}${role.url}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+              withCredentials: true,
             }
+          );
+
+          if (response.status === 200) {
+            setIsLogin(response.data.data.role);
+            return; // Stop checking once we find a valid profile
+          }
+        } catch (error) {
+          // Suppress all errors (no logging)
         }
+      }
     };
 
     fetchUserType();
-}, [token, isLogin]);
+  }, [token, isLogin]);
 
-const handleClick = () => {
-  if (isLogin === "consumer") {
-    navigate("/userProfile");
-  } else {
-    navigate("/producerDetail");
-  }
-};
+  const handleClick = () => {
+    if (isLogin === "consumer") {
+      navigate("/userProfile");
+    } else {
+      navigate("/producerDetail");
+    }
+  };
 
   return (
     <div
@@ -192,51 +195,52 @@ const handleClick = () => {
         <li className="hover:text-blue-900 cursor-pointer">
           {isLogin ? (
             <>
-            <img
-              onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-              className="rounded-full hover:border-white size-12 hover:border-2 min-w-12 cursor-pointer transition duration-200"
-              src={profile === "male" ? profileMale : profileFemale}
-              alt="Profile"
-            />
+              <img
+                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                className="rounded-full hover:border-white size-12 hover:border-2 min-w-12 cursor-pointer transition duration-200"
+                src={profile === "male" ? profileMale : profileFemale}
+                alt="Profile"
+              />
 
-            {/* Profile Dropdown */}
-            {isProfileMenuOpen && (
-              <ul className="absolute right-0  mt-2 w-48 bg-gray-700 border border-gray-500 shadow-lg rounded-lg overflow-hidden animate-fadeIn z-20">
-                <li
-                  onClick={handleClick}
-                  className="p-3 cursor-pointer hover:bg-gray-500 transition flex items-center"
-                >
-                  📄 <span className="ml-2 text-white">Profile</span>
-                </li>
-                <li
-                  onClick={() => navigate("/feedback")}
-                  className="p-3 cursor-pointer hover:bg-gray-500 transition flex items-center"
-                >
-                  ✍️ <span className="ml-2 text-white">Feedback</span>
-                </li>
-                <li
-                  onClick={() => navigate("/gamification")}
-                  className="p-3 cursor-pointer hover:bg-gray-500 transition flex items-center"
-                >
-                  🎮 <span className="ml-2 text-white">Gamification</span>
-                </li>
-                <li
-                  onClick={() => navigate("/image-review")}
-                  className="p-3 cursor-pointer hover:bg-gray-500 transition flex items-center"
-                >
-                  🌎 <span className="ml-2 text-white">Vision</span>
-                </li>
-                <li
-                  onClick={() => navigate("/about")}
-                  className="p-3 cursor-pointer hover:bg-gray-500 transition flex items-center"
-                >
-                  ℹ️ <span className="ml-2 text-white">About</span>
-                </li>
-              </ul>
-            )}
-          </>
+              {/* Profile Dropdown */}
+              {isProfileMenuOpen && (
+                <ul className="absolute right-0  mt-2 w-48 bg-gray-700 border border-gray-500 shadow-lg rounded-lg overflow-hidden animate-fadeIn z-20">
+                  <li
+                    onClick={handleClick}
+                    className="p-3 cursor-pointer hover:bg-gray-500 transition flex items-center"
+                  >
+                    📄 <span className="ml-2 text-white">{t("Profile")}</span>
+                  </li>
+                  <li
+                    onClick={() => navigate("/feedback")}
+                    className="p-3 cursor-pointer hover:bg-gray-500 transition flex items-center"
+                  >
+                    ✍️ <span className="ml-2 text-white">{t("Feedback")}k</span>
+                  </li>
+                  <li
+                    onClick={() => navigate("/gamification")}
+                    className="p-3 cursor-pointer hover:bg-gray-500 transition flex items-center"
+                  >
+                    🎮{" "}
+                    <span className="ml-2 text-white">{t("Gamification")}</span>
+                  </li>
+                  <li
+                    onClick={() => navigate("/image-review")}
+                    className="p-3 cursor-pointer hover:bg-gray-500 transition flex items-center"
+                  >
+                    🌎 <span className="ml-2 text-white">{t("Vision")}</span>
+                  </li>
+                  <li
+                    onClick={() => navigate("/about")}
+                    className="p-3 cursor-pointer hover:bg-gray-500 transition flex items-center"
+                  >
+                    ℹ️ <span className="ml-2 text-white">{t("About")}</span>
+                  </li>
+                </ul>
+              )}
+            </>
           ) : (
-            <button className="flex items-center border-2 border-gray-600 text-white hover:bg-gray-500/50 py-1 px-3 rounded-[14px] hover:border-white hover:backdrop-brightness-200 transition duration-200 " >
+            <button className="flex items-center border-2 border-gray-600 text-white hover:bg-gray-500/50 py-1 px-3 rounded-[14px] hover:border-white hover:backdrop-brightness-200 transition duration-200 ">
               <a href="/login">{t("Login")}</a>
             </button>
           )}

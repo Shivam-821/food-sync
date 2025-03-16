@@ -20,7 +20,6 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
   try {
     const { location, address, paymentMethod } = req.body;
 
-    // Validate input data
     if (!address || !paymentMethod) {
       throw new ApiError(400, "All fields are required");
     }
@@ -61,7 +60,8 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     }
 
     let gamification = await Gamification.findOne({ user: consumer._id });
-    const newCredit = Math.floor(cart.totalAmount / 100) + extraPoints;
+    const newCredit =  parseFloat(extraPoints);
+    console.log('newCredit: ', newCredit)
 
     if (gamification) {
       gamification.points += newCredit;
@@ -73,6 +73,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
         userType: "Consumer",
         contribution: "Order",
         points: newCredit,
+        discountPoint: newCredit,
         badges: getBadge(newCredit),
       });
     }
@@ -85,7 +86,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     const order = new Order({
       consumer: consumerId,
       items: cart.items,
-      totalAmount: totalAmount,
+      totalAmount: totalValue,
       deliveryAddress: address,
       deliveryLocation: location,
       paymentMethod,
@@ -96,31 +97,26 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     await order.save();
 
     if (paymentMethod === "razorpay") {
-      // Validate Razorpay configuration
       if (!razorpay) {
         throw new ApiError(500, "Razorpay is not configured");
       }
 
       const options = {
-        amount: totalAmount * 100, // Amount in paise
+        amount: totalValue * 100, // in paise
         currency: "INR",
         receipt: `receipt_${order._id}`,
-        payment_capture: 1, // Auto-capture payment
+        payment_capture: 1, // auto-capture
       };
      
       let razorpayOrder;
       try {
-        // Create a Razorpay order
         razorpayOrder = await razorpay.orders.create(options);
 
-    
-        // Update the order with the Razorpay order ID
         order.razorpayOrderId = razorpayOrder.id;
         await order.save();
       } catch (error) {
         console.error("Razorpay API Error:", error);
     
-        // Handle specific Razorpay API errors
         if (error.error && error.error.description) {
           throw new ApiError(500, `Razorpay API Error: ${error.error.description}`);
         } else {
@@ -128,17 +124,15 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
         }
       }
     
-      // Delete the cart after the order is created
       await Cart.deleteOne({ buyer: consumerId, buyerType: "Consumer" });
     
-      // Return the response to the client
       return res.status(201).json(
         new ApiResponse(
           201,
           {
             orderId: order._id,
             razorpayOrderId: razorpayOrder.id,
-            amount: totalAmount,
+            amount: totalValue,
             currency: "INR",
             key: process.env.RAZORPAY_KEY_ID || "razorpay_key_id_missing", // Fallback for missing key
           },
@@ -204,7 +198,6 @@ const verifyPayment = asyncHandler(async (req, res) => {
     order.paymentStatus = "paid";
     await order.save();
 
-    // Return success response
     res
       .status(200)
       .json(new ApiResponse(200, order, "Payment verified successfully"));

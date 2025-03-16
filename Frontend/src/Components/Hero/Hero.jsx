@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef } from "react";
 import "./Hero.css";
 import arrow_btn from "../../assets/arrow_btn.png";
