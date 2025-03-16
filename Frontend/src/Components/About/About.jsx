@@ -3,8 +3,10 @@ import { motion } from "framer-motion";
 import Navbar from "../Navbar/Navbar";
 import Footer from "../Footer/Footer";
 import image from "../../assets/about2.jpeg";
+import { useTranslation } from "react-i18next";
 
 function About() {
+  const { t } = useTranslation();
   return (
     <div className="bg-gradient-to-r from-green-200 pt-5 to-blue-100 min-h-screen font-sans overflow-auto h-screen">
       <Navbar />
@@ -16,7 +18,7 @@ function About() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          Our Journey & Mission
+          {t("Our Journey & Mission")}
         </motion.h1>
 
         <motion.p

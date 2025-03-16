@@ -1,8 +1,9 @@
 import { Server } from "socket.io";
 import chalk from "chalk";
 
+let io;
 const initializeSocket = (server) => {
-  const io = new Server(server, {
+   io = new Server(server, {
     cors: {
       origin: "*", 
       methods: ["GET", "POST"],
@@ -30,4 +31,4 @@ const initializeSocket = (server) => {
   return io;
 };
 
-export default initializeSocket;
+export  {initializeSocket, io}

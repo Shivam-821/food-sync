@@ -184,9 +184,14 @@ const SignUp = () => {
           localStorage.setItem("accessToken", token);
         }
 
+        const userId = response.data.data.user._id;
+        if(userId){
+          localStorage.setItem("userId", userId);
+        }
+
         const data = response.data;
         setConsumer(data.user);
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("token", data.refreshToken);
 
         setIsLoading(false);
 
