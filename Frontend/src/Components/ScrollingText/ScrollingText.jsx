@@ -19,7 +19,7 @@ const ScrollingText = () => {
     t("Reduce food waste"),
     t("Stop wasting start saving"),
     t("Respect food respect nature"),
-    t("plate it dont waste it"),
+    t("plate it don't waste it"),
     t("Leftovers are treasures"),
     t("Plan smart waste apart"),
     t("Food is precious"),
