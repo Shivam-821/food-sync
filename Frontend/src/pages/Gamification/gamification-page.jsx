@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { MdStars } from "react-icons/md"; // Rookie
+import { SlBadge } from "react-icons/sl"; // Contributor
+import { RiShieldFlashFill } from "react-icons/ri"; // Achiever
+import { GiLaurelsTrophy } from "react-icons/gi"; // Champion
+import { GiLaurelCrown } from "react-icons/gi"; // Legend
 import {
   Crown,
   Trophy,
@@ -25,8 +30,8 @@ import {
   Medal,
   Flame,
 } from "lucide-react";
-import axios from 'axios';
-import image from '../../assets/male.jpg'
+import axios from "axios";
+import image from "../../assets/male.jpg";
 
 // Styles directly in component
 const styles = {
@@ -349,13 +354,36 @@ const GamificationPage = () => {
   const bonusLoopRef = useRef(null);
   const [loading, setLoading] = useState(false);
 
+  const getBadgeDetails = (points) => {
+    if (points < 31)
+      return { icon: <MdStars className={styles.badgeIcon} />, name: "Rookie" };
+    if (points < 81)
+      return {
+        icon: <SlBadge className={styles.badgeIcon} />,
+        name: "Contributor",
+      };
+    if (points < 151)
+      return {
+        icon: <RiShieldFlashFill className={styles.badgeIcon} />,
+        name: "Achiever",
+      };
+    if (points < 201)
+      return {
+        icon: <GiLaurelsTrophy className={styles.badgeIcon} />,
+        name: "Champion",
+      };
+    return {
+      icon: <GiLaurelCrown className={styles.badgeIcon} />,
+      name: "Legend",
+    };
+  };
 
   //fetch gamification data from backend
   useEffect(() => {
     const fetchFeedback = async () => {
       setLoading(true);
       const token = localStorage.getItem("accessToken");
-    
+
       if (!token) {
         alert("Unauthorized: No token found. Please log in again.");
         return;
@@ -375,7 +403,7 @@ const GamificationPage = () => {
         );
         setCurrentUser(response.data.data);
         setTopUsers(response.data.data.gamification);
-        setOtherUsers(response.data.data.gamification.slice(3, 8))
+        setOtherUsers(response.data.data.gamification.slice(3, 8));
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -385,8 +413,7 @@ const GamificationPage = () => {
     fetchFeedback();
   }, []);
 
-    useEffect(() => {
-    }, [currentUser,topUsers,otherUsers]); // ✅ Only logs when feedbackList updates
+  useEffect(() => {}, [currentUser, topUsers, otherUsers]); // ✅ Only logs when feedbackList updates
 
   // Check screen size for responsive design
   useEffect(() => {
@@ -806,7 +833,9 @@ const GamificationPage = () => {
               repeatType: "reverse",
             }}
           ></motion.div>
-          <h1 className={styles.logoText}>FoodSync</h1>
+          <a href="/" className={styles.logoText}>
+            FoodSync
+          </a>
         </div>
 
         <div className="flex items-center gap-2">
@@ -815,7 +844,9 @@ const GamificationPage = () => {
             className={styles.pointsBadge}
           >
             <div className="w-5 h-5 rounded-full bg-yellow-400"></div>
-            <span className="font-bold">{currentUser?.usergamiDetails?.points}</span>
+            <span className="font-bold">
+              {currentUser?.usergamiDetails?.points}
+            </span>
           </motion.div>
 
           <motion.div
@@ -871,20 +902,39 @@ const GamificationPage = () => {
                       className={styles.statCard}
                       whileHover={{ scale: 1.02 }}
                     >
-                      <div className={styles.statValue}>
-                        {currentUser?.usergamiDetails?.points}
+                      <div
+                        className={`${styles.statValue} flex justify-between items-center`}
+                      >
+                        {/* Badge Name on the Left */}
+                        <span className={styles.badgeName}>
+                          {
+                            getBadgeDetails(
+                              currentUser?.usergamiDetails?.points
+                            ).name
+                          }
+                        </span>
+
+                        {/* Badge Icon on the Right */}
+                        <div className="pt-2">
+                          {
+                            getBadgeDetails(
+                              currentUser?.usergamiDetails?.points
+                            ).icon
+                          }
+                        </div>
                       </div>
-                      <div className={styles.statLabel}>Total Points</div>
                     </motion.div>
 
+                    {/* Total Points Section */}
                     <motion.div
                       className={styles.statCard}
                       whileHover={{ scale: 1.02 }}
                     >
                       <div className={styles.statValue}>
-                        {currentUser?.usergamiDetails?.badges}
+                        {currentUser?.usergamiDetails?.points}{" "}
+                        {/* Display total points */}
                       </div>
-                      <div className={styles.statLabel}>Current Badge</div>
+                      <div className={styles.statLabel}>Total Points</div>
                     </motion.div>
                   </div>
 
@@ -1076,7 +1126,9 @@ const GamificationPage = () => {
                         />
                       </div>
                     </div>
-                    <p className="mt-3 text-xl font-bold">{topUsers[0]?.user?.fullname}</p>
+                    <p className="mt-3 text-xl font-bold">
+                      {topUsers[0]?.user?.fullname}
+                    </p>
                     <p className="text-purple-300">
                       {topUsers[0].points} points
                     </p>
@@ -1192,7 +1244,9 @@ const GamificationPage = () => {
                         />
                       </div>
                     </div>
-                    <p className="mt-2 font-medium">{topUsers[0]?.user?.fullname}</p>
+                    <p className="mt-2 font-medium">
+                      {topUsers[0]?.user?.fullname}
+                    </p>
                   </motion.div>
 
                   {/* 3rd Place */}
@@ -1231,7 +1285,9 @@ const GamificationPage = () => {
                     <div className={styles.currentRankContainer}>
                       <div className="flex items-center gap-3">
                         <img
-                          src={currentUser?.usergamiDetails?.user?.avatar || image}
+                          src={
+                            currentUser?.usergamiDetails?.user?.avatar || image
+                          }
                           alt="Your avatar"
                           className="w-8 h-8 rounded-full object-cover border border-white/50"
                         />
@@ -1272,7 +1328,9 @@ const GamificationPage = () => {
                             </div>
                           </div>
                           <div>
-                            <p className="font-medium">{user?.user?.fullname}</p>
+                            <p className="font-medium">
+                              {user?.user?.fullname}
+                            </p>
                             <div className={styles.badgeIndicator}>
                               <div
                                 className="w-2 h-2 rounded-full"
@@ -1809,23 +1867,9 @@ const GamificationPage = () => {
                             <ChevronRight className="h-3 w-3" />
                           </div>
                         </div>
-                        <span>Rookie: Earn 0 to 20 points to start your journey</span>
-                      </li>
-                      <li className={styles.ruleItem}>
-                        <div className={styles.ruleBullet}>
-                          <div className={styles.ruleBulletInner}>
-                            <ChevronRight className="h-3 w-3" />
-                          </div>
-                        </div>
-                        <span>Contributor: Reach 21 to 60 points to become a valued contributor</span>
-                      </li>
-                      <li className={styles.ruleItem}>
-                        <div className={styles.ruleBullet}>
-                          <div className={styles.ruleBulletInner}>
-                            <ChevronRight className="h-3 w-3" />
-                          </div>
-                        </div>
-                        <span>Champion: Accumulate 101 to 150 points to rise as a champion</span>
+                        <span>
+                          Rookie: Earn 0 to 20 points to start your journey
+                        </span>
                       </li>
                       <li className={styles.ruleItem}>
                         <div className={styles.ruleBullet}>
@@ -1834,7 +1878,30 @@ const GamificationPage = () => {
                           </div>
                         </div>
                         <span>
-                        Legend: Surpass 151+ points to earn the legendary status
+                          Contributor: Reach 21 to 60 points to become a valued
+                          contributor
+                        </span>
+                      </li>
+                      <li className={styles.ruleItem}>
+                        <div className={styles.ruleBullet}>
+                          <div className={styles.ruleBulletInner}>
+                            <ChevronRight className="h-3 w-3" />
+                          </div>
+                        </div>
+                        <span>
+                          Champion: Accumulate 101 to 150 points to rise as a
+                          champion
+                        </span>
+                      </li>
+                      <li className={styles.ruleItem}>
+                        <div className={styles.ruleBullet}>
+                          <div className={styles.ruleBulletInner}>
+                            <ChevronRight className="h-3 w-3" />
+                          </div>
+                        </div>
+                        <span>
+                          Legend: Surpass 151+ points to earn the legendary
+                          status
                         </span>
                       </li>
                     </ul>
@@ -1842,7 +1909,8 @@ const GamificationPage = () => {
 
                   <div>
                     <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                      <Truck className="h-5 w-5 text-purple-300" /> Credit Points
+                      <Truck className="h-5 w-5 text-purple-300" /> Credit
+                      Points
                     </h3>
                     <ul className={styles.rulesList}>
                       <li className={styles.ruleItem}>
@@ -1851,23 +1919,11 @@ const GamificationPage = () => {
                             <ChevronRight className="h-3 w-3" />
                           </div>
                         </div>
-                        <span>Credit points are calculated based on the total amount spent in the cart and additional factors like item price, quantity, and a multiplier.</span>
-                      </li>
-                      <li className={styles.ruleItem}>
-                        <div className={styles.ruleBullet}>
-                          <div className={styles.ruleBulletInner}>
-                            <ChevronRight className="h-3 w-3" />
-                          </div>
-                        </div>
-                        <span>Earn 1 credit point for every ₹100 spent in the cart.</span>
-                      </li>
-                      <li className={styles.ruleItem}>
-                        <div className={styles.ruleBullet}>
-                          <div className={styles.ruleBulletInner}>
-                            <ChevronRight className="h-3 w-3" />
-                          </div>
-                        </div>
-                        <span>Additional points are earned for each item in the cart, calculated using the item's price, quantity, and a predefined multiplier.</span>
+                        <span>
+                          Credit points are calculated based on the total amount
+                          spent in the cart and additional factors like item
+                          price, quantity, and a multiplier.
+                        </span>
                       </li>
                       <li className={styles.ruleItem}>
                         <div className={styles.ruleBullet}>
@@ -1876,7 +1932,31 @@ const GamificationPage = () => {
                           </div>
                         </div>
                         <span>
-                        The total credit points are the sum of the base points (from the total cart amount) and the extra points (from individual items).
+                          Earn 1 credit point for every ₹100 spent in the cart.
+                        </span>
+                      </li>
+                      <li className={styles.ruleItem}>
+                        <div className={styles.ruleBullet}>
+                          <div className={styles.ruleBulletInner}>
+                            <ChevronRight className="h-3 w-3" />
+                          </div>
+                        </div>
+                        <span>
+                          Additional points are earned for each item in the
+                          cart, calculated using the item's price, quantity, and
+                          a predefined multiplier.
+                        </span>
+                      </li>
+                      <li className={styles.ruleItem}>
+                        <div className={styles.ruleBullet}>
+                          <div className={styles.ruleBulletInner}>
+                            <ChevronRight className="h-3 w-3" />
+                          </div>
+                        </div>
+                        <span>
+                          The total credit points are the sum of the base points
+                          (from the total cart amount) and the extra points
+                          (from individual items).
                         </span>
                       </li>
 
@@ -1887,7 +1967,9 @@ const GamificationPage = () => {
                           </div>
                         </div>
                         <span>
-                        For a ₹5000 cart with 2 items, you earn 50 base points (₹5000 / 100) and 60 extra points (from items), totaling 110 credit points
+                          For a ₹5000 cart with 2 items, you earn 50 base points
+                          (₹5000 / 100) and 60 extra points (from items),
+                          totaling 110 credit points
                         </span>
                       </li>
 
@@ -1898,13 +1980,15 @@ const GamificationPage = () => {
                           </div>
                         </div>
                         <span>
-                        These credit points are added to your gamification profile, helping you progress through badge levels like Rookie, Contributor, Achiever, Champion, and Legend
+                          These credit points are added to your gamification
+                          profile, helping you progress through badge levels
+                          like Rookie, Contributor, Achiever, Champion, and
+                          Legend
                         </span>
                       </li>
                     </ul>
                   </div>
 
-                 
                   <div>
                     <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
                       <Trophy className="h-5 w-5 text-purple-300" /> Leaderboard

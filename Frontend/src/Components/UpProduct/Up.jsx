@@ -262,7 +262,6 @@ function BlockList() {
         setCartItems(cartData.items || []);
       } catch (err) {
         console.error("Error fetching data:", err);
-        toast.error("Failed to fetch cart data. Please try again.");
       }
     };
     fetchCart();
