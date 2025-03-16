@@ -19,16 +19,16 @@ const ScrollingText = () => {
     t("Reduce food waste"),
     t("Stop wasting start saving"),
     t("Respect food respect nature"),
-    t("plate it don't waste it"),
+    t("Plate it don't waste it"),
     t("Leftovers are treasures"),
     t("Plan smart waste apart"),
     t("Food is precious"),
     t("Finish your plate"),
     t("Waste less taste more"),
-    t("Dont let good food go bad"),
+    t("Don't let good food go bad"),
     t("Shop wise store right"),
     t("Food is for eating"),
-    t("Use it up dont throw it out"),
+    t("Use it up don't throw it out"),
   ];
 
   useEffect(() => {
