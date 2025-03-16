@@ -40,7 +40,6 @@ const ProducerDetail = () => {
   //   },
   // });
 
-  
   const [producerData, setProducerData] = useState({
     fullname: "",
     email: "",
@@ -49,11 +48,11 @@ const ProducerDetail = () => {
     address: "",
     bio: "",
     producerType: "",
-    companyName:"",
+    companyName: "",
     avatar: "",
     history: [],
   });
-  
+
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -63,7 +62,7 @@ const ProducerDetail = () => {
           navigate("/login");
           return;
         }
-  
+
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/v1/producer/profile`,
           {
@@ -72,14 +71,16 @@ const ProducerDetail = () => {
             },
           }
         );
-  
+
         if (response.data && response.data.data) {
           const user = response.data.data;
+          console.log(user);
 
+          // Extract donated items' names
           const donatedItems = user.donationsMade
             .flatMap((donation) => donation.items.map((item) => item.name))
             .join(", "); // Join names into a comma-separated string
-  
+
           setProducerData({
             fullname: user.fullname,
             email: user.email,
@@ -102,7 +103,7 @@ const ProducerDetail = () => {
         alert("Failed to fetch user profile. Please try again.");
       }
     };
-  
+
     fetchUserProfile();
   }, [navigate]);
 
@@ -305,10 +306,7 @@ const ProducerDetail = () => {
                 >
                   {producerData.companyName}
                 </motion.p>
-
               </motion.div>
-
-              
 
               <motion.div
                 className={`flex items-center ${
@@ -555,9 +553,7 @@ const ProducerDetail = () => {
                 </p>
                 <p>
                   Phone:{" "}
-                  <span className="text-blue-600">
-                    {producerData.phone}
-                  </span>
+                  <span className="text-blue-600">{producerData.phone}</span>
                 </p>
               </motion.div>
             </motion.div>

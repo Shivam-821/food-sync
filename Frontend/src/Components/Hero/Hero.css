@@ -1,65 +1,208 @@
-.hero{
-  margin:0px 70px;
-  margin-top: 130px;
+.hero {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 20px;
+  padding: 0 40px;
+  z-index: 2;
 }
-.hero-explore{
+
+.hero-text {
+  margin-top: 80px;
+  position: relative;
+}
+
+.text-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.first {
+  font-size: 4.5rem;
+  font-weight: 700;
+  color: #00796b;
+  margin-bottom: 10px;
+  position: relative;
+  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.text-3d-shadow {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 100%;
+  height: 100%;
+  background: #ff7043;
+  z-index: -1;
+  filter: blur(8px);
+  opacity: 0.4;
+}
+
+.second {
+  font-size: 2.5rem;
+  color: #004d40;
+  font-weight: 400;
+  margin-top: 8px;
+}
+
+.animate-text {
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-explore {
   display: flex;
   align-items: center;
-  gap:50px;
-  width: fit-content;
+  gap: 20px;
   margin-top: 60px;
-  padding:3px 5px;
-  padding-left:30px;
-  border-radius:60px;
-  background-color: white;
   cursor: pointer;
+  transition: transform 0.3s ease;
 }
-.hero-explore p{
-  color: #292929;
-  font-size: 20px;
+
+.hero-explore:hover {
+  transform: translateX(10px);
+}
+
+.hero-explore p {
+  font-size: 1.2rem;
   font-weight: 500;
+  color: #00796b;
 }
-.hero-dot-play{
-  margin-left: 20px;
-  margin-top: 40px;
-  display:flex;
-  justify-content: space-between;
-}
-.hero-dots{
-  display:flex;
+
+.arrow-container {
+  width: 60px;
+  height: 60px;
+  background: #ff7043;
+  border-radius: 50%;
+  display: flex;
   align-items: center;
-  gap: 23px;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(255, 112, 67, 0.3);
+  transition: all 0.3s ease;
+}
+
+.arrow-container:hover {
+  transform: scale(1.1);
+  background: #ff5722;
+}
+
+.arrow-container img {
+  width: 24px;
+  height: auto;
+}
+
+.hero-dot-play {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
+.hero-dots {
+  display: flex;
+  gap: 15px;
   list-style: none;
 }
-.hero-dot{
+
+.hero-dot {
   width: 15px;
   height: 15px;
-  border-radius: 7.5px;
-  background-color: #fff;
+  background-color: #e0e0e0;
+  border-radius: 50%;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
-.hero-dot.orange{
-  background: orangered;
+
+.hero-dot.active {
+  background-color: #ff7043;
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(255, 112, 67, 0.5);
 }
-.hero-play{
+
+.hero-play {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 15px;
+  cursor: pointer;
 }
-.hero-play p{
-  color: #fff;
-  font-size: 29px;
-  /* font-weight: 500; */
+
+.play-button-wrapper {
+  position: relative;
+  width: 55px;
+  height: 55px;
+  background: #ff7043;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(255, 112, 67, 0.3);
+  transition: all 0.3s ease;
+  overflow: hidden;
 }
-.first{
-  color: hwb(22 27% 17%);
-  font-size: 100px;
+
+.play-button-wrapper:hover {
+  transform: scale(1.1);
+  background: #ff5722;
+}
+
+.play-button-ripple {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0);
+  animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.hero-play p {
+  font-size: 1.1rem;
   font-weight: 500;
-  line-height: 130px;
+  color: #00796b;
 }
-.second{
-  color: #fff;
-  font-size: 100px;
-  font-weight: 500;
-  line-height: 130px;
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 0 20px;
+  }
+
+  .first {
+    font-size: 3rem;
+  }
+
+  .second {
+    font-size: 1.8rem;
+  }
+
+  .hero-explore {
+    margin-top: 40px;
+  }
+
+  .hero-dot-play {
+    margin-bottom: 40px;
+  }
 }
+

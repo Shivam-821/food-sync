@@ -6,13 +6,15 @@ import Achivements from "../../Components/Donation/Achivements";
 import UserAddedDonation from "../../Components/Donation/UserAddedDonation";
 
 function Donation() {
-  return <div>
-    <Navbar/>
-    <InputSection/>
-    <Achivements/>
-    <UserAddedDonation />
-    <Footer/>
-  </div>;
+  return (
+    <div className="overflow-auto h-screen">
+      <Navbar />
+      <InputSection />
+      <Achivements />
+      <UserAddedDonation />
+      <Footer />
+    </div>
+  );
 }
 
 export default Donation;

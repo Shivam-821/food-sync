@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
-import { useRef } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import "./upcycle.css";
 import {
   FaUser,
   FaEnvelope,
@@ -12,8 +9,11 @@ import {
   FaPhone,
   FaMapMarkerAlt,
   FaRecycle,
+  FaSignInAlt,
+  FaArrowRight,
 } from "react-icons/fa";
 import { UpcyclingIDataContext } from "../../Context/UpcyclingIContext";
+import "./upcycle.css";
 
 const USignup = () => {
   const navigate = useNavigate();
@@ -154,148 +154,255 @@ const USignup = () => {
   };
 
   return (
-    <div className="signup-container">
-      {/* Cursor Animation */}
+    <div className="signup-page overflow-auto h-screen">
+      {/* Custom cursor */}
       <motion.div
-        className="cursor-effect"
-        animate={{ x: cursorX - 75, y: cursorY - 75 }}
-        transition={{ type: "spring", stiffness: 50 }}
+        className="cursor"
+        animate={{
+          x: cursorX,
+          y: cursorY,
+        }}
+        transition={{
+          type: "spring",
+          damping: 25,
+          stiffness: 300,
+          mass: 0.5,
+        }}
       />
 
-      {/* Glassmorphic Signup Form */}
-      <div className="signup-box">
-        <h2>Upcycling Industry Signup</h2>
-        <form>
-          <div className="input-box">
-            <FaUser className="icon" />
-            <input
-              type="text"
-              placeholder="Company Name"
-              onChange={handleChange}
-              name="companyName"
-              value={formData.companyName}
-              required
-            />
-          </div>
-          <div className="input-box">
-            <FaEnvelope className="icon" />
-            <input
-              type="email"
-              name="email"
-              onChange={handleChange}
-              placeholder="Your email address"
-              value={formData.email}
-              required
-            />
-          </div>
-          <div className="input-box">
-            <FaPhone className="icon" />
-            <input
-              type="text"
-              placeholder="Phone Number"
-              name="phone"
-              onChange={handleChange}
-              value={formData.phone}
-              required
-            />
-          </div>
-          <div className="input-box">
-            <FaLock className="icon" />
-            <input
-              type="password"
-              placeholder="Password"
-              name="password"
-              onChange={handleChange}
-              value={formData.password}
-              required
-            />
-          </div>
-          <div className="input-box">
-            <FaMapMarkerAlt className="icon" />
-            <input
-              type="text"
-              placeholder="Location"
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="input-box">
-            <FaRecycle className="icon" />
-            <input
-              type="text"
-              placeholder="Upcycling Methods"
-              name="upcyclingMethods"
-              onChange={handleChange}
-              value={formData.upcyclingMethods}
-              required
-            />
-          </div>
-          <motion.div variants={itemVariants} className="mb-4">
-            <button
-              name="location"
-              type="button"
-              onClick={getLocation}
-              disabled={isLoading}
-              className="glass-button location-button"
+      <div className="signup-container">
+        {/* Left Section - Information */}
+        <motion.div
+          className="info-section"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="info-content">
+            <motion.h1
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
             >
-              <span className="relative z-10 flex items-center justify-center">
-                {isLoading ? (
-                  <>
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Getting Location...
-                  </>
-                ) : (
-                  <>
-                    <FaMapMarkerAlt className="mr-2" /> Get My Location
-                  </>
+              Join the Upcycling Revolution
+            </motion.h1>
+
+            <motion.p
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+            >
+              Transform food waste into valuable resources through innovative
+              upcycling methods.
+            </motion.p>
+
+            <motion.div
+              className="benefits"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+            >
+              <div className="benefit-item">
+                <FaRecycle className="benefit-icon" />
+                <h3>Reduce Waste</h3>
+                <p>Convert food waste into valuable products</p>
+              </div>
+
+              <div className="benefit-item">
+                <FaRecycle className="benefit-icon" />
+                <h3>Create Value</h3>
+                <p>Generate new revenue streams</p>
+              </div>
+
+              <div className="benefit-item">
+                <FaRecycle className="benefit-icon" />
+                <h3>Sustainable Future</h3>
+                <p>Contribute to a circular economy</p>
+              </div>
+            </motion.div>
+
+            {/* <div className="upcycle-3d">
+              <div className="cube">
+                <div className="face front"></div>
+                <div className="face back"></div>
+                <div className="face right"></div>
+                <div className="face left"></div>
+                <div className="face top"></div>
+                <div className="face bottom"></div>
+              </div>
+            </div> */}
+          </div>
+        </motion.div>
+
+        {/* Right Section - Form */}
+        <motion.div
+          className="form-section"
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="glass-form">
+            <h2>Create Your Account</h2>
+
+            <form onSubmit={handleSubmit}>
+              <div className="input-group">
+                <div className="input-field">
+                  <FaUser className="field-icon" />
+                  <input
+                    type="text"
+                    placeholder="Company Name"
+                    name="companyName"
+                    value={formData.companyName}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="input-field">
+                  <FaEnvelope className="field-icon" />
+                  <input
+                    type="email"
+                    placeholder="Email Address"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="input-field">
+                  <FaPhone className="field-icon" />
+                  <input
+                    type="text"
+                    placeholder="Phone Number"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="input-field">
+                  <FaLock className="field-icon" />
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="input-field">
+                  <FaLock className="field-icon" />
+                  <input
+                    type="password"
+                    placeholder="Confirm Password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="input-field">
+                  <FaRecycle className="field-icon" />
+                  <select
+                    name="upcyclingMethods"
+                    value={formData.upcyclingMethods}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="" disabled>
+                      Select Upcycling Method
+                    </option>
+                    <option value="Compost">Compost</option>
+                    <option value="Bio gas">Bio gas</option>
+                    <option value="Cosmetics">Cosmetics</option>
+                    <option value="Energy">Energy</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="location-section">
+                <button
+                  type="button"
+                  onClick={getLocation}
+                  disabled={isLoading}
+                  className="location-btn"
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="spinner"></div>
+                      <span>Getting Location...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaMapMarkerAlt />
+                      <span>Get My Location</span>
+                    </>
+                  )}
+                </button>
+
+                {locationError && (
+                  <p className="error-message">{locationError}</p>
                 )}
-              </span>
-            </button>
-            {locationError && (
-              <p className="text-red-300 text-sm mb-2">{locationError}</p>
-            )}
-            {location && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-sm text-blue-100 bg-blue-900/30 p-2 rounded-lg border border-blue-500/30 backdrop-blur-sm mt-2"
-              >
-                <p className="flex items-center">
-                  <FaMapMarkerAlt className="text-blue-300 mr-2" />
-                  Location captured: {location.coordinates[1].toFixed(4)},{" "}
-                  {location.coordinates[0].toFixed(4)}
-                </p>
-              </motion.div>
-            )}
-          </motion.div>
-          <motion.button
-            onClick={handleSubmit}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="signup-btn"
-          >
-            Sign Up
-          </motion.button>
-        </form>
+
+                {location && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="location-success"
+                  >
+                    <FaMapMarkerAlt />
+                    <span>
+                      Location captured: {location.coordinates[1].toFixed(4)},{" "}
+                      {location.coordinates[0].toFixed(4)}
+                    </span>
+                  </motion.div>
+                )}
+              </div>
+
+              <div className="form-actions">
+                <motion.button
+                  type="submit"
+                  className="signup-button"
+                  disabled={!isFormValid || isLoading}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="spinner"></div>
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Sign Up</span>
+                      <FaArrowRight />
+                    </>
+                  )}
+                </motion.button>
+
+                <div className="login-link">
+                  <p>Already registered?</p>
+                  <motion.button
+                    type="button"
+                    className="login-button"
+                    onClick={() => navigate("/login")}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <FaSignInAlt />
+                    <span>Login</span>
+                  </motion.button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
