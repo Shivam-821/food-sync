@@ -266,9 +266,9 @@ export function Pay() {
           }
         },
         prefill: {
-          name: "utkarsh singh",
-          email: "utkarshsingh7104@gmail.com",
-          contact: "9889775335",
+          name: "",
+          email: "",
+          contact: "",
         },
         notes: {
           address: "Razorpay Corporate Office",
