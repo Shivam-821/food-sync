@@ -82,7 +82,6 @@ export function Upay() {
     },
   };
 
-
   useEffect(() => {
     // Trigger entrance animation
     setTimeout(() => {
@@ -127,7 +126,7 @@ export function Upay() {
         {
           deliveryAddress: address,
           paymentMethod: paymentMethod,
-          deliveryLocation: location
+          deliveryLocation: location,
         },
         {
           headers: {
@@ -139,7 +138,9 @@ export function Upay() {
       const orderId = response.data?.data?._id;
       //setting order completed
       await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/upcyclingOrder/${orderId}/completed`,
+        `${
+          import.meta.env.VITE_BASE_URL
+        }/api/v1/upcyclingOrder/${orderId}/completed`,
         {},
         {
           headers: {
@@ -188,7 +189,7 @@ export function Upay() {
         {
           deliveryAddress: address,
           paymentMethod: paymentMethod,
-          deliveryLocation: location
+          deliveryLocation: location,
         },
         {
           headers: {
@@ -235,7 +236,9 @@ export function Upay() {
           try {
             // Step 4: Verify payment
             await axios.post(
-              `${import.meta.env.VITE_BASE_URL}/api/v1/upcyclingOrder/verifyPayment`,
+              `${
+                import.meta.env.VITE_BASE_URL
+              }/api/v1/upcyclingOrder/verifyPayment`,
               response,
               {
                 headers: {
@@ -247,14 +250,16 @@ export function Upay() {
             alert("Payment Successful!");
             //setting order completed
             await axios.put(
-              `${import.meta.env.VITE_BASE_URL}/api/v1/upcyclingOrder/${data.data.orderId}/completed`,
+              `${import.meta.env.VITE_BASE_URL}/api/v1/upcyclingOrder/${
+                data.data.orderId
+              }/completed`,
               {},
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
                 },
                 withCredentials: true,
-               }
+              }
             );
             setOrderPlaced(true);
           } catch (error) {
@@ -341,14 +346,16 @@ export function Upay() {
 
         {orderPlaced ? (
           <div className="order-success">
-            <div className="success-icon-container">
+            <div className="success-icon-container pt-2.5">
               <div className="success-icon">
                 <div className="checkmark"></div>
               </div>
               <div className="success-rays"></div>
             </div>
             <h2>Order Placed Successfully!</h2>
-            <p>Thank you for your purchase. Your delicious food is on its way!</p>
+            <p>
+              Thank you for your purchase. Your delicious food is on its way!
+            </p>
             <div className="order-details">
               <div className="order-detail-item">
                 <span>Order Amount:</span>
@@ -357,7 +364,9 @@ export function Upay() {
               <div className="order-detail-item">
                 <span>Payment Method:</span>
                 <span>
-                  {paymentMethod === "cod" ? "Cash on Delivery" : "razorpay"}
+                  {paymentMethod === "cod"
+                    ? "Cash on Delivery"
+                    : "Online Payment"}
                 </span>
               </div>
               <div className="order-detail-item">
@@ -404,76 +413,81 @@ export function Upay() {
             </div>
 
             <div className="input-group mb-4 mt-4 ml-2 mr-2">
-                <input
-                  type="text"
-                  placeholder="Enter your delivery address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-300 bg-white text-gray-700 placeholder-gray-400 shadow-sm"
-                />
-              </div>
+              <input
+                type="text"
+                placeholder="Enter your delivery address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-300 bg-white text-gray-700 placeholder-gray-400 shadow-sm"
+              />
+            </div>
             <motion.div variants={itemVariants} className="mb-4">
-                  <button
-                    name="location"
-                    type="button"
-                    onClick={getLocation}
-                    disabled={isLoading}
-                    className="glass-button location-button"
-                  >
-                    <span className="relative z-10 flex items-center justify-center">
-                      {isLoading ? (
-                        <>
-                          <svg
-                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
-                          Getting Location...
-                        </>
-                      ) : (
-                        <>
-                          <FaMapMarkerAlt className="mr-2" /> Get My Location
-                        </>
-                      )}
-                    </span>
-                  </button>
-                  {locationError && (
-                    <p className="text-red-300 text-sm mb-2">{locationError}</p>
+              <button
+                name="location"
+                type="button"
+                onClick={getLocation}
+                disabled={isLoading}
+                className="glass-button location-button"
+              >
+                <span className="relative z-10 flex items-center justify-center">
+                  {isLoading ? (
+                    <>
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Getting Location...
+                    </>
+                  ) : (
+                    <>
+                      <FaMapMarkerAlt className="mr-2" /> Get My Location
+                    </>
                   )}
-                  {location && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-sm text-blue-100 bg-blue-900/30 p-2 rounded-lg border border-blue-500/30 backdrop-blur-sm mt-2"
-                    >
-                      <p className="flex items-center">
-                        <FaMapMarkerAlt className="text-blue-300 mr-2" />
-                        Location captured: {location.coordinates[1].toFixed(
-                          4
-                        )}, {location.coordinates[0].toFixed(4)}
-                      </p>
-                    </motion.div>
-                  )}
+                </span>
+              </button>
+              {locationError && (
+                <p className="text-red-300 text-sm mb-2">{locationError}</p>
+              )}
+              {location && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-sm text-blue-100 bg-blue-900/30 p-2 rounded-lg border border-blue-500/30 backdrop-blur-sm mt-2"
+                >
+                  <p className="flex items-center">
+                    <FaMapMarkerAlt className="text-blue-300 mr-2" />
+                    Location captured: {location.coordinates[1].toFixed(
+                      4
+                    )}, {location.coordinates[0].toFixed(4)}
+                  </p>
                 </motion.div>
+              )}
+            </motion.div>
 
-            <form onSubmit={paymentMethod === "cod"
+            <form
+              onSubmit={
+                paymentMethod === "cod"
                   ? handlePaymentSubmit
-                  : handleRazorpayPayment} className="payment-form">
+                  : handleRazorpayPayment
+              }
+              className="payment-form"
+            >
               <h2>Select Payment Method</h2>
 
               <div className="payment-options">
