@@ -120,13 +120,6 @@ const ProducerHome = () => {
         transition={{ duration: 0.5 }}
       >
         <h1 className="text-5xl font-extrabold text-gray-800">Surplus Producer</h1>
-        <Link to="/producerDetail">
-          <img
-            className="h-20 w-20 rounded-full border-4 border-gray-300 hover:shadow-lg transition duration-300"
-            src="https://imgs.search.brave.com/infROkE3qEnyLfNcO-cEkJfbiXqq4XtSkwzdwsCY_yU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/cGhvdG8vMjAyMC8w/NS8xNy8yMC8yMS9j/YXQtNTE4MzQyN182/NDAuanBn"
-            alt="User Profile"
-          />
-        </Link>
       </motion.div>
 
       <div className="p-10 pt-5 mb-9">

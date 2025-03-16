@@ -1,7 +1,6 @@
 "use client";
 import "./feedback.css";
 import axios from "axios";
-
 import { useState, useEffect } from "react";
 import {
   Heart,
@@ -25,33 +24,37 @@ const Feedback = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [userName, setUserName] = useState("Guest User");
   const [userType, setUserType] = useState("individual");
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Load feedback  on component mount
+  // Load feedback on component mount
   useEffect(() => {
     const fetchFeedback = async () => {
       setLoading(true);
+      setError(null);
       try {
         const response = await axios.get(
-          `${
-            import.meta.env.VITE_BASE_URL
-          }/api/v1/feedback/getallfeedback`
+          `${import.meta.env.VITE_BASE_URL}/api/v1/feedback/getallfeedback`
         );
-        setFeedbackList(response.data.data);
+        if (response.data && Array.isArray(response.data.data)) {
+          setFeedbackList(response.data.data);
+        } else {
+          throw new Error("Invalid data format received from the server");
+        }
       } catch (err) {
         console.error("Error fetching data:", err);
+        setError("Failed to fetch feedback. Please try again later.");
       } finally {
-        setLoading(false); // Stop loader after fetching
+        setLoading(false);
       }
     };
     fetchFeedback();
-    
+
     const savedTheme = localStorage.getItem("darkMode");
     if (savedTheme) {
       setIsDarkMode(savedTheme === "true");
     }
   }, []);
-  
 
   // Update body class when dark mode changes
   useEffect(() => {
@@ -81,21 +84,20 @@ const Feedback = () => {
 
     const updatedFeedback = [feedback, ...feedbackList];
     setFeedbackList(updatedFeedback);
-    
+
     try {
       const token = localStorage.getItem("accessToken");
       if (!token) {
-        alert("You must be logged in to donate food.");
+        alert("You must be logged in to submit feedback.");
         return;
       }
-
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/v1/feedback/givefeedback`,
         feedback,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json", // Correct content type
+            "Content-Type": "application/json",
           },
         }
       );
@@ -104,10 +106,10 @@ const Feedback = () => {
         alert("Feedback submitted successfully!");
         setNewFeedback({ rating: 5, comment: "" });
       } else {
-        alert("Error during donation. Please try again.");
+        alert("Error during submission. Please try again.");
       }
     } catch (error) {
-      console.error("Error during donation:", error);
+      console.error("Error during submission:", error);
       alert("Failed to connect to server.");
     } finally {
       setLoading(false);
@@ -126,7 +128,7 @@ const Feedback = () => {
     localStorage.setItem("feedbackData", JSON.stringify(updated));
   };
 
-  // Handle replying to feedback (frontend only)
+  // Handle replying to feedback
   const handleReply = (feedbackId) => {
     if (!replyText.trim()) return;
 
@@ -151,7 +153,7 @@ const Feedback = () => {
     setReplyText("");
   };
 
-  // Handle liking replies (frontend only)
+  // Handle liking replies
   const handleLikeReply = (feedbackId, replyId) => {
     const updated = feedbackList.map((item) => {
       if (item._id === feedbackId) {
@@ -170,24 +172,10 @@ const Feedback = () => {
     localStorage.setItem("feedbackData", JSON.stringify(updated));
   };
 
-  // Fetch feedback on component mount
-  useEffect(() => {
-  }, [feedbackList]);
-
-  // Handle dark mode toggle
-  useEffect(() => {
-    if (isDarkMode) {
-      document.body.classList.add("dark");
-    } else {
-      document.body.classList.remove("dark");
-    }
-    localStorage.setItem("darkMode", isDarkMode);
-  }, [isDarkMode]);
-
   // Filter feedback based on active filter
   const getFilteredFeedback = () => {
     if (!Array.isArray(feedbackList)) {
-      return []; // Return an empty array if feedbackList is not an array
+      return [];
     }
 
     switch (activeFilter) {
@@ -200,9 +188,7 @@ const Feedback = () => {
           (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         );
       case "mostLiked":
-        return [...feedbackList].sort(
-          (a, b) => (b.likes || 0) - (a.likes || 0)
-        );
+        return [...feedbackList].sort((a, b) => (b.likes || 0) - (a.likes || 0));
       case "mostReplies":
         return [...feedbackList].sort(
           (a, b) => (b.replies?.length || 0) - (a.replies?.length || 0)
@@ -292,16 +278,6 @@ const Feedback = () => {
           </button>
         </div>
 
-        {/* User info input */}
-        {/* <div
-          className={`mb-6 p-6 rounded-xl ${
-            isDarkMode
-              ? "bg-gray-800/70 backdrop-blur-md border border-gray-700/50"
-              : "bg-white/40 backdrop-blur-md border border-white/50 shadow-xl"
-          }`}
-        >
-        </div> */}
-
         {/* Feedback form */}
         <form
           onSubmit={handleSubmitFeedback}
@@ -321,7 +297,6 @@ const Feedback = () => {
             <div className="flex space-x-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
-                name="rating"
                   key={star}
                   type="button"
                   onClick={() =>
@@ -342,7 +317,6 @@ const Feedback = () => {
           <div className="mb-4">
             <label className="block mb-2 font-medium">Your Feedback:</label>
             <textarea
-              name="comment"
               value={newFeedback.comment}
               onChange={(e) =>
                 setNewFeedback({ ...newFeedback, comment: e.target.value })
@@ -407,206 +381,15 @@ const Feedback = () => {
 
         {/* Feedback list */}
         <div className="space-y-6">
-          {getFilteredFeedback().map((feedback, index) => (
-            <div
-              key={feedback._id}
-              className={`p-6 rounded-xl transition-all duration-500 ${getAnimationClass(
-                index
-              )} ${
-                isDarkMode
-                  ? "bg-gray-800/70 backdrop-blur-md border border-gray-700/50 hover:bg-gray-800/90"
-                  : "bg-white/40 backdrop-blur-md border border-white/50 shadow-lg hover:bg-white/60"
-              }`}
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className="flex items-start gap-4">
-                <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    isDarkMode ? "bg-gray-700" : "bg-green-100"
-                  }`}
-                >
-                  {/* {feedback.user.includes("Restaurant") ||
-                  feedback.user.includes("Catering") ||
-                  feedback.user.includes("Buffet") ? (
-                    <Utensils className="text-green-500" size={24} />
-                  ) : feedback.user.includes("NGO") ||
-                    feedback.user.includes("Food Bank") ||
-                    feedback.user.includes("Shelter") ? (
-                    <Heart className="text-red-500" size={24} />
-                  ) : (
-                    <Apple className="text-green-500" size={24} />
-                  )} */}
-                </div>
-                <div className="flex-1">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-lg">{feedback.user.fullname}</h3>
-                      <div className="flex items-center mt-1">
-                        {renderStars(feedback.rating)}
-                        <span
-                          className={`ml-2 text-sm ${
-                            isDarkMode ? "text-gray-400" : "text-gray-500"
-                          }`}
-                        >
-                          {formatDate(feedback.createdAt)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <p
-                    className={`my-3 ${
-                      isDarkMode ? "text-gray-300" : "text-gray-700"
-                    }`}
-                  >
-                    {feedback.comment}
-                  </p>
-
-                  <div className="flex items-center gap-4 mt-2">
-                    <button
-                      onClick={() => handleLike(feedback._id)}
-                      className={`flex items-center gap-1 transition-all duration-300 ${
-                        isDarkMode
-                          ? "text-gray-400 hover:text-red-400"
-                          : "text-gray-500 hover:text-red-500"
-                      } hover:scale-110`}
-                    >
-                      <Heart size={18} className="fill-current" />
-                      <span>{feedback.likes||9}</span>
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        setReplyingTo(
-                          replyingTo === feedback._id ? null : feedback._id
-                        )
-                      }
-                      className={`flex items-center gap-1 transition-all duration-300 ${
-                        isDarkMode
-                          ? "text-gray-400 hover:text-green-400"
-                          : "text-gray-500 hover:text-green-500"
-                      } hover:scale-110`}
-                    >
-                      <MessageCircle size={18} />
-                      <span>{feedback.replies || 19}</span>
-                    </button>
-                  </div>
-
-                  {/* Reply form */}
-                  {replyingTo === feedback._id && (
-                    <div
-                      className={`mt-4 p-4 rounded-lg animate-fade-in ${
-                        isDarkMode
-                          ? "bg-gray-700/70 backdrop-blur-sm"
-                          : "bg-white/50 backdrop-blur-sm"
-                      }`}
-                    >
-                      <textarea
-                        value={replyText}
-                        onChange={(e) => setReplyText(e.target.value)}
-                        className={`w-full p-3 rounded-lg border mb-2 ${
-                          isDarkMode
-                            ? "bg-gray-600/70 border-gray-500 text-white"
-                            : "bg-white/70 border-gray-200 text-gray-800"
-                        } backdrop-blur-sm focus:ring-2 focus:ring-green-500`}
-                        rows={2}
-                        placeholder="Share your thoughts or experience..."
-                      />
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => setReplyingTo(null)}
-                          className={`px-4 py-2 rounded-lg transition-all duration-300 ${
-                            isDarkMode
-                              ? "bg-gray-600/70 hover:bg-gray-500/70"
-                              : "bg-gray-200/70 hover:bg-gray-300/70"
-                          } backdrop-blur-sm`}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={() => handleReply(feedback._id)}
-                          className={`px-4 py-2 rounded-lg flex items-center gap-1 transition-all duration-300 ${
-                            isDarkMode
-                              ? "bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-500 hover:to-blue-500"
-                              : "bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-400 hover:to-blue-400"
-                          } text-white shadow-md hover:shadow-lg`}
-                        >
-                          <Send size={16} />
-                          Reply
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Replies */}
-                  {/* {feedback.replies.length > 0 && (
-                    <div
-                      className={`mt-4 pl-4 border-l-2 ${
-                        isDarkMode ? "border-gray-700" : "border-green-200"
-                      }`}
-                    >
-                      {feedback.replies.map((reply) => (
-                        <div key={reply.id} className="mt-3 animate-fade-in">
-                          <div className="flex items-start gap-3">
-                            <div
-                              className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                                isDarkMode ? "bg-gray-700" : "bg-blue-100"
-                              }`}
-                            >
-                              {reply.user.includes("Support") ? (
-                                <Leaf className="text-green-500" size={16} />
-                              ) : (
-                                <MessageCircle
-                                  className="text-blue-500"
-                                  size={16}
-                                />
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex justify-between">
-                                <h4 className="font-medium">{reply.user}</h4>
-                                <span
-                                  className={`text-xs ${
-                                    isDarkMode
-                                      ? "text-gray-400"
-                                      : "text-gray-500"
-                                  }`}
-                                >
-                                  {formatDate(reply.date)}
-                                </span>
-                              </div>
-                              <p
-                                className={`mt-1 text-sm ${
-                                  isDarkMode ? "text-gray-300" : "text-gray-700"
-                                }`}
-                              >
-                                {reply.comment}
-                              </p>
-                              <button
-                                onClick={() =>
-                                  handleLikeReply(feedback._id, reply.id)
-                                }
-                                className={`flex items-center gap-1 mt-1 text-sm transition-all duration-300 ${
-                                  isDarkMode
-                                    ? "text-gray-400 hover:text-red-400"
-                                    : "text-gray-500 hover:text-red-500"
-                                } hover:scale-110`}
-                              >
-                                <ThumbsUp size={14} className="fill-current" />
-                                <span>{reply.likes || 0}</span>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )} */}
-                </div>
-              </div>
+          {loading ? (
+            <div className="text-center py-8">
+              <p>Loading feedback...</p>
             </div>
-          ))}
-
-          {feedbackList.length === 0 && (
+          ) : error ? (
+            <div className="text-center py-8 text-red-500">
+              <p>{error}</p>
+            </div>
+          ) : feedbackList.length === 0 ? (
             <div
               className={`p-8 text-center rounded-xl ${
                 isDarkMode
@@ -618,6 +401,205 @@ const Feedback = () => {
                 No feedback yet. Be the first to share your FoodSync experience!
               </p>
             </div>
+          ) : (
+            getFilteredFeedback().map((feedback, index) => {
+              if (!feedback || !feedback.user) {
+                return null; // Skip rendering if feedback or user is null
+              }
+
+              return (
+                <div
+                  key={feedback._id}
+                  className={`p-6 rounded-xl transition-all duration-500 ${getAnimationClass(
+                    index
+                  )} ${
+                    isDarkMode
+                      ? "bg-gray-800/70 backdrop-blur-md border border-gray-700/50 hover:bg-gray-800/90"
+                      : "bg-white/40 backdrop-blur-md border border-white/50 shadow-lg hover:bg-white/60"
+                  }`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                        isDarkMode ? "bg-gray-700" : "bg-green-100"
+                      }`}
+                    >
+                      {/* Avatar content */}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-semibold text-lg">
+                            {feedback.user.fullname || "Anonymous User"}
+                          </h3>
+                          <div className="flex items-center mt-1">
+                            {renderStars(feedback.rating)}
+                            <span
+                              className={`ml-2 text-sm ${
+                                isDarkMode ? "text-gray-400" : "text-gray-500"
+                              }`}
+                            >
+                              {formatDate(feedback.createdAt)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <p
+                        className={`my-3 ${
+                          isDarkMode ? "text-gray-300" : "text-gray-700"
+                        }`}
+                      >
+                        {feedback.comment}
+                      </p>
+
+                      <div className="flex items-center gap-4 mt-2">
+                        <button
+                          onClick={() => handleLike(feedback._id)}
+                          className={`flex items-center gap-1 transition-all duration-300 ${
+                            isDarkMode
+                              ? "text-gray-400 hover:text-red-400"
+                              : "text-gray-500 hover:text-red-500"
+                          } hover:scale-110`}
+                        >
+                          <Heart size={18} className="fill-current" />
+                          <span>{feedback.likes || 0}</span>
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            setReplyingTo(
+                              replyingTo === feedback._id ? null : feedback._id
+                            )
+                          }
+                          className={`flex items-center gap-1 transition-all duration-300 ${
+                            isDarkMode
+                              ? "text-gray-400 hover:text-green-400"
+                              : "text-gray-500 hover:text-green-500"
+                          } hover:scale-110`}
+                        >
+                          <MessageCircle size={18} />
+                          <span>{feedback.replies?.length || 0}</span>
+                        </button>
+                      </div>
+
+                      {/* Reply form */}
+                      {replyingTo === feedback._id && (
+                        <div
+                          className={`mt-4 p-4 rounded-lg animate-fade-in ${
+                            isDarkMode
+                              ? "bg-gray-700/70 backdrop-blur-sm"
+                              : "bg-white/50 backdrop-blur-sm"
+                          }`}
+                        >
+                          <textarea
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            className={`w-full p-3 rounded-lg border mb-2 ${
+                              isDarkMode
+                                ? "bg-gray-600/70 border-gray-500 text-white"
+                                : "bg-white/70 border-gray-200 text-gray-800"
+                            } backdrop-blur-sm focus:ring-2 focus:ring-green-500`}
+                            rows={2}
+                            placeholder="Share your thoughts or experience..."
+                          />
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => setReplyingTo(null)}
+                              className={`px-4 py-2 rounded-lg transition-all duration-300 ${
+                                isDarkMode
+                                  ? "bg-gray-600/70 hover:bg-gray-500/70"
+                                  : "bg-gray-200/70 hover:bg-gray-300/70"
+                              } backdrop-blur-sm`}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={() => handleReply(feedback._id)}
+                              className={`px-4 py-2 rounded-lg flex items-center gap-1 transition-all duration-300 ${
+                                isDarkMode
+                                  ? "bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-500 hover:to-blue-500"
+                                  : "bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-400 hover:to-blue-400"
+                              } text-white shadow-md hover:shadow-lg`}
+                            >
+                              <Send size={16} />
+                              Reply
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Replies */}
+                      {feedback.replies?.length > 0 && (
+                        <div
+                          className={`mt-4 pl-4 border-l-2 ${
+                            isDarkMode ? "border-gray-700" : "border-green-200"
+                          }`}
+                        >
+                          {feedback.replies.map((reply) => (
+                            <div key={reply.id} className="mt-3 animate-fade-in">
+                              <div className="flex items-start gap-3">
+                                <div
+                                  className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                    isDarkMode ? "bg-gray-700" : "bg-blue-100"
+                                  }`}
+                                >
+                                  {reply.user.includes("Support") ? (
+                                    <Leaf className="text-green-500" size={16} />
+                                  ) : (
+                                    <MessageCircle
+                                      className="text-blue-500"
+                                      size={16}
+                                    />
+                                  )}
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex justify-between">
+                                    <h4 className="font-medium">
+                                      {reply.user}
+                                    </h4>
+                                    <span
+                                      className={`text-xs ${
+                                        isDarkMode
+                                          ? "text-gray-400"
+                                          : "text-gray-500"
+                                      }`}
+                                    >
+                                      {formatDate(reply.date)}
+                                    </span>
+                                  </div>
+                                  <p
+                                    className={`mt-1 text-sm ${
+                                      isDarkMode ? "text-gray-300" : "text-gray-700"
+                                    }`}
+                                  >
+                                    {reply.comment}
+                                  </p>
+                                  <button
+                                    onClick={() =>
+                                      handleLikeReply(feedback._id, reply.id)
+                                    }
+                                    className={`flex items-center gap-1 mt-1 text-sm transition-all duration-300 ${
+                                      isDarkMode
+                                        ? "text-gray-400 hover:text-red-400"
+                                        : "text-gray-500 hover:text-red-500"
+                                    } hover:scale-110`}
+                                  >
+                                    <ThumbsUp size={14} className="fill-current" />
+                                    <span>{reply.likes || 0}</span>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })
           )}
         </div>
       </div>
