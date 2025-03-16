@@ -33,7 +33,7 @@ const Hero = ({
 
   return (
     <div className="hero pt-28">
-      <div className="hero-text">
+      {/* <div className="hero-text">
         <div className="text-wrapper">
           <p ref={text1Ref} className="first animate-text">
             {heroData.text1}
@@ -81,7 +81,7 @@ const Hero = ({
           </div>
           <p>See the video</p>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

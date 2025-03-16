@@ -8,7 +8,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Gamification } from "../models/gamification.models.js";
 import { getBadge } from "../utils/gamificationUtils.js";
-
+import {UpcyclingItem} from "../models/upcyclingItem.models.js"
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -64,9 +64,9 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
         upcyclingIndustry.gamification = gamification._id;
         await upcyclingIndustry.save();
 
-    const totalAmount = Number(cart.totalAmount) - parseFloat((discountPoint * 2.5).toFixed(2))
+    let totalAmount = Number(cart.totalAmount) - parseFloat((discountPoint * 2.5).toFixed(2))
     if(totalAmount < 0){
-      totalAmount = 0
+      totalAmount = 1
     }
 
     const upcyclingOrder = new UpcyclingOrder({
@@ -82,7 +82,12 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
 
     await upcyclingOrder.save();
 
-    if (paymentMethod === "Online") {
+    if (paymentMethod === "razorpay") {
+
+      if (!razorpay) {
+        throw new ApiError(500, "Razorpay is not configured");
+      }
+
       const options = {
         amount: totalAmount * 100,
         currency: "INR",
@@ -91,10 +96,12 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
       };
 
       const razorpayOrder = await razorpay.orders.create(options);
-
+console.log(razorpayOrder)
       upcyclingOrder.razorpayOrderId = razorpayOrder.id;
       await upcyclingOrder.save();
-
+console.log(upcyclingOrder.razorpayOrderId)
+      // Delete the cart after the order is created
+      await Cart.deleteOne({ buyer: upcyclingIndustry._id, buyerType: "UpcyclingIndustry" });
 
       return res.status(201).json(
         new ApiResponse(
@@ -109,13 +116,10 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
           "Upcycling order placed successfully. Proceed with payment."
         )
       );
-    }
+    } else {
 
     upcyclingIndustry.upcyclingOrders.push(upcyclingOrder._id);
     await upcyclingIndustry.save();
-
-    upcyclingOrder.status = "confirmed"
-    await upcyclingOrder.save()
 
     await Cart.deleteOne({
       buyer: upcyclingIndustry._id,
@@ -131,6 +135,7 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
           "Upcycling order placed successfully"
         )
       );
+    }
   } catch (error) {
     console.error("Error placing upcycling order:", error.message);
     throw new ApiError(500, error.message || "Internal Server Error");
@@ -138,34 +143,48 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
 });
 
 const verifyUpcyclingPayment = asyncHandler(async (req, res) => {
-  try {
+  
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
       req.body;
-
+console.log("1")
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return res.status(400).json(new ApiError(400, "Missing payment details"));
     }
-
-    const generated_signature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-      .digest("hex");
-
-    if (generated_signature !== razorpay_signature) {
-      return res
-        .status(400)
-        .json(new ApiError(400, "Payment verification failed"));
-    }
-
+  try {
+    console.log("2")
     const upcyclingOrder = await UpcyclingOrder.findOne({
       razorpayOrderId: razorpay_order_id,
     });
+    console.log(razorpay_order_id)
+    console.log(upcyclingOrder)
     if (!upcyclingOrder) {
       return res
         .status(404)
         .json(new ApiError(404, "Upcycling order not found"));
     }
-
+    console.log("4")
+    // Check if the order is already paid
+    if (upcyclingOrder.paymentStatus === "paid") {
+      return res.status(400).json(new ApiError(400, "Payment already verified"));
+    }
+    console.log("5")
+    const generated_signature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest("hex");
+      console.log("6")
+    if (generated_signature !== razorpay_signature) {
+      console.error("Invalid payment signature:", {
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        generatedSignature,
+      });
+      return res
+        .status(400)
+        .json(new ApiError(400, "Payment verification failed"));
+    }
+    console.log("7")
     upcyclingOrder.paymentStatus = "Paid";
     upcyclingOrder.razorpayPaymentId = razorpay_payment_id;
     await upcyclingOrder.save();
@@ -175,7 +194,7 @@ const verifyUpcyclingPayment = asyncHandler(async (req, res) => {
       .json(
         new ApiResponse(
           200,
-          { razorpay_payment_id },
+          upcyclingOrder,
           "Payment verified successfully"
         )
       );
@@ -186,6 +205,56 @@ const verifyUpcyclingPayment = asyncHandler(async (req, res) => {
       .json(new ApiError(500, error.message || "Internal Server Error"));
   }
 });
+
+const markOrderAsCompleted = asyncHandler(async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    console.log("Order ID from params:", orderId);
+    const order = await UpcyclingOrder.findById(orderId);
+    console.log(order)
+    if (!order) {
+      return res.status(404).json(new ApiError(404, "Order not found"));
+    }
+    if (order.status !== "pending" && order.status !== "Processing") {
+      return res
+        .status(400)
+        .json(new ApiError(400, "Order cannot be completed"));
+    }
+console.log(order.status)
+    order.status = "confirmed";
+    await order.save();
+    await updateInventoryOnOrderCompletion(orderId);
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, order, "Order completed successfully"));
+  } catch (error) {
+    console.error("Error completing order:", error.message);
+    return res
+      .status(500)
+      .json(new ApiError(500, error.message || "Internal Server Error"));
+  }
+});
+
+const updateInventoryOnOrderCompletion = async (orderId) => {
+  try {
+    const order = await UpcyclingOrder.findById(orderId).populate("items.item");
+    if (!order) throw new Error("Order not found");
+console.log(order)
+    for (const cartItem of order.items) {
+      console.log(cartItem)
+      const item = await UpcyclingItem.findById(cartItem._id);
+      if (!item) continue;
+
+      item.quantity -= cartItem.quantity;
+      item.status = item.quantity > 0 ? "available" : "Out of Stock";
+      await item.save();
+    }
+  } catch (error) {
+    console.error("Error updating inventory:", error.message);
+    throw error; // Re-throw the error to handle it in the calling function
+  }
+};
 
 const getUpcyclingOrder = asyncHandler(async (req, res) => {
   try {
@@ -207,4 +276,5 @@ export {
   placeUpcyclingOrderFromCart,
   verifyUpcyclingPayment,
   getUpcyclingOrder,
+  markOrderAsCompleted,
 };
