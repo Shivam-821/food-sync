@@ -10,7 +10,7 @@ const AuthProtectWrapper = ({ children }) => {
     const token = localStorage.getItem('accessToken');
     const navigate = useNavigate();
     
-    // Contexts for different user roles
+    // Contexts for different user rolesm
     const { setConsumer } = useContext(ConsumerDataContext);
     const { setProducer } = useContext(ProducerDataContext);
     const { updateUpcyclingI } = useContext(UpcyclingIDataContext);

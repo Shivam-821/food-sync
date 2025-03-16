@@ -41,6 +41,7 @@ export default function ChatComponent() {
         setLoading(false); // ✅ Reset loading state after response
       }, 1000);
     } catch (err) {
+      Navigate("/error")
       console.error("Error fetching data:", err);
       setMessages((prev) => [
         ...prev,
