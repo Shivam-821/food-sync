@@ -33,7 +33,8 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
     const cart = await Cart.findOne({
       buyer: upcyclingIndustry._id,
       buyerType: "UpcyclingIndustry",
-    });
+    }).populate("items.item")
+    
     if (!cart || cart.items.length === 0) {
       throw new ApiError(400, "Cart is empty");
     }
@@ -83,7 +84,7 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
 
     if (paymentMethod === "Online") {
       const options = {
-        amount: cart.totalAmount * 100,
+        amount: totalAmount * 100,
         currency: "INR",
         receipt: `receipt_${upcyclingOrder._id}`,
         payment_capture: 1,
@@ -101,7 +102,7 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
           {
             orderId: upcyclingOrder._id,
             razorpayOrderId: razorpayOrder.id,
-            amount: cart.totalAmount,
+            amount: totalAmount,
             currency: "INR",
             key: process.env.RAZORPAY_KEY_ID,
           },

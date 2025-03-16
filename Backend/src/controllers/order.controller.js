@@ -20,7 +20,6 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
   try {
     const { location, address, paymentMethod } = req.body;
 
-    // Validate input data
     if (!address || !paymentMethod) {
       throw new ApiError(400, "All fields are required");
     }
@@ -62,10 +61,13 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
 
     let discountPoint = 0;
     let gamification = await Gamification.findOne({ user: consumer._id });
-    const newCredit = Math.floor(cart.totalAmount / 100) + extraPoints;
+    const newCredit =  parseFloat(extraPoints);
+    console.log('newCredit: ', newCredit)
 
     if (gamification) {
-      discountPoint = gamification.points;
+      console.log(gamification.discountPoint)
+      discountPoint = gamification.discountPoint || 0,
+      gamification.discountPoint = newCredit,
       gamification.points += newCredit;
       gamification.badges = getBadge(gamification.points);
       await gamification.save();
@@ -75,19 +77,30 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
         userType: "Consumer",
         contribution: "Order",
         points: newCredit,
+        discountPoint: newCredit,
         badges: getBadge(newCredit),
       });
     }
 
     consumer.gamification = gamification._id;
     await consumer.save();
-console.log(cart.totalAmount)
-console.log(discountPoint)
-    // Calculate total amount after applying discount
-    let totalAmount = cart.totalAmount - (discountPoint * 2.5);
+
+    console.log("Cart Total:", cart.totalAmount);
+    console.log("Discount Points:", discountPoint);
+    
+    
+    let cartTotal = cart.totalAmount ? parseFloat(cart.totalAmount) : 0;
+    let discountValue = discountPoint ? parseFloat(discountPoint) * 2.5 : 0;
+
+    console.log("Calculated Discount:", discountValue);
+
+    let totalAmount = parseFloat((cartTotal - discountValue).toFixed(2));
     if (totalAmount < 0) {
       totalAmount = 1;
     }
+
+    console.log("Final Total Amount:", totalAmount);
+
 
     const order = new Order({
       consumer: consumerId,
@@ -103,31 +116,26 @@ console.log(discountPoint)
     await order.save();
 
     if (paymentMethod === "razorpay") {
-      // Validate Razorpay configuration
       if (!razorpay) {
         throw new ApiError(500, "Razorpay is not configured");
       }
 
       const options = {
-        amount: totalAmount * 100, // Amount in paise
+        amount: totalAmount * 100, // in paise
         currency: "INR",
         receipt: `receipt_${order._id}`,
-        payment_capture: 1, // Auto-capture payment
+        payment_capture: 1, // auto-capture
       };
      
       let razorpayOrder;
       try {
-        // Create a Razorpay order
         razorpayOrder = await razorpay.orders.create(options);
 
-    
-        // Update the order with the Razorpay order ID
         order.razorpayOrderId = razorpayOrder.id;
         await order.save();
       } catch (error) {
         console.error("Razorpay API Error:", error);
     
-        // Handle specific Razorpay API errors
         if (error.error && error.error.description) {
           throw new ApiError(500, `Razorpay API Error: ${error.error.description}`);
         } else {
@@ -135,10 +143,8 @@ console.log(discountPoint)
         }
       }
     
-      // Delete the cart after the order is created
       await Cart.deleteOne({ buyer: consumerId, buyerType: "Consumer" });
     
-      // Return the response to the client
       return res.status(201).json(
         new ApiResponse(
           201,
@@ -211,7 +217,6 @@ const verifyPayment = asyncHandler(async (req, res) => {
     order.paymentStatus = "paid";
     await order.save();
 
-    // Return success response
     res
       .status(200)
       .json(new ApiResponse(200, order, "Payment verified successfully"));
