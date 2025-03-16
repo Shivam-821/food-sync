@@ -128,6 +128,16 @@ function FilterSection({
                 />
                 <span className="radio-text">Non-perishable</span>
               </label>
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="productType"
+                  value="ready-to-eat"
+                  checked={productType === "ready-to-eat"}
+                  onChange={(e) => setProductType(e.target.value)}
+                />
+                <span className="radio-text">Ready-To-Eat</span>
+              </label>
             </div>
           </div>
 

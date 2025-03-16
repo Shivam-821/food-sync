@@ -1,5 +1,3 @@
-"use client";
-
 import { useContext, useState, useEffect, useRef } from "react";
 import {
   FaEye,
@@ -185,7 +183,7 @@ const SignUp = () => {
         }
 
         const userId = response.data.data.user._id;
-        if(userId){
+        if (userId) {
           localStorage.setItem("userId", userId);
         }
 

@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
 import ProductDetail from "./ProductDetail";
@@ -10,6 +8,7 @@ import "./Blocks.css";
 import { FaShoppingCart } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {  useNavigate } from "react-router-dom";
 
 const Blocks = () => {
   return (
@@ -22,6 +21,7 @@ const Blocks = () => {
 export default Blocks;
 
 function BlockList() {
+  const navigate = useNavigate();
   const [blocks, setBlocks] = useState([]);
   const [sampleProducts, setSampleProducts] = useState([]);
   const [products, setProducts] = useState([]);
@@ -90,8 +90,8 @@ function BlockList() {
 
         setFilteredProducts(filtered); // Set filteredProducts after filtering
       } catch (err) {
-        console.error("Error fetching data:", err);
-        toast.error("Failed to fetch products. Please try again.");
+        console.log("kjhgk khjg kjgh kj kjkj g")
+        navigate("/error")
       } finally {
         setLoading(false); // Set loading to false after fetching data
       }
@@ -146,6 +146,7 @@ function BlockList() {
       setData(cartResponse.data.data);
       setCartItems(cartResponse.data.data.items || []);
     } catch (error) {
+      Navigate("/error")
       toast.error(error.response?.data?.message || "Failed to add to cart");
     } finally {
       setLoading(false);
@@ -190,9 +191,8 @@ function BlockList() {
       setData(cartResponse.data.data);
       setCartItems(cartResponse.data.data.items || []);
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to remove from cart"
-      );
+      Navigate("/error")
+      toast.error(error.response?.data?.message || "Failed to remove from cart");
     } finally {
       setLoading(false);
     }
@@ -237,9 +237,8 @@ function BlockList() {
       setData(cartResponse.data.data);
       setCartItems(cartResponse.data.data.items || []);
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to update cart quantity"
-      );
+      Navigate("/error")
+      toast.error(error.response?.data?.message || "Failed to update cart quantity");
     } finally {
       setLoading(false);
     }
@@ -266,7 +265,6 @@ function BlockList() {
         setCartItems(cartData.items || []);
       } catch (err) {
         console.error("Error fetching data:", err);
-        toast.error("Failed to fetch cart data. Please try again.");
       }
     };
     fetchCart();

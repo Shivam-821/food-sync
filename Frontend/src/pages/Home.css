@@ -51,3 +51,9 @@
   }
 }
 
+html, body {
+  overflow-y: auto;
+  height: auto;
+}
+
+

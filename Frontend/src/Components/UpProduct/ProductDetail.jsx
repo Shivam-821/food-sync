@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import "./ProductDetail.css";
 import { FaShoppingCart, FaTimes, FaCalendarAlt, FaTag } from "react-icons/fa";

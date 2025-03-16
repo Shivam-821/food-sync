@@ -16,7 +16,7 @@ const gamificationSchema = new Schema(
       type: Number,
       default: 0,
     },
-    discountPoints:{
+    discountPoints: {
       type: Number,
       default: 0,
     },
