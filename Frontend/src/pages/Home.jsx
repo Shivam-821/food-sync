@@ -7,6 +7,7 @@ import Hero from "../Components/Hero/Hero";
 import ScrollingText from "../Components/ScrollingText/ScrollingText";
 import Footer from "../Components/Footer/Footer";
 import Blocks from "../Components/Block/Blocks";
+import ImprovedSurplusFoodSharing from "../Components/ImprovedSurplusFoodSharing/ImprovedSurplusFoodSharing";
 //import "./Home.css";
 
 const Home = () => {
@@ -44,6 +45,9 @@ const Home = () => {
         <ScrollingText />
         <div className="blocks-container">
           <Blocks />
+        </div>
+        <div>
+          <ImprovedSurplusFoodSharing />
         </div>
         <Footer />
       </div>
