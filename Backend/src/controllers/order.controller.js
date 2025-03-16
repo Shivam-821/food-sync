@@ -65,10 +65,10 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     console.log('newCredit: ', newCredit)
 
     if (gamification) {
-      console.log(gamification.discountPoint)
-      discountPoint = gamification.discountPoint || 0,
-      gamification.discountPoint = newCredit,
-      gamification.points += newCredit;
+      console.log(gamification?.discountPoints);
+      (discountPoint = parseFloat(gamification?.discountPoints) || 0),
+        (gamification.discountPoints = newCredit),
+        (gamification.points += newCredit);
       gamification.badges = getBadge(gamification.points);
       await gamification.save();
     } else {
@@ -94,18 +94,18 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
 
     console.log("Calculated Discount:", discountValue);
 
-    let totalAmount = parseFloat((cartTotal - discountValue).toFixed(2));
-    if (totalAmount < 0) {
-      totalAmount = 1;
+    let totalValue = parseFloat((cartTotal - discountValue).toFixed(2));
+    if (totalValue < 0) {
+      totalValue = 1;
     }
 
-    console.log("Final Total Amount:", totalAmount);
+    console.log("Final Total Amount:", totalValue);
 
 
     const order = new Order({
       consumer: consumerId,
       items: cart.items,
-      totalAmount: totalAmount,
+      totalAmount: totalValue,
       deliveryAddress: address,
       deliveryLocation: location,
       paymentMethod,
@@ -121,7 +121,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
       }
 
       const options = {
-        amount: totalAmount * 100, // in paise
+        amount: totalValue * 100, // in paise
         currency: "INR",
         receipt: `receipt_${order._id}`,
         payment_capture: 1, // auto-capture
@@ -151,7 +151,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
           {
             orderId: order._id,
             razorpayOrderId: razorpayOrder.id,
-            amount: totalAmount,
+            amount: totalValue,
             currency: "INR",
             key: process.env.RAZORPAY_KEY_ID || "razorpay_key_id_missing", // Fallback for missing key
           },

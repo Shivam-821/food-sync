@@ -81,7 +81,7 @@ const itemSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["available", "expired"],
+      enum: ["available", "expired", "Out of Stock"],
       default: "available",
     },
     upcyclingOptions: {
