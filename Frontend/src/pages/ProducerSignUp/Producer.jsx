@@ -217,6 +217,10 @@ const ProducerSignUp = () => {
         const data = response.data.data;
         setProducer(data.producer);
         console.log(data);
+        const userId = response.data.data.user._id;
+        if (userId) {
+          localStorage.setItem("userId", userId);
+        }
         const token = response.data.data.accessToken;
         if (token) {
           localStorage.setItem("accessToken", token);

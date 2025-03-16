@@ -1,42 +1,52 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import Background from "../Components/Background/Background";
 import Navbar from "../Components/Navbar/Navbar";
 import Hero from "../Components/Hero/Hero";
 import ScrollingText from "../Components/ScrollingText/ScrollingText";
 import Footer from "../Components/Footer/Footer";
 import Blocks from "../Components/Block/Blocks";
+//import "./Home.css";
 
 const Home = () => {
-  let heroData = [
-    { text1: "UPCYCLED FOOD", text2: "A tred to sustain" },
-    { text1: "indulge", text2: "your passions" },
-    { text1: "Give in to", text2: "your passions" },
+  const heroData = [
+    { text1: "UPCYCLED FOOD", text2: "A trend to sustain" },
+    { text1: "REDUCE WASTE", text2: "nourish the planet" },
+    { text1: "FOODSYNC", text2: "for a better tomorrow" },
   ];
-  const [heroCount, setHeroCount] = useState(2);
+  const [heroCount, setHeroCount] = useState(0);
   const [playStatus, setPlayStatus] = useState(false);
 
   useEffect(() => {
-    setInterval(() => {
+    const interval = setInterval(() => {
       setHeroCount((count) => {
         return count === 2 ? 0 : count + 1;
       });
-    }, 3000);
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
-    <div>
+    <div className="home-container">
+      <div className="home-background"></div>
       <Background playStatus={playStatus} heroCount={heroCount} />
-      <Navbar />
-      <Hero
-        setPlayStatus={setPlayStatus}
-        heroData={heroData[heroCount]}
-        heroCount={heroCount}
-        setHeroCount={setHeroCount}
-        playStatus={playStatus}
-      ></Hero>
-      <ScrollingText />
-      <Blocks />
-      <Footer />
+      <div className="content-wrapper">
+        <Navbar />
+        <Hero
+          setPlayStatus={setPlayStatus}
+          heroData={heroData[heroCount]}
+          heroCount={heroCount}
+          setHeroCount={setHeroCount}
+          playStatus={playStatus}
+        />
+        <ScrollingText />
+        <div className="blocks-container">
+          <Blocks />
+        </div>
+        <Footer />
+      </div>
     </div>
   );
 };

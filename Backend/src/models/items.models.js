@@ -75,10 +75,14 @@ const itemSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    priceModifiedUpcycling: {
+      type: Boolean,
+      default: false,
+    },
     status: {
       type: String,
-      enum:["available", "expired"],
-      default:"available"
+      enum: ["available", "expired"],
+      default: "available",
     },
     upcyclingOptions: {
       type: String,

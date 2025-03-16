@@ -24,13 +24,16 @@ const ProducerDetail = () => {
     email: "",
     phone: "",
     location: "",
+    location: "",
     address: "",
     bio: "",
     producerType: "",
     companyName: "",
+    companyName: "",
     avatar: "",
     history: [],
   });
+
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -42,6 +45,7 @@ const ProducerDetail = () => {
           return;
         }
 
+
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/v1/producer/profile`,
           {
@@ -50,6 +54,7 @@ const ProducerDetail = () => {
             },
           }
         );
+
 
         if (response.data && response.data.data) {
           const user = response.data.data;
@@ -82,6 +87,7 @@ const ProducerDetail = () => {
         alert("Failed to fetch user profile. Please try again.");
       }
     };
+
 
     fetchUserProfile();
   }, [navigate]);

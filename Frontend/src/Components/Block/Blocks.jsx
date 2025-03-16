@@ -203,7 +203,7 @@ function BlockList() {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-  
+
       // Update item quantity in the backend
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/v1/cart/addtocart`,
@@ -221,9 +221,9 @@ function BlockList() {
           withCredentials: true,
         }
       );
-  
+
       toast.success("Cart quantity updated successfully!");
-  
+
       // Fetch updated cart data from the backend
       const cartResponse = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/v1/cart/getcart`,

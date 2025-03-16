@@ -1,42 +1,57 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Navbar from "../Navbar/Navbar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaGoogle, FaGithub, FaFacebook } from "react-icons/fa";
+import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
 
 const Login = () => {
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [focusedInput, setFocusedInput] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const navigate = useNavigate();
+
+  const testimonials = [
+    {
+      quote: "Your efforts in reducing food waste are truly inspiring!",
+      quote1:
+        "Every step you take makes a big difference for people and the planet. Keep up the amazing work!",
+    },
+    {
+      quote: "What you're doing isn't just about saving food—",
+      quote1:
+        "it's about saving resources, supporting communities, and protecting our environment. Thank you for making a real impact!",
+    },
+    {
+      quote: "Keep serving.",
+      quote1: "keep Exploring",
+    },
+  ];
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // Send login request to the common login endpoint
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/v1/auth/login`,
-        { emailOrPhone, password }
+        {
+          emailOrPhone,
+          password,
+        }
       );
 
       const { accessToken, refreshToken, user } = response.data.data;
-
-      // Store tokens in local storage
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-
-      // Show success toast
       toast.success("Login successful! Redirecting...");
 
-      // Redirect based on role
       if (user.role === "consumer") {
         navigate("/", { state: { user } });
       } else if (user.role === "producer") {
@@ -54,314 +69,179 @@ const Login = () => {
     }
   };
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { type: "spring", stiffness: 300, damping: 24 },
-    },
-  };
-
-  const backgroundVariants = {
-    animate: {
-      background: [
-        "linear-gradient(to bottom right, #4f46e5, #7e22ce, #ec4899)",
-        "linear-gradient(to bottom right, #6366f1, #8b5cf6, #f472b6)",
-        "linear-gradient(to bottom right, #4f46e5, #7e22ce, #ec4899)",
-      ],
-      transition: {
-        duration: 15,
-        repeat: Infinity,
-        repeatType: "reverse",
-      },
-    },
-  };
-
   return (
-    <motion.div
-      className="min-h-screen relative overflow-hidden"
-      variants={backgroundVariants}
-      animate="animate"
-    >
-      {/* Animated particles */}
-      <Particles />
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-600 to-pink-500">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-6xl h-[650px] flex rounded-3xl overflow-hidden bg-white/10 backdrop-blur-lg shadow-2xl"
+      >
+        {/* Left Section - Login Form */}
+        <div className="flex-1 p-10 bg-blue-300 rounded-r-3xl">
+          <div className="mb-10">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-10 h-10"
+            >
+              {/* Your logo here */}
+              <div className="w-30 h-10 bg-gradient-to-r from-purple-400 to-pink-300 rounded-lg p-1.6 pt-1 pl-2 text-2xl">
+                FoodSync
+              </div>
+            </motion.div>
+          </div>
 
-      {/* Toast Container */}
-      <ToastContainer
-        position="top-center" // Set position to top-center
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
-
-      <div className="flex items-center justify-center min-h-screen p-4 relative z-10">
-        <Navbar />
-
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
-          className="bg-white/10 backdrop-blur-lg shadow-2xl rounded-2xl p-8 w-full max-w-md border border-white/20 relative overflow-hidden"
-        >
-          {/* Glassmorphism light effect */}
           <motion.div
-            className="absolute -top-40 -left-40 w-80 h-80 bg-white/30 rounded-full blur-3xl"
-            animate={{
-              x: [0, 30, 0],
-              y: [0, 20, 0],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              repeatType: "reverse",
-            }}
-          />
-
-          <motion.h2
-            variants={itemVariants}
-            className="text-white text-3xl font-bold text-center mb-8 relative"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-md mx-auto"
           >
-            Welcome To FoodSync
-          </motion.h2>
+            <h1 className="text-4xl font-semibold mb-2">Welcome back</h1>
+            <p className="text-gray-600 mb-8">
+              Please Enter your Account details
+            </p>
 
-          <form onSubmit={handleLogin}>
-            {/* Email/Phone Input */}
-            <motion.div variants={itemVariants} className="mb-6 relative">
-              <label className="block text-white/80 text-sm font-medium mb-2">
-                Email or Phone
-              </label>
-              <motion.div
-                animate={
-                  focusedInput === "emailOrPhone"
-                    ? { scale: 1.02 }
-                    : { scale: 1 }
-                }
-                transition={{ type: "spring", stiffness: 400, damping: 25 }}
-              >
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium mb-2">Email</label>
                 <input
                   type="text"
                   value={emailOrPhone}
                   onChange={(e) => setEmailOrPhone(e.target.value)}
-                  onFocus={() => setFocusedInput("emailOrPhone")}
-                  onBlur={() => setFocusedInput(null)}
-                  placeholder="Enter your email or phone"
-                  className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition duration-200"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-200"
+                  placeholder="foodSync@gmail.com"
                 />
-              </motion.div>
-              <motion.div
-                className="h-0.5 bg-white/50 mt-1 rounded-full"
-                initial={{ width: "0%" }}
-                animate={{
-                  width:
-                    focusedInput === "emailOrPhone"
-                      ? "100%"
-                      : emailOrPhone
-                      ? "100%"
-                      : "0%",
-                  backgroundColor:
-                    focusedInput === "emailOrPhone"
-                      ? "rgba(255, 255, 255, 0.8)"
-                      : "rgba(255, 255, 255, 0.5)",
-                }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              />
-            </motion.div>
+              </div>
 
-            {/* Password Input */}
-            <motion.div variants={itemVariants} className="mb-6 relative">
-              <label className="block text-white/80 text-sm font-medium mb-2">
-                Password
-              </label>
-              <motion.div
-                animate={
-                  focusedInput === "password" ? { scale: 1.02 } : { scale: 1 }
-                }
-                transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className="relative"
-              >
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Password
+                </label>
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  onFocus={() => setFocusedInput("password")}
-                  onBlur={() => setFocusedInput(null)}
-                  placeholder="Enter your password"
-                  className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition duration-200 pr-10"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-200"
+                  placeholder="••••••••"
                 />
-                <motion.button
-                  type="button"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white"
+              </div>
+
+              <div className="flex items-center justify-between">
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                  />
+                  <span className="text-sm text-gray-600">
+                    Keep me logged in
+                  </span>
+                </label>
+                <a
+                  href="#"
+                  className="text-sm text-gray-600 hover:text-purple-600 transition-colors"
                 >
-                  {showPassword ? (
-                    <i className="ri-eye-off-line text-lg"></i>
-                  ) : (
-                    <i className="ri-eye-line text-lg"></i>
-                  )}
-                </motion.button>
-              </motion.div>
-              <motion.div
-                className="h-0.5 bg-white/50 mt-1 rounded-full"
-                initial={{ width: "0%" }}
-                animate={{
-                  width:
-                    focusedInput === "password"
-                      ? "100%"
-                      : password
-                      ? "100%"
-                      : "0%",
-                  backgroundColor:
-                    focusedInput === "password"
-                      ? "rgba(255, 255, 255, 0.8)"
-                      : "rgba(255, 255, 255, 0.5)",
-                }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              />
-            </motion.div>
+                  Forgot Password
+                </a>
+              </div>
+              <div>
+                If you don't have an account!
+                <a href="signup" className="text-blue-600">
+                  Signup
+                </a>
+              </div>
 
-            {/* Forgot Password */}
-            <motion.div variants={itemVariants} className="text-right mb-6">
-              <motion.a
-                href="#"
-                whileHover={{ scale: 1.05, x: 3 }}
-                className="text-white/70 hover:text-white text-sm transition duration-200 inline-block"
-              >
-                Forgot Password?
-              </motion.a>
-            </motion.div>
-
-            {/* Login Button */}
-            <motion.div variants={itemVariants}>
               <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={isLoading}
-                className="w-full p-3 bg-white/20 text-white font-semibold rounded-lg hover:bg-white/30 transition duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 relative overflow-hidden group"
-                whileHover={{
-                  scale: 1.03,
-                  backgroundColor: "rgba(255, 255, 255, 0.3)",
-                }}
-                whileTap={{ scale: 0.97 }}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                <AnimatePresence mode="wait">
-                  {isLoading ? (
-                    <motion.div
-                      key="loading"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="absolute inset-0 flex items-center justify-center"
-                    >
-                      <i className="ri-loader-4-line animate-spin text-lg"></i>
-                    </motion.div>
-                  ) : null}
-                </AnimatePresence>
-
-                <span className={isLoading ? "opacity-0" : "opacity-100"}>
-                  Log In
-                </span>
-
-                {/* Button shine effect */}
-                <motion.div
-                  className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20"
-                  animate={{ left: ["150%", "-150%"] }}
-                  transition={{
-                    repeat: Infinity,
-                    repeatType: "loop",
-                    duration: 2.5,
-                    repeatDelay: 1,
-                  }}
-                />
+                {isLoading ? "Signing in..." : "Sign in"}
               </motion.button>
-            </motion.div>
 
-            {/* Optional: Sign Up Link */}
-            <motion.div variants={itemVariants} className="mt-6 text-center">
-              <p className="text-white/70 text-sm">
-                Don't have an account?{" "}
-                <motion.a
-                  href="signup"
-                  className="text-white hover:underline inline-block"
-                  whileHover={{
-                    scale: 1.05,
-                    textShadow: "0 0 8px rgba(255, 255, 255, 0.5)",
+              <div className="relative text-center">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200"></div>
+                </div>
+              </div>
+
+              <div className="flex justify-center space-x-4">
+                {[FaGoogle, FaFacebook].map((Icon, i) => (
+                  <motion.button
+                    key={i}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    type="button"
+                    className="w-12 h-12 rounded-xl border-2 border-gray-200 flex items-center justify-center text-gray-600 hover:border-purple-500 hover:text-purple-500 transition-colors"
+                  >
+                    <Icon className="w-5 h-5" />
+                  </motion.button>
+                ))}
+              </div>
+            </form>
+          </motion.div>
+        </div>
+
+        {/* Right Section - Testimonials */}
+        <div className="flex-1 p-10 bg-gradient-to-br from-purple-900 to-purple-700 text-white relative overflow-hidden">
+          <div className="relative z-10 h-full flex flex-col justify-between">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-5xl font-semibold leading-tight"
+            >
+              Nourish the Future! 🌱🍽️♻️
+            </motion.h2>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentTestimonial}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="my-10"
+              >
+                <p className="text-lg mb-6">
+                  "{testimonials[currentTestimonial].quote}"
+                </p>
+                <h4 className="font-medium text-lg">
+                  {testimonials[currentTestimonial].quote1}
+                </h4>
+              </motion.div>
+            </AnimatePresence>
+
+            <div className="flex space-x-3">
+              {[HiChevronLeft, HiChevronRight].map((Icon, i) => (
+                <motion.button
+                  key={i}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => {
+                    if (i === 0) {
+                      setCurrentTestimonial((prev) =>
+                        prev === 0 ? testimonials.length - 1 : prev - 1
+                      );
+                    } else {
+                      setCurrentTestimonial((prev) =>
+                        prev === testimonials.length - 1 ? 0 : prev + 1
+                      );
+                    }
                   }}
+                  className="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center"
                 >
-                  Sign Up
-                </motion.a>
-              </p>
-            </motion.div>
-          </form>
-        </motion.div>
-      </div>
-    </motion.div>
-  );
-};
+                  <Icon className="w-5 h-5" />
+                </motion.button>
+              ))}
+            </div>
+          </div>
 
-// Animated background particles
-const Particles = () => {
-  const particles = Array.from({ length: 20 });
-
-  return (
-    <div className="absolute inset-0 overflow-hidden">
-      {particles.map((_, index) => {
-        const size = Math.random() * 60 + 10;
-        const initialX = Math.random() * 100;
-        const initialY = Math.random() * 100;
-        const duration = Math.random() * 20 + 10;
-        const delay = Math.random() * 5;
-
-        return (
-          <motion.div
-            key={index}
-            className="absolute rounded-full bg-white/10 backdrop-blur-md"
-            style={{ width: size, height: size }}
-            initial={{
-              x: `${initialX}vw`,
-              y: `${initialY}vh`,
-              opacity: 0,
-            }}
-            animate={{
-              y: [
-                `${initialY}vh`,
-                `${(initialY + 20) % 100}vh`,
-                `${initialY}vh`,
-              ],
-              x: [
-                `${initialX}vw`,
-                `${(initialX + 10) % 100}vw`,
-                `${initialX}vw`,
-              ],
-              opacity: [0, 0.3, 0],
-            }}
-            transition={{
-              repeat: Infinity,
-              duration,
-              delay,
-              ease: "easeInOut",
-            }}
-          />
-        );
-      })}
+          {/* Decorative Elements */}
+          <div className="absolute top-1/2 right-10 -translate-y-1/2 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-20 w-32 h-32 bg-pink-500/10 rounded-full blur-2xl" />
+        </div>
+      </motion.div>
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 };

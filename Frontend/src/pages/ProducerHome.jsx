@@ -97,7 +97,7 @@ const ProducerHome = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 font-sans">
+    <div className="min-h-screen bg-gray-100 font-sans overflow-auto h-screen">
       {/* Toast Container */}
       <ToastContainer
         position="top-center" // Set position to top-center
@@ -147,7 +147,9 @@ const ProducerHome = () => {
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-lg font-medium text-gray-700">Name</label>
+                <label className="block text-lg font-medium text-gray-700">
+                  Name
+                </label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -159,7 +161,9 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">Image</label>
+                <label className="block text-lg font-medium text-gray-700">
+                  Image
+                </label>
                 <input
                   type="file"
                   accept="image/*"
@@ -176,7 +180,9 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">Quantity</label>
+                <label className="block text-lg font-medium text-gray-700">
+                  Quantity
+                </label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -188,7 +194,9 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">Unit</label>
+                <label className="block text-lg font-medium text-gray-700">
+                  Unit
+                </label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -200,7 +208,9 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">Price</label>
+                <label className="block text-lg font-medium text-gray-700">
+                  Price
+                </label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -212,7 +222,9 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">Category</label>
+                <label className="block text-lg font-medium text-gray-700">
+                  Category
+                </label>
                 <select
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -227,7 +239,9 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">Manufacturing Date</label>
+                <label className="block text-lg font-medium text-gray-700">
+                  Manufacturing Date
+                </label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -238,7 +252,9 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">Description</label>
+                <label className="block text-lg font-medium text-gray-700">
+                  Description
+                </label>
                 <textarea
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -249,7 +265,9 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">Expiry Date</label>
+                <label className="block text-lg font-medium text-gray-700">
+                  Expiry Date
+                </label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -260,7 +278,9 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">Upcycling Option</label>
+                <label className="block text-lg font-medium text-gray-700">
+                  Upcycling Option
+                </label>
                 <select
                   className="w-full p-3 border rounded-lg bg-gray-200"
                   value={upcyclingOption}
