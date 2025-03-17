@@ -32,6 +32,7 @@ import VisionComponent from "./Components/VisionStick"
 import AuthProtectWrapper from './pages/Wrapper/UniProtectedWrapper'
 import ProducerProtectWrapper from './pages/Wrapper/ProducerProtectedWrapper'
 import UpcyclingProtectWrapper from './pages/Wrapper/UpcyclingProtectedWrapper'
+import Notification from './pages/Notification'
 
 function App() {
   return (
@@ -92,6 +93,7 @@ function App() {
         <Route path="/error" element={<Error />} />
         <Route path="/maps" element={<GoogleMapsRoute />} />
         <Route path="/startUp" element={<StartUp />} />
+        <Route path="/notification" element={<Notification />} />
       </Routes>
       <VisionComponent />
     </div>
