@@ -16,6 +16,31 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+const getBuyerAndType = async (req) => {
+  if (req.consumer) {
+    return {
+      buyer: await Consumer.findById(req.consumer._id),
+      buyerId: req.consumer._id,
+      buyerType: "Consumer",
+    };
+  }
+  if (req.upcycledIndustry) {
+    return {
+      buyer: await UpcyclingIndustry.findById(req.upcycledIndustry._id),
+      buyerId: req.upcycledIndustry._id,
+      buyerType: "UpcyclingIndustry",
+    };
+  }
+  if (req.ngo) {
+    return {
+      buyer: await Ngo.findById(req.ngo._id),
+      buyerId: req.ngo._id,
+      buyerType: "Ngo",
+    };
+  }
+  return { buyer: null, buyerId: null, buyerType: null };
+};
+
 const placeOrderFromCart = asyncHandler(async (req, res) => {
   try {
     const { location, address, paymentMethod } = req.body;

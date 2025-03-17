@@ -5,6 +5,7 @@ import { Consumer } from "../models/consumer.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { Ngo } from "../models/ngo.models.js";
 
 const getUserAndType = async (req) => {
   if (req.consumer)
@@ -80,10 +81,9 @@ const updateFeedback = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, feedback, "Feedback updated successfully"));
 });
- 
+
 const deleteFeedback = asyncHandler(async (req, res) => {
   const { feedbackId } = req.params;
-
 
   const feedback = await Feedback.findById(feedbackId);
   if (!feedback) throw new ApiError(404, "Feedback not found");
@@ -105,17 +105,19 @@ const deleteFeedback = asyncHandler(async (req, res) => {
 
 const getAllFeedback = asyncHandler(async (req, res) => {
   try {
-    const feedbacks = await Feedback.find().populate({
-      path: "user",
-      select: "email phone fullname companyName"
-    }).populate("userType")
+    const feedbacks = await Feedback.find()
+      .populate({
+        path: "user",
+        select: "email phone fullname companyName",
+      })
+      .populate("userType");
 
     return res
       .status(200)
-      .json(new ApiResponse(200, feedbacks, "All feedbacks in the system"))
+      .json(new ApiResponse(200, feedbacks, "All feedbacks in the system"));
   } catch (error) {
-    throw new ApiError(500, `Failed to get feedbacks: ${error.message}`)
+    throw new ApiError(500, `Failed to get feedbacks: ${error.message}`);
   }
-})
+});
 
 export { createFeedback, updateFeedback, deleteFeedback, getAllFeedback };
