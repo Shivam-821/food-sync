@@ -4,6 +4,7 @@ import { Producer } from "../models/producer.models.js";
 import { UpcyclingIndustry } from "../models/upcyclingIndustry.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
+import {Ngo} from "../models/ngo.models.js"
 
 const verifyUnified = asyncHandler(async (req, res, next) => {
   let token = req.cookies.accessToken || req.headers.authorization;
@@ -39,6 +40,12 @@ const verifyUnified = asyncHandler(async (req, res, next) => {
     if (user) {
       req.upcycledIndustry = user;
       return next();
+    }
+
+    user = await Ngo.findById(decodedToken._id).select("ngoName ownerName email phone")
+    if (user){
+      req.ngo = user
+      return next()
     }
 
     throw new ApiError(401, "Unauthorized: Invalid user");
