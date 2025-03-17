@@ -66,13 +66,10 @@ upcyclingSchema.statics.addExpiredItemsToUpcycling = async function () {
       expiryDate: { $lt: new Date() },
       status: "expired",
     });
-    console.log("Expired Items:", expiredItems);
 
-    console.log(`Found ${expiredItems.length} expired items.`);
 
     if (expiredItems.length === 0) return;
 
-    // Map expired items to upcycling entries
     const upcyclingEntries = expiredItems.map((expiredItem) => ({
       item: expiredItem._id,
       name: expiredItem.name,
@@ -83,9 +80,7 @@ upcyclingSchema.statics.addExpiredItemsToUpcycling = async function () {
       unit: expiredItem.unit,
       producer: expiredItem.producer,
     }));
-    console.log("Upcycling Entries:", upcyclingEntries);
-
-    // Insert upcycling entries into the UpcyclingItem collection
+    
     let insertedUpcyclingItems;
     try {
       insertedUpcyclingItems = await UpcyclingItem.insertMany(
@@ -97,10 +92,9 @@ upcyclingSchema.statics.addExpiredItemsToUpcycling = async function () {
       );
     } catch (error) {
       console.error("Error inserting upcycling items:", error);
-      throw error; // Re-throw the error to stop further execution
+      throw error; 
     }
 
-    // Update producers with the new upcycling items
     const producerUpdates = {};
     insertedUpcyclingItems.forEach((upcyclingItem, index) => {
       const producerId = expiredItems[index].producer;
@@ -119,7 +113,6 @@ upcyclingSchema.statics.addExpiredItemsToUpcycling = async function () {
     );
     await Promise.all(updatePromises);
 
-    // Delete expired items from the Item collection
     const expiredItemIds = expiredItems.map((item) => item._id);
     await Item.deleteMany({ _id: { $in: expiredItemIds } });
 
@@ -128,11 +121,9 @@ upcyclingSchema.statics.addExpiredItemsToUpcycling = async function () {
     );
   } catch (error) {
     console.error("Error adding expired items to Upcycling:", error);
-    throw error; // Re-throw the error to see it in the logs
+    throw error; 
   }
 };
-
-
 
 
 

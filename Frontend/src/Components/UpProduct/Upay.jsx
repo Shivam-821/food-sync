@@ -11,6 +11,7 @@ import {
   FaMapMarkerAlt,
   FaRecycle,
 } from "react-icons/fa";
+import { CloudCog } from "lucide-react";
 
 export function Upay() {
   const navigate = useNavigate();
@@ -63,7 +64,7 @@ export function Upay() {
             withCredentials: true,
           }
         );
-        setAmount(response.data.data.totalAmount);
+        setAmount(response.data.data.finalAmount);
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -270,9 +271,9 @@ export function Upay() {
           }
         },
         prefill: {
-          name: "utkarsh singh",
-          email: "utkarshsingh7104@gmail.com",
-          contact: "9889775335",
+          name: "",
+          email: "",
+          contact: "",
         },
         notes: {
           address: "Razorpay Corporate Office",

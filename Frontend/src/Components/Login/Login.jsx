@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -57,7 +55,7 @@ const Login = () => {
       } else if (user.role === "producer") {
         navigate("/SurplusProducer", { state: { user } });
       } else if (user.role === "upcycling-industry") {
-        navigate("/upcycling-profile", { state: { user } });
+        navigate("/upcycle", { state: { user } });
       } else {
         toast.error("Invalid role received.");
       }
@@ -166,7 +164,7 @@ const Login = () => {
                 </div>
               </div>
 
-              <div className="flex justify-center space-x-4">
+              {/* <div className="flex justify-center space-x-4">
                 {[FaGoogle, FaFacebook].map((Icon, i) => (
                   <motion.button
                     key={i}
@@ -178,7 +176,7 @@ const Login = () => {
                     <Icon className="w-5 h-5" />
                   </motion.button>
                 ))}
-              </div>
+              </div> */}
             </form>
           </motion.div>
         </div>

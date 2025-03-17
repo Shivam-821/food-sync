@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import "./FilterSection.css";
 import { FaSearch, FaChevronDown, FaChevronUp } from "react-icons/fa";
@@ -128,7 +126,17 @@ function FilterSection({
                   checked={productType === "non-perishable"}
                   onChange={(e) => setProductType(e.target.value)}
                 />
-                <span className="radio-text">Non-Perishable</span>
+                <span className="radio-text">Non-perishable</span>
+              </label>
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="productType"
+                  value="ready-to-eat"
+                  checked={productType === "ready-to-eat"}
+                  onChange={(e) => setProductType(e.target.value)}
+                />
+                <span className="radio-text">Ready-To-Eat</span>
               </label>
             </div>
           </div>

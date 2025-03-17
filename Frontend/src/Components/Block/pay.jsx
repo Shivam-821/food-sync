@@ -65,7 +65,7 @@ export function Pay() {
             withCredentials: true,
           }
         );
-        setAmount(response.data.data.totalAmount);
+        setAmount(response.data.data.finalAmount);
         setMap(response.data.data?.items[0]?.producer.location.coordinates);
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -266,9 +266,9 @@ export function Pay() {
           }
         },
         prefill: {
-          name: "utkarsh singh",
-          email: "utkarshsingh7104@gmail.com",
-          contact: "9889775335",
+          name: "",
+          email: "",
+          contact: "",
         },
         notes: {
           address: "Razorpay Corporate Office",

@@ -27,13 +27,7 @@ function About() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.3 }}
         >
-          At <span className="text-blue-600 font-semibold">FoodSync</span>, we
-          are committed to creating a sustainable future by reducing food waste
-          and ensuring surplus food reaches those in need. Our journey began
-          when our founder saw firsthand the immense amount of food wasted daily
-          while so many people struggled with hunger. This inspired us to create
-          a platform that bridges the gap between food producers, retailers, and
-          NGOs.
+          At <span className="text-blue-600 font-semibold">FoodSync</span>, we are on a mission to reduce food waste and create a more sustainable and hunger-free world. Every year, millions of tons of food go to waste while countless people struggle with food insecurity. Our platform bridges the gap between food donors, such as restaurants, grocery stores, and individuals, and NGOs and communities in need.
         </motion.p>
 
         <div className="mt-12 flex justify-center">

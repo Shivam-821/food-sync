@@ -8,6 +8,7 @@ import { Item } from "../models/items.models.js";
 import { UpcyclingIndustry } from "../models/upcyclingIndustry.models.js";
 import { UpcyclingItem } from "../models/upcyclingItem.models.js";
 import chalk from "chalk";
+import { Gamification } from "../models/gamification.models.js";
 
 const getBuyerAndType = async (req) => {
   if (req.consumer) {
@@ -209,6 +210,29 @@ const getCart = asyncHandler(async (req, res) => {
         .status(200)
         .json(new ApiResponse(200, { items: [] }, "Cart is empty"));
     }
+
+    const gamification = await Gamification.findOne({user: buyerId})
+
+    let discountValue = 0
+    if(gamification){
+      console.log('disPoint', gamification.discountPoints)
+      discountValue = parseFloat(gamification.discountPoints)
+      await gamification.save()
+    }
+    else {
+      discountValue = 0
+    }
+
+    // calculate finalValue of items in cart
+    let finalValue = parseFloat((parseFloat(cart.totalAmount) - discountValue * 2).toFixed(2))
+    console.log("finalValue: ", finalValue)
+
+    if(finalValue < 1){
+      finalValue = 1
+    }
+    cart.finalAmount = finalValue
+    await cart.save()
+    console.log("final: ", cart.finalAmount)
 
     // Return the cart details
     res.status(200).json(new ApiResponse(200, cart, "Cart fetched successfully"));

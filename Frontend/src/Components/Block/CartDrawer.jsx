@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import "./CartDrawer.css";
 import { FaShoppingCart, FaTimes, FaTrash } from "react-icons/fa";
