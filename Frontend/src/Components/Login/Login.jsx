@@ -55,7 +55,7 @@ const Login = () => {
       } else if (user.role === "producer") {
         navigate("/SurplusProducer", { state: { user } });
       } else if (user.role === "upcycling-industry") {
-        navigate("/upcycling-profile", { state: { user } });
+        navigate("/upcycle", { state: { user } });
       } else {
         toast.error("Invalid role received.");
       }

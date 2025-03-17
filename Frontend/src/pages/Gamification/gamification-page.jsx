@@ -374,7 +374,7 @@ const GamificationPage = () => {
       };
     return {
       icon: <GiLaurelCrown className={styles.badgeIcon} />,
-      name: "Legend",
+      name: "Rookie",
     };
   };
 

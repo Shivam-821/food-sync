@@ -65,7 +65,7 @@ export function Pay() {
             withCredentials: true,
           }
         );
-        setAmount(response.data.data.totalAmount);
+        setAmount(response.data.data.finalAmount);
         setMap(response.data.data?.items[0]?.producer.location.coordinates);
       } catch (err) {
         console.error("Error fetching data:", err);
