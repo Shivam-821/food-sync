@@ -56,7 +56,10 @@ const Login = () => {
         navigate("/SurplusProducer", { state: { user } });
       } else if (user.role === "upcycling-industry") {
         navigate("/upcycle", { state: { user } });
-      } else {
+      } else if(user.role === "ngo"){
+        navigate("/", {state: {user}})
+      }
+       else {
         toast.error("Invalid role received.");
       }
     } catch (err) {

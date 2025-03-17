@@ -73,7 +73,7 @@ const loginUser = asyncHandler(async (req, res) => {
   } else if(user instanceof Ngo){
     populatedUser = await Ngo.findById(user._id)
       .select("-password -refreshToken")
-      .populate("feedbacks donationReceived")
+      .populate("feedbacks donationsReceived")
       .populate("donationRequested.item")
   }
 

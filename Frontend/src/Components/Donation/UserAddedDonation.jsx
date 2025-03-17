@@ -39,7 +39,6 @@ const DonationsList = () => {
     })
         .catch(err => {
             console.log(err)
-            navigate('/login')
         })
 }, [ token ])
 
