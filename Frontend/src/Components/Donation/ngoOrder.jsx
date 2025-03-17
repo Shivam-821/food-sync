@@ -13,7 +13,7 @@ import {
 } from "react-icons/fa";
 import { CloudCog } from "lucide-react";
 
-export function Upay() {
+export function NgoOrder() {
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -305,7 +305,7 @@ export function Upay() {
   const handleBackToHome = () => {
     setAnimateIn(false);
     setTimeout(() => {
-      navigate("/upcycle");
+      navigate("/donation");
     }, 500);
   };
 
@@ -362,22 +362,10 @@ export function Upay() {
                 <span>Order Amount:</span>
                 <span className="amount">₹{amount}</span>
               </div>
-              <div className="order-detail-item">
-                <span>Payment Method:</span>
-                <span>
-                  {paymentMethod === "cod"
-                    ? "Cash on Delivery"
-                    : "Online Payment"}
-                </span>
-              </div>
-              <div className="order-detail-item">
-                <span>Estimated Delivery:</span>
-                <span>30-45 minutes</span>
-              </div>
             </div>
             <button className="back-to-home-btn" onClick={handleBackToHome}>
               <span className="btn-icon">🏠</span>
-              <span>Back to Home</span>
+              <span>Back to Donation</span>
             </button>
           </div>
         ) : (
