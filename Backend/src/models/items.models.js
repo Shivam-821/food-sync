@@ -51,6 +51,11 @@ const itemSchema = new Schema(
       },
       required: [true, "Category is required"],
     },
+    type: {
+      type: String,
+      enum: ["biodegradable", "non-biodegradable"],
+      required: [true, "Type is required"],
+    },
     mfDate: {
       type: Date,
       required: [true, "Manufacturing date is required"],

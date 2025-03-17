@@ -13,6 +13,10 @@ const donationSchema = new Schema(
       enum: ["Consumer", "Producer", "UpcyclingIndustry"],
       required: true,
     },
+    requset: {
+      type: Boolean,
+      default: false
+    },
     items: [
       {
         name: {
