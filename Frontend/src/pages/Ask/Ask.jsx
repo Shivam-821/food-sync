@@ -1,6 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MdFactory, MdOutlineFastfood, MdRecycling } from "react-icons/md";
+import {
+  MdFactory,
+  MdOutlineFastfood,
+  MdRecycling,
+  MdVolunteerActivism,
+} from "react-icons/md";
 
 const SelectionComponent = () => {
   const navigate = useNavigate();
@@ -12,6 +17,7 @@ const SelectionComponent = () => {
         <div className="w-[60%] h-[60%] bg-yellow-500 blur-[80px] opacity-30 rounded-full absolute left-[15%] top-[20%] animate-pulse"></div>
         <div className="w-[60%] h-[60%] bg-green-500 blur-[80px] opacity-30 rounded-full absolute right-[15%] bottom-[20%] animate-pulse"></div>
         <div className="w-[60%] h-[60%] bg-purple-500 blur-[80px] opacity-30 rounded-full absolute left-[40%] bottom-[10%] animate-pulse"></div>
+        <div className="w-[60%] h-[60%] bg-blue-500 blur-[80px] opacity-30 rounded-full absolute right-[40%] top-[10%] animate-pulse"></div>
       </div>
 
       {/* Title */}
@@ -25,7 +31,7 @@ const SelectionComponent = () => {
       </motion.h2>
 
       {/* Card Container */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 w-full max-w-5xl z-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl z-10">
         {/* Surplus Food Producer Card */}
         <motion.div
           className="relative p-8 rounded-xl shadow-2xl cursor-pointer bg-gray-900 hover:bg-yellow-600 transition-all flex flex-col items-center text-center text-white"
@@ -52,7 +58,7 @@ const SelectionComponent = () => {
 
           <MdOutlineFastfood className="text-9xl text-green-400 mb-4 transition-all" />
           <h3 className="text-lg font-semibold">
-            Consumer (NGOs, Individuals, Industries)
+            Consumer (Individuals, Industries)
           </h3>
         </motion.div>
 
@@ -68,6 +74,22 @@ const SelectionComponent = () => {
 
           <MdRecycling className="text-9xl text-purple-400 mb-4 transition-all" />
           <h3 className="text-lg font-semibold">Upcycling Industry</h3>
+        </motion.div>
+
+        {/* NGO Card */}
+        <motion.div
+          className="relative p-8 rounded-xl shadow-2xl cursor-pointer bg-gray-900 hover:bg-blue-600 transition-all flex flex-col items-center text-center text-white"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => navigate("/ngosignup")}
+        >
+          {/* Glowing Effect Behind Card */}
+          <div className="absolute inset-0 bg-blue-500 blur-[50px] opacity-30 rounded-xl"></div>
+
+          <MdVolunteerActivism className="text-9xl text-blue-400 mb-4 transition-all" />
+          <h3 className="text-lg font-semibold">
+            NGO's(Non-Governmental Organization)
+          </h3>
         </motion.div>
       </div>
     </div>
