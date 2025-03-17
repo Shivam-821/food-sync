@@ -215,8 +215,8 @@ const getCart = asyncHandler(async (req, res) => {
 
     let discountValue = 0
     if(gamification){
-      discountValue = parseFloat(gamification.points)
-      gamification.discountPoints = 0;
+      console.log('disPoint', gamification.discountPoints)
+      discountValue = parseFloat(gamification.discountPoints)
       await gamification.save()
     }
     else {
@@ -225,12 +225,14 @@ const getCart = asyncHandler(async (req, res) => {
 
     // calculate finalValue of items in cart
     let finalValue = parseFloat((parseFloat(cart.totalAmount) - discountValue * 2).toFixed(2))
+    console.log("finalValue: ", finalValue)
 
     if(finalValue < 1){
       finalValue = 1
     }
     cart.finalAmount = finalValue
     await cart.save()
+    console.log("final: ", cart.finalAmount)
 
     // Return the cart details
     res.status(200).json(new ApiResponse(200, cart, "Cart fetched successfully"));

@@ -59,12 +59,19 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
         Math.floor((cartItem.price * cartItem.quantity) / 100) * multiplier;
     }
 
-    let gamification = await Gamification.findOne({ user: consumer._id });
+    let gamification = await Gamification.findOne({ user: consumerId });
     const newCredit =  parseFloat(extraPoints);
     console.log('newCredit: ', newCredit)
 
     if (gamification) {
+      if(gamification.discountPoints > cart.totalAmount){
+        gamification.discountPoints -= cart.totalAmount
+      } else{
+        gamification.discountPoints = 0
+      }
       gamification.points += newCredit;
+      gamification.discountPoints += newCredit
+      console.log("gamification: ", gamification.discountPoints)
       gamification.badges = getBadge(gamification.points);
       await gamification.save();
     } else {
@@ -73,20 +80,21 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
         userType: "Consumer",
         contribution: "Order",
         points: newCredit,
-        discountPoint: newCredit,
+        discountPoints: newCredit,
         badges: getBadge(newCredit),
       });
     }
 
     consumer.gamification = gamification._id;
     await consumer.save();
-
+    console.log('finalAmount: ', cart.finalAmount)
     let totalAmount = parseFloat((parseFloat(cart.finalAmount)).toFixed(2));
+    console.log('totalA: ', totalAmount )
 
     const order = new Order({
       consumer: consumerId,
       items: cart.items,
-      totalAmount: totalValue,
+      totalAmount: totalAmount,
       deliveryAddress: address,
       deliveryLocation: location,
       paymentMethod,
@@ -102,11 +110,12 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
       }
 
       const options = {
-        amount: totalValue * 100, // in paise
+        amount: totalAmount * 100, // in paise
         currency: "INR",
         receipt: `receipt_${order._id}`,
         payment_capture: 1, // auto-capture
       };
+      console.log("total: ", totalAmount)
      
       let razorpayOrder;
       try {
@@ -132,7 +141,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
           {
             orderId: order._id,
             razorpayOrderId: razorpayOrder.id,
-            amount: totalValue,
+            amount: totalAmount,
             currency: "INR",
             key: process.env.RAZORPAY_KEY_ID || "razorpay_key_id_missing", // Fallback for missing key
           },

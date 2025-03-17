@@ -45,7 +45,15 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
         const newCredit = parseFloat(Math.floor(parseFloat(cart.totalAmount) / 100))
     
         if (gamification) {
+          if(gamification.discountPoints > cart.totalAmount){
+            gamification.discountPoints -= cart.totalAmount
+          } else {
+            gamification.discountPoints = 0
+          }
           gamification.points += newCredit;
+          gamification.discountPoints += newCredit;
+          console.log(gamification.discountPoints)
+          console.log("gamifiactionDis: ", gamification.discountPoints)
           gamification.badges = getBadge(gamification.points);
           await gamification.save();
         } else {
@@ -54,6 +62,7 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
             userType: "UpcyclingIndustry",
             contribution: "Order",
             points: newCredit,
+            discountPoints: newCredit,
             badges: getBadge(newCredit),
           });
         }
