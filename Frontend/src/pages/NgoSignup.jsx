@@ -182,8 +182,8 @@ const NGOSignUp = () => {
         }
 
         const ngoId = response.data.data.ngo._id;
-        if (ngoId) {
-          localStorage.setItem("ngoId", ngoId);
+        if (accessToken) {
+          localStorage.setItem("accessToken", accessToken);
         }
 
         const data = response.data;

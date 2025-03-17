@@ -72,8 +72,8 @@ const ngoSchema = new Schema(
           type: String,
         },
         donorId: {
-          type: Schema.type.ObjectId,
-          ref: donorType,
+          type: Schema.Types.ObjectId,
+          ref: "donorType",
         },
       },
     ],
@@ -105,17 +105,17 @@ const ngoSchema = new Schema(
   { timestamps: true }
 );
 
-consumerSchema.pre("save", async function (next) {
+ngoSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-consumerSchema.methods.isPasswordCorrect = async function (password) {
+ngoSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-consumerSchema.methods.generateAccessToken = function () {
+ngoSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
       _id: this._id,
@@ -126,7 +126,7 @@ consumerSchema.methods.generateAccessToken = function () {
   );
 };
 
-consumerSchema.methods.generateRefreshToken = function () {
+ngoSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
       _id: this._id,
