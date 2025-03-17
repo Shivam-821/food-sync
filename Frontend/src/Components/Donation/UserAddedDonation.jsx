@@ -41,7 +41,6 @@ const DonationsList = () => {
     })
         .catch(err => {
             console.log(err)
-            navigate('/login')
         })
 }, [ token ])
 
@@ -123,7 +122,9 @@ const DonationsList = () => {
             {/* Donor Information */}
             <div className="p-4">
               <h3 className="text-xl font-semibold text-gray-900">
-                {donation.donor?.fullname || donation.donor?.companyName || "Unknown Donor"}
+                {donation.donor?.fullname ||
+                  donation.donor?.companyName ||
+                  "Unknown Donor"}
               </h3>
             </div>
 
@@ -167,14 +168,16 @@ const DonationsList = () => {
             </div>
 
             {/* "Get Items" Button */}
-            <div className="mt-auto p-4 border-t border-gray-300">
-              <button
-                onClick={() => handleGetItems(donation)}
-                className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
-              >
-                Get Items
-              </button>
-            </div>
+            {isDonor && (
+              <div className="mt-auto p-4 border-t border-gray-300">
+                <button
+                  onClick={() => handleGetItems(donation)}
+                  className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Get Items
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>
