@@ -11,12 +11,40 @@ const UserAddedDonation = () => {
     </div>
   );
 };
-
+ 
 export default UserAddedDonation;
 
 const DonationsList = () => {
   const [donations, setDonations] = useState([]);
+  const [isDonor, setIsDonor] = useState(null)
 
+  
+  const token = localStorage.getItem('accessToken')
+  //get donor type
+  useEffect(() => {
+    if (!token) {
+        return
+    }
+    axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/ngo/getngoprofile`, {
+        headers:{
+            Authorization: `Bearer ${token}` 
+        },
+        withCredentials: true 
+    }).then(response => {
+        if (response.status === 200) {
+          console.log(response.data)
+          setIsDonor(response.data)
+            setIsLoading(false)
+        }
+    })
+        .catch(err => {
+            console.log(err)
+            navigate('/login')
+        })
+}, [ token ])
+
+
+//fetch donations from backend
   useEffect(() => {
     const fetchDonations = async () => {
       try {

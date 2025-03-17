@@ -103,7 +103,7 @@ const ngoProfile = asyncHandler(async (req, res) => {
   const ngo = await Ngo.findById(req.ngo._id)
     .select("-password -refreshToken")
     .populate({
-      path: "feedbacks donationsMade gamification donationReceived ",
+      path: "feedbacks donationsMade gamification donationsReceived",
     })
     .populate({
         path: "requestMade",

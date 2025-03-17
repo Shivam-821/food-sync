@@ -186,8 +186,7 @@ const NGOSignUp = () => {
 
         const data = response.data;
         console.log(data)
-        setNgo(data.data.ownerName);
-        localStorage.setItem("token", data.refreshToken);
+        setNgo(data.data);
 
         setIsLoading(false);
 
