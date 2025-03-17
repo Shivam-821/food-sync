@@ -81,7 +81,7 @@ const SelectionComponent = () => {
           className="relative p-8 rounded-xl shadow-2xl cursor-pointer bg-gray-900 hover:bg-blue-600 transition-all flex flex-col items-center text-center text-white"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/ngosignup")}
         >
           {/* Glowing Effect Behind Card */}
           <div className="absolute inset-0 bg-blue-500 blur-[50px] opacity-30 rounded-xl"></div>
