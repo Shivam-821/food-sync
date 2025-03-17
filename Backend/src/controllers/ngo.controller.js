@@ -9,7 +9,7 @@ import { Donation } from "../models/donation.models.js";
 
 const generateAccessAndRefreshToken = async (consumerId) => {
   try {
-    const consumer = await Consumer.findById(consumerId);
+    const consumer = await Ngo.findById(consumerId);
     if (!consumer) {
       throw new ApiError(404, "Consumer not found");
     }
@@ -49,6 +49,7 @@ const createngo = asyncHandler(async (req, res) => {
             phone,
             address,
             role: "ngo",
+            password,
         })
     
         const createdNgo = await Ngo.findById(ngo._id).select("-password")
@@ -66,11 +67,11 @@ const createngo = asyncHandler(async (req, res) => {
         };
     
         return res
-        .status(201)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
-        .json(new ApiResponse(201,  createdNgo, accessToken, refreshToken),
-    "ngo created successfully")
+          .status(201)
+          .cookie("accessToken", accessToken, options)
+          .cookie("refreshToken", refreshToken, options)
+          .json(new ApiResponse(201, { createdNgo, accessToken, refreshToken, message: "Ngo created successfully" }));
+
     } catch (error) {
         console.error("Error creating consumer:  ", error)
         throw new ApiError(500, "Something went wrong: ", error)
