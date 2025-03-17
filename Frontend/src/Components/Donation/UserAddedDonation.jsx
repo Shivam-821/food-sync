@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const UserAddedDonation = () => {
   return (
@@ -17,7 +18,8 @@ export default UserAddedDonation;
 const DonationsList = () => {
   const [donations, setDonations] = useState([]);
   const [isDonor, setIsDonor] = useState(null)
-
+  const [isLoading, setIsLoading] = useState(null);
+  const navigate = useNavigate();
   
   const token = localStorage.getItem('accessToken')
   //get donor type
@@ -39,7 +41,6 @@ const DonationsList = () => {
     })
         .catch(err => {
             console.log(err)
-            navigate('/login')
         })
 }, [ token ])
 
@@ -64,17 +65,46 @@ const DonationsList = () => {
   }, []);
 
   // Function to handle "Get Items" button click
-  const handleGetItems = async (donationId) => {
+  const handleGetItems = async (donation) => {
     try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        throw new Error("No access token found. Please log in again.");
+      }
+  
+      const items = donation.items; // Use the first item's ID
+      const quantity = donation.items.length; // Use the first item's quantity
+      const donationId = donation._id; // Use the donation ID
+      const donorId = donation.donor._id; // Use the donor's ID
+  
+      // Prepare the request body
+      const requestBody = {
+        items,
+        quantity,
+        donationId,
+        donorType: donation.donorType, // Assuming the donorType is "NGO"
+        donorId, // Use the NGO's ID as the donorId
+      };
+  
+      // Make the request to the backend using POST
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/donation/claim-donation`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/ngo/requestdonation`,
+        requestBody,
         {
-          donationId,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
         }
       );
-      console.log("Claimed Donation:", response.data);
+  
       alert("Donation claimed successfully!");
+      navigate('/ngopay')
       // Optionally, refresh the donations list or update the UI
+      const updatedDonationsResponse = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/donation/get-universal-donations`
+      );
+      setDonations(updatedDonationsResponse.data.data || []);
     } catch (err) {
       console.error("Error claiming donation:", err);
       alert("Failed to claim donation. Please try again.");
@@ -92,7 +122,9 @@ const DonationsList = () => {
             {/* Donor Information */}
             <div className="p-4">
               <h3 className="text-xl font-semibold text-gray-900">
-                {donation.donor?.fullname || donation.donor?.companyName || "Unknown Donor"}
+                {donation.donor?.fullname ||
+                  donation.donor?.companyName ||
+                  "Unknown Donor"}
               </h3>
             </div>
 
@@ -136,14 +168,16 @@ const DonationsList = () => {
             </div>
 
             {/* "Get Items" Button */}
-            <div className="mt-auto p-4 border-t border-gray-300">
-              <button
-                onClick={() => handleGetItems(donation._id)}
-                className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
-              >
-                Get Items
-              </button>
-            </div>
+            {isDonor && (
+              <div className="mt-auto p-4 border-t border-gray-300">
+                <button
+                  onClick={() => handleGetItems(donation)}
+                  className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Get Items
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>

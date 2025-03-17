@@ -121,38 +121,46 @@ const ngoProfile = asyncHandler(async (req, res) => {
 });
 
 const requestDonation = asyncHandler(async (req, res) => {
-    const ngo = await Ngo.findById(req.ngo._id);
+  const ngo = await Ngo.findById(req.ngo._id);
 
-    if (!ngo) {
-        throw new ApiError(404, "NGO not found");
-    }
+  if (!ngo) {
+    throw new ApiError(404, "NGO not found");
+  }
 
-    const { item, quantity, donationId, donorType, donorId } = req.body; 
+  const { items, donationId, donorType, donorId } = req.body;
 
-    if (!item || !quantity || !donationId) {
-        throw new ApiError(400, "Missing required fields");
-    }
+  if (!items || !donationId || !donorType || !donorId) {
+    throw new ApiError(400, "Missing required fields");
+  }
 
-    const donation = await Donation.findById(donationId);
+  const donation = await Donation.findById(donationId);
 
-    if (!donation) { 
-        throw new ApiError(404, "Donation not found");
-    }
+  if (!donation) {
+    throw new ApiError(404, "Donation not found");
+  }
 
-    ngo.requestMade = true
+  // Initialize donationsRequested if it doesn't exist
+  if (!ngo.donationsRequested) {
+    ngo.donationsRequested = [];
+  }
 
-    ngo.donationRequested.push({
-        item: donationId,
-        quantity,
-        donorType,
-        donorId
+  ngo.requestMade = true;
+
+  // Iterate over the items array and push each item into donationsRequested
+  items.forEach((item) => {
+    ngo.donationsRequested.push({
+      item: item._id, // Use the item's ID
+      quantity: item.quantity, // Use the item's quantity
+      donorType,
+      donorId,
     });
+  });
 
-    await ngo.save();
+  await ngo.save();
 
-    return res
-        .status(200)
-        .json(new ApiResponse(200, ngo, "Donation requested successfully"));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, ngo, "Donation requested successfully"));
 });
 
 

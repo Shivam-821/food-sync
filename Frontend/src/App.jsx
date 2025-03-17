@@ -33,6 +33,7 @@ import AuthProtectWrapper from "./pages/Wrapper/UniProtectedWrapper";
 import ProducerProtectWrapper from "./pages/Wrapper/ProducerProtectedWrapper";
 import UpcyclingProtectWrapper from "./pages/Wrapper/UpcyclingProtectedWrapper";
 import NGOSignUp from "./pages/NgoSignup";
+import { NgoOrder } from "./Components/Donation/ngoOrder";
 
 function App() {
   return (
@@ -113,6 +114,7 @@ function App() {
         <Route path="/maps" element={<GoogleMapsRoute />} />
         <Route path="/startUp" element={<StartUp />} />
         <Route path="/ngosignup" element={<NGOSignUp />} />
+        <Route path="/ngopay" element={<NgoOrder />} />
       </Routes>
       <VisionComponent />
     </div>

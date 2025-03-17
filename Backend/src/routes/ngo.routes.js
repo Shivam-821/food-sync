@@ -9,7 +9,7 @@ router.route("/getngoprofile").get(verifyNgo, ngoProfile);
 
 router.route("/logoutngo").get(verifyNgo, logoutNgo)
 
-router.route("/requestdonation").get(verifyNgo, requestDonation)
+router.route("/requestdonation").post(verifyNgo, requestDonation)
 
 
 
