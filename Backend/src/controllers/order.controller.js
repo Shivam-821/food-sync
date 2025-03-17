@@ -44,20 +44,19 @@ const getBuyerAndType = async (req) => {
 const placeOrderFromCart = asyncHandler(async (req, res) => {
   try {
     const { location, address, paymentMethod } = req.body;
+    const {buyer, buyerId, buyerType} = await getBuyerAndType(req)
+
+    if(!buyer || !buyerId || !buyerType){
+      return ApiResponse(404, "buyer not found")
+    }
 
     if (!address || !paymentMethod) {
       throw new ApiError(400, "All fields are required");
     }
-    const consumer = await Consumer.findById(req.consumer._id);
     
-    if (!consumer) {
-      return res.status(404).json(new ApiError(404, "Consumer not found"));
-    }
-  
-    const consumerId = consumer._id;
     const cart = await Cart.findOne({
-      buyer: consumerId,
-      buyerType: "Consumer"
+      buyer: buyerId,
+      buyerType: buyerId,
     }).populate("items.item");
 
     if (!cart || cart.items.length === 0) {
@@ -84,7 +83,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
         Math.floor((cartItem.price * cartItem.quantity) / 100) * multiplier;
     }
 
-    let gamification = await Gamification.findOne({ user: consumerId });
+    let gamification = await Gamification.findOne({ user: buyerId });
     const newCredit =  parseFloat(extraPoints);
     console.log('newCredit: ', newCredit)
 
@@ -101,8 +100,8 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
       await gamification.save();
     } else {
       gamification = await Gamification.create({
-        user: consumer._id,
-        userType: "Consumer",
+        user: buyerId,
+        userType: buyerType,
         contribution: "Order",
         points: newCredit,
         discountPoints: newCredit,
@@ -110,14 +109,14 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
       });
     }
 
-    consumer.gamification = gamification._id;
-    await consumer.save();
+    buyer.gamification = gamification._id;
+    await buyer.save();
     console.log('finalAmount: ', cart.finalAmount)
     let totalAmount = parseFloat((parseFloat(cart.finalAmount)).toFixed(2));
     console.log('totalA: ', totalAmount )
 
     const order = new Order({
-      consumer: consumerId,
+      consumer: buyerId,
       items: cart.items,
       totalAmount: totalAmount,
       deliveryAddress: address,
@@ -158,7 +157,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
         }
       }
     
-      await Cart.deleteOne({ buyer: consumerId, buyerType: "Consumer" });
+      await Cart.deleteOne({ buyer: buyerId, buyerType: buyerType });
     
       return res.status(201).json(
         new ApiResponse(
@@ -176,9 +175,9 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     } else {
 
     // For Cash on Delivery (COD)
-    consumer.orders.push(order._id);
-    await consumer.save();
-    await Cart.deleteOne({ buyer: consumerId, buyerType: "Consumer" });
+    buyer.orders.push(order._id);
+    await buyer.save();
+    await Cart.deleteOne({ buyer: buyerId, buyerType: buyerType });
     
     return res
       .status(201)

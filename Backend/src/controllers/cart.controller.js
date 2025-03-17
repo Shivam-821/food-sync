@@ -9,7 +9,7 @@ import { UpcyclingIndustry } from "../models/upcyclingIndustry.models.js";
 import { UpcyclingItem } from "../models/upcyclingItem.models.js";
 import chalk from "chalk";
 import { Gamification } from "../models/gamification.models.js";
-import { Ngo } from "../models/gamification.models.js";
+import { Ngo } from "../models/ngo.models.js";
 
 const getBuyerAndType = async (req) => {
   if (req.consumer) {

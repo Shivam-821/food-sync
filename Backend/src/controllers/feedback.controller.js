@@ -23,7 +23,14 @@ const getUserAndType = async (req) => {
       user: await UpcyclingIndustry.findById(req.upcycledIndustry._id),
       userType: "UpcyclingIndustry",
     };
+  if (req.ngo){
+      return {
+        user: await Ngo.findById(req.ngo._id),
+        userType: "Ngo",
+      }
+  }
   return { user: null, userType: null };
+
 };
 
 const createFeedback = asyncHandler(async (req, res) => {

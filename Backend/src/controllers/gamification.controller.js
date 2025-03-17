@@ -6,6 +6,7 @@ import { Gamification } from "../models/gamification.models.js";
 import { Consumer } from "../models/consumer.models.js";
 import {Producer} from "../models/producer.models.js"
 import {UpcyclingIndustry} from "../models/upcyclingIndustry.models.js"
+import { Ngo } from "../models/ngo.models.js";
 
 const getUserAndType = async (req) => {
   if (req.consumer)
@@ -23,6 +24,12 @@ const getUserAndType = async (req) => {
       user: await UpcyclingIndustry.findById(req.upcycledIndustry._id),
       userType: "UpcyclingIndustry",
     };
+    if (req.ngo){
+      return {
+        user: await Ngo.findById(req.ngo._id),
+        userType: "Ngo"
+      }
+    }
   return { user: null, userType: null };
 };
 
