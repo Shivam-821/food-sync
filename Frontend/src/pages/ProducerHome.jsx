@@ -14,7 +14,7 @@ const ProducerHome = () => {
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("");
   const [category, setCategory] = useState("");
-  const [type, setType] = useState("");
+  const [typeitem, setTypeItem] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [manufacturingDate, setManufacturingDate] = useState("");
   const [status, setStatus] = useState("");
@@ -49,6 +49,7 @@ const ProducerHome = () => {
     formData.append("category", category);
     formData.append("expiryDate", expiryDate);
     formData.append("mfDate", manufacturingDate);
+    formData.append("typeitem", typeitem);
     formData.append("status", status);
     formData.append("upcyclingOptions", upcyclingOption);
     formData.append("description", description);
@@ -85,6 +86,7 @@ const ProducerHome = () => {
       setCategory("");
       setExpiryDate("");
       setManufacturingDate("");
+      setTypeItem("");
       setStatus("");
       setUpcyclingOption("");
       setDescription("");
@@ -243,12 +245,12 @@ const ProducerHome = () => {
                 <select
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
-                  value={type}
-                  onChange={(e) => setType(e.target.value)}
+                  value={typeitem}
+                  onChange={(e) => setTypeItem(e.target.value)}
                 >
                   <option value="">Select Category</option>
-                  <option value="biodegradabl">Biodegrable</option>
-                  <option value="non-biodegradable">Non-Biodegrable</option>
+                  <option value="biodegradable">Biodegradable</option>
+                  <option value="non-biodegradable">Non-Biodegradable</option>
                 </select>
               </div>
 

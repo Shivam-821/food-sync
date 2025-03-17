@@ -4,12 +4,13 @@ const orderSchema = new Schema(
   {
     consumer: {
       type: Schema.Types.ObjectId,
-      ref: "buyer",
+      refPath: "buyer",
       required: true,
     },
     buyer: {
       type: String,
-      enum: ["Consumer", "Ngo"]
+      enum: ["Consumer", "Ngo"],
+      required: true,
     },
     items: [
       {

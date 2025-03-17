@@ -9,7 +9,7 @@ const gamificationSchema = new Schema(
     },
     userType: {
       type: String,
-      enum: ["Consumer", "Producer", "UpcyclingIndustry"],
+      enum: ["Consumer", "Producer", "UpcyclingIndustry", "Ngo"],
       required: true,
     },
     points: {
