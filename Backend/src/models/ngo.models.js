@@ -59,24 +59,6 @@ const ngoSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    donationRequested: [
-      {
-        item: {
-          type: Schema.Types.ObjectId,
-          ref: "Donation",
-        },
-        quantity: {
-          type: Number,
-        },
-        donorType: {
-          type: String,
-        },
-        donorId: {
-          type: Schema.Types.ObjectId,
-          ref: "donorType",
-        },
-      },
-    ],
     donationsReceived: [
         {
             type: Schema.Types.ObjectId, 
@@ -89,14 +71,16 @@ const ngoSchema = new Schema(
         ref: "Feedback",
       },
     ],
-    requestMade: [
+    orders: [
       {
-        items: {
-          type: Schema.Types.ObjectId,
-          ref: "Donation",
-        },
-      },
+        type: Schema.Types.ObjectId,
+        ref: "Order"
+      }
     ],
+    cart:{
+      type: Schema.Types.ObjectId,
+      ref: "Cart"
+    },
     gamification: {
       type: Schema.Types.ObjectId,
       ref: "Gamification",

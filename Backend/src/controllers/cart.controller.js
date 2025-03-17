@@ -9,6 +9,7 @@ import { UpcyclingIndustry } from "../models/upcyclingIndustry.models.js";
 import { UpcyclingItem } from "../models/upcyclingItem.models.js";
 import chalk from "chalk";
 import { Gamification } from "../models/gamification.models.js";
+import { Ngo } from "../models/ngo.models.js";
 
 const getBuyerAndType = async (req) => {
   if (req.consumer) {
@@ -25,13 +26,20 @@ const getBuyerAndType = async (req) => {
       buyerType: "UpcyclingIndustry",
     };
   }
+  if (req.ngo) {
+    return {
+      buyer: await Ngo.findById(req.ngo._id),
+      buyerId: req.ngo._id,
+      buyerType: "Ngo",
+    };
+  }
   return { buyer: null, buyerId: null, buyerType: null };
 };
 
 const addToCart = asyncHandler(async (req, res) => {
   try {
     const { buyer, buyerId, buyerType } = await getBuyerAndType(req);
-    console.log("BuyerType: ", buyerType)
+    console.log("BuyerType: ", buyerType);
     const { itemId, quantity, price, addOne, deleteOne } = req.query;
 
     if (!buyerId || !buyerType || !itemId || !quantity || !price) {
@@ -58,6 +66,9 @@ const addToCart = asyncHandler(async (req, res) => {
     } else if (buyerType === "UpcyclingIndustry") {
       item = await UpcyclingItem.findById(itemId);
       itemType = "UpcyclingItem";
+    } else if (buyerType === "Ngo") {
+      item = await Item.findById(itemId);
+      itemType = "Item";
     }
 
     if (!item) {
@@ -81,28 +92,25 @@ const addToCart = asyncHandler(async (req, res) => {
       await buyer.save();
     }
 
-    // Find the existing item in the cart
     const existingItem = cart.items.find((cartItem) =>
       cartItem.item.equals(itemId)
     );
 
     if (existingItem) {
-      // Update quantity based on addOne or deleteOne
       if (addOne === "add") {
         existingItem.quantity += 1;
       } else if (deleteOne === "delete") {
         existingItem.quantity -= 1;
         if (existingItem.quantity <= 0) {
           // Remove the item if quantity becomes 0 or negative
-          cart.items = cart.items.filter((cartItem) =>
-            !cartItem.item.equals(itemId)
+          cart.items = cart.items.filter(
+            (cartItem) => !cartItem.item.equals(itemId)
           );
         }
       } else {
         existingItem.quantity += parsedQuantity;
       }
     } else {
-      // Add new item to the cart
       cart.items.push({
         item: itemId,
         itemType,
@@ -116,7 +124,9 @@ const addToCart = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: existingItem ? "Item quantity updated successfully" : "Item added to cart successfully",
+      message: existingItem
+        ? "Item quantity updated successfully"
+        : "Item added to cart successfully",
       cart,
     });
   } catch (error) {
@@ -174,17 +184,18 @@ const getCart = asyncHandler(async (req, res) => {
   try {
     const { buyer, buyerId, buyerType } = await getBuyerAndType(req);
 
-    // Validate buyer, buyerId, and buyerType
     if (!buyer || !buyerId || !buyerType) {
       throw new ApiError(404, "Buyer not found");
     }
 
-    // Validate buyerType
-    if (buyerType !== "Consumer" && buyerType !== "UpcyclingIndustry") {
+    if (
+      buyerType !== "Consumer" &&
+      buyerType !== "UpcyclingIndustry" &&
+      buyerType !== "Ngo"
+    ) {
       throw new ApiError(400, "Invalid buyer type");
     }
 
-    // Define populate options based on buyerType
     let populateOptions = {
       path: "items.item",
       select: "name producer avatar",
@@ -194,9 +205,10 @@ const getCart = asyncHandler(async (req, res) => {
       populateOptions.model = "Item";
     } else if (buyerType === "UpcyclingIndustry") {
       populateOptions.model = "UpcyclingItem";
+    } else if (buyerType === "Ngo") {
+      populateOptions.model = "Item";
     }
 
-    // Fetch the cart and populate the necessary fields
     const cart = await Cart.findOne({ buyer: buyerId, buyerType })
       .populate(populateOptions)
       .populate({
@@ -204,38 +216,39 @@ const getCart = asyncHandler(async (req, res) => {
         select: "location email phone fullname producerType companyName",
       });
 
-    // If cart is empty, return an empty object
     if (!cart) {
       return res
         .status(200)
         .json(new ApiResponse(200, { items: [] }, "Cart is empty"));
     }
 
-    const gamification = await Gamification.findOne({user: buyerId})
+    const gamification = await Gamification.findOne({ user: buyerId });
 
-    let discountValue = 0
-    if(gamification){
-      console.log('disPoint', gamification.discountPoints)
-      discountValue = parseFloat(gamification.discountPoints)
-      await gamification.save()
-    }
-    else {
-      discountValue = 0
+    let discountValue = 0;
+    if (gamification) {
+      console.log("disPoint", gamification.discountPoints);
+      discountValue = parseFloat(gamification.discountPoints);
+      await gamification.save();
+    } else {
+      discountValue = 0;
     }
 
-    // calculate finalValue of items in cart
-    let finalValue = parseFloat((parseFloat(cart.totalAmount) - discountValue * 2).toFixed(2))
-    console.log("finalValue: ", finalValue)
+    let finalValue = parseFloat(
+      (parseFloat(cart.totalAmount) - discountValue * 2).toFixed(2)
+    );
+    console.log("finalValue: ", finalValue);
 
-    if(finalValue < 1){
-      finalValue = 1
+    if (finalValue < 1) {
+      finalValue = 1;
     }
-    cart.finalAmount = finalValue
-    await cart.save()
-    console.log("final: ", cart.finalAmount)
+    cart.finalAmount = finalValue;
+    await cart.save();
+    console.log("final: ", cart.finalAmount);
 
     // Return the cart details
-    res.status(200).json(new ApiResponse(200, cart, "Cart fetched successfully"));
+    res
+      .status(200)
+      .json(new ApiResponse(200, cart, "Cart fetched successfully"));
   } catch (error) {
     throw new ApiError(500, "Internal server error");
   }

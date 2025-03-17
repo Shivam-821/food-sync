@@ -4,7 +4,7 @@ import { Producer } from "../models/producer.models.js";
 import { UpcyclingIndustry } from "../models/upcyclingIndustry.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-import {Ngo} from "../models/ngo.models.js"
+import { Ngo } from "../models/ngo.models.js";
 
 const verifyUnified = asyncHandler(async (req, res, next) => {
   let token = req.cookies.accessToken || req.headers.authorization;
@@ -20,9 +20,7 @@ const verifyUnified = asyncHandler(async (req, res, next) => {
   try {
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-    let user = await Consumer.findById(decodedToken._id).select(
-      "email"
-    );
+    let user = await Consumer.findById(decodedToken._id).select("email");
     if (user) {
       req.consumer = user;
       return next();
@@ -42,10 +40,12 @@ const verifyUnified = asyncHandler(async (req, res, next) => {
       return next();
     }
 
-    user = await Ngo.findById(decodedToken._id).select("ngoName ownerName email phone")
-    if (user){
-      req.ngo = user
-      return next()
+    user = await Ngo.findById(decodedToken._id).select(
+      "ngoName ownerName email phone"
+    );
+    if (user) {
+      req.ngo = user;
+      return next();
     }
 
     throw new ApiError(401, "Unauthorized: Invalid user");
@@ -53,8 +53,5 @@ const verifyUnified = asyncHandler(async (req, res, next) => {
     throw new ApiError(401, error?.message || "Invalid access token");
   }
 });
-
-
-
 
 export { verifyUnified };

@@ -4,8 +4,12 @@ const orderSchema = new Schema(
   {
     consumer: {
       type: Schema.Types.ObjectId,
-      ref: "Consumer",
+      ref: "buyer",
       required: true,
+    },
+    buyer: {
+      type: String,
+      enum: ["Consumer", "Ngo"]
     },
     items: [
       {
