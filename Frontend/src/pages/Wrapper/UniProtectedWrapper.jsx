@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ConsumerDataContext } from '../../Context/ConsumerContext';
 import { ProducerDataContext } from '../../Context/ProducerContext';
 import { UpcyclingIDataContext } from '../../Context/UpcyclingIContext';
+import { NgoDataContext } from '../../Context/NgoContext'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import LoadingPage from '../../Components/Loading';
@@ -14,6 +15,7 @@ const AuthProtectWrapper = ({ children }) => {
     const { setConsumer } = useContext(ConsumerDataContext);
     const { setProducer } = useContext(ProducerDataContext);
     const { updateUpcyclingI } = useContext(UpcyclingIDataContext);
+    const { setNgo } = useContext(NgoDataContext);
 
     const [isLoading, setIsLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -27,7 +29,8 @@ const AuthProtectWrapper = ({ children }) => {
         const roleEndpoints = [
             { type: 'consumer', url: '/api/v1/consumer/profile', setter: setConsumer },
             { type: 'producer', url: '/api/v1/producer/profile', setter: setProducer },
-            { type: 'upcyclingIndustry', url: '/api/v1/upcyclingIndustry/profile', setter: updateUpcyclingI }
+            { type: 'upcyclingIndustry', url: '/api/v1/upcyclingIndustry/profile', setter: updateUpcyclingI },
+            { type: 'ngo', url: '/api/v1/ngo/getngoprofile', setter: setNgo }
         ];
 
         const checkAuthentication = async () => {
@@ -53,7 +56,7 @@ const AuthProtectWrapper = ({ children }) => {
         };
 
         checkAuthentication();
-    }, [token, navigate, setConsumer, setProducer, updateUpcyclingI]);
+    }, [token, navigate, setConsumer, setProducer, updateUpcyclingI,setNgo]);
 
     if (isLoading) {
         return <LoadingPage />;
