@@ -4,6 +4,7 @@ import Footer from "../../Components/Footer/Footer";
 import InputSection from "../../Components/Donation/InputSection";
 import Achivements from "../../Components/Donation/Achivements";
 import UserAddedDonation from "../../Components/Donation/UserAddedDonation";
+import Upcycleawarenss from "../../Components/Upcycleawarenss/Upcycleawarenss";
 
 function Donation() {
   return (
@@ -13,6 +14,7 @@ function Donation() {
       <Achivements />
       <UserAddedDonation />
       <Footer />
+      <Upcycleawarenss />
     </div>
   );
 }

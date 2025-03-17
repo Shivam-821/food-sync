@@ -3,8 +3,10 @@ import { Producer } from "../models/producer.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
-
+import {
+  uploadOnCloudinary,
+  deleteFromCloudinary,
+} from "../utils/cloudinary.js";
 
 const createItem = asyncHandler(async (req, res) => {
   const {
@@ -14,6 +16,7 @@ const createItem = asyncHandler(async (req, res) => {
     price,
     category,
     mfDate,
+    type,
     expiryDate,
     upcyclingOptions,
     avatar: avatarUrl,
@@ -28,6 +31,7 @@ const createItem = asyncHandler(async (req, res) => {
     !price ||
     !category ||
     !mfDate ||
+    !type ||
     !expiryDate ||
     !description
   ) {
@@ -61,12 +65,13 @@ const createItem = asyncHandler(async (req, res) => {
       quantity,
       unit,
       price,
+      type,
       avatar: avatar?.url || "",
       category,
       mfDate,
       expiryDate,
       description,
-      upcyclingOptions: upcyclingOptions || "compost"
+      upcyclingOptions: upcyclingOptions || "compost",
     });
 
     // Add the item to the producer's items list
@@ -87,7 +92,6 @@ const createItem = asyncHandler(async (req, res) => {
   }
 });
 
-
 // Get a single item by ID
 
 const getAllItems = asyncHandler(async (req, res) => {
@@ -96,8 +100,8 @@ const getAllItems = asyncHandler(async (req, res) => {
     select: "fullname email phone companyName location",
   });
 
-  if(!items){
-    throw new ApiError(404, "Items not found")
+  if (!items) {
+    throw new ApiError(404, "Items not found");
   }
 
   return res

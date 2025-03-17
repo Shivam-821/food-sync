@@ -5,6 +5,7 @@ import {
   FaUser,
   FaEnvelope,
   FaPhone,
+  FaMapMarkerAlt,
   FaLock,
   FaHandHoldingHeart,
 } from "react-icons/fa";
@@ -12,14 +13,14 @@ import { useNavigate } from "react-router-dom";
 // import "./signup.css";
 // import Navbar from "../Components/Navbar/Navbar";
 import axios from "axios";
-// import { ConsumerDataContext } from "../../Context/ConsumerContext";
+import { NgoDataContext } from "../Context/NgoContext";
 import { motion } from "framer-motion";
 // import { GoogleOAuthProvider } from "@react-oauth/google";
 // import GoogleLogin from "../../Components/GoogleLogin/GoogleLogin";
 
 const NGOSignUp = () => {
   const navigate = useNavigate();
-//   const { consumer, setConsumer } = useContext(ConsumerDataContext);
+  const { ngo, setNgo } = useContext(NgoDataContext);
   const formRef = useRef(null);
   const buttonRef = useRef(null);
   const containerRef = useRef(null);
@@ -30,6 +31,7 @@ const NGOSignUp = () => {
     email: "",
     phone: "",
     password: "",
+    address:"",
     confirmPassword: "",
   });
 
@@ -166,12 +168,13 @@ const NGOSignUp = () => {
       ngoName: formData.ngoName,
       email: formData.email,
       phone: formData.phone,
+      address:formData.address,
       password: formData.password,
     };
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/ngo/register`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/ngo/registerngo`,
         newNGO
       );
 
@@ -181,13 +184,9 @@ const NGOSignUp = () => {
           localStorage.setItem("accessToken", token);
         }
 
-        const ngoId = response.data.data.ngo._id;
-        if (accessToken) {
-          localStorage.setItem("accessToken", accessToken);
-        }
-
         const data = response.data;
-        setConsumer(data.ngo);
+        console.log(data)
+        setNgo(data.data.ownerName);
         localStorage.setItem("token", data.refreshToken);
 
         setIsLoading(false);
@@ -456,6 +455,34 @@ const NGOSignUp = () => {
                     <p className="text-red-300 text-sm mt-1">{errors.phone}</p>
                   )}
                 </motion.div>
+
+                <motion.div variants={itemVariants} className="relative">
+                  <div className="absolute left-3 top-3.5 text-blue-300">
+                    <FaMapMarkerAlt />
+                  </div>
+                  <input
+                    type="text"
+                    name="address"
+                    placeholder="Address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    onFocus={() => setActiveField("address")}
+                    onBlur={() => setActiveField(null)}
+                    className={`glass-input ${
+                      activeField === "address"
+                        ? "active-input"
+                        : errors.address
+                        ? "error-input"
+                        : formData.address
+                        ? "success-input"
+                        : ""
+                    }`}
+                  />
+                  {errors.address && (
+                    <p className="text-red-300 text-sm mt-1">{errors.address}</p>
+                  )}
+                </motion.div>
+
 
                 <motion.div variants={itemVariants} className="relative">
                   <div className="absolute left-3 top-3.5 text-green-300">
