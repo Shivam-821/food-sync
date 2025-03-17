@@ -14,6 +14,7 @@ const ProducerHome = () => {
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("");
   const [category, setCategory] = useState("");
+  const [type, setType] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [manufacturingDate, setManufacturingDate] = useState("");
   const [status, setStatus] = useState("");
@@ -119,7 +120,9 @@ const ProducerHome = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-5xl font-extrabold text-gray-800">Surplus Producer</h1>
+        <h1 className="text-5xl font-extrabold text-gray-800">
+          Surplus Producer
+        </h1>
       </motion.div>
 
       <div className="p-10 pt-5 mb-9">
@@ -129,7 +132,9 @@ const ProducerHome = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <h3 className="text-3xl font-semibold text-gray-700 mb-6">Add Items</h3>
+          <h3 className="text-3xl font-semibold text-gray-700 mb-6">
+            Add Items
+          </h3>
 
           <motion.form
             onSubmit={handleAddItem}
@@ -228,6 +233,22 @@ const ProducerHome = () => {
                   <option value="perishable">Perishable</option>
                   <option value="non-perishable">Non-Perishable</option>
                   <option value="ready-to-eat">Ready-to-Eat</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-lg font-medium text-gray-700">
+                  Types
+                </label>
+                <select
+                  required
+                  className="w-full p-3 border rounded-lg bg-gray-200"
+                  value={type}
+                  onChange={(e) => setType(e.target.value)}
+                >
+                  <option value="">Select Category</option>
+                  <option value="biodegradabl">Biodegrable</option>
+                  <option value="non-biodegradable">Non-Biodegrable</option>
                 </select>
               </div>
 

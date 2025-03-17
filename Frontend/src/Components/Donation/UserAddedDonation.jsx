@@ -62,13 +62,31 @@ const DonationsList = () => {
     fetchDonations();
   }, []);
 
+  // Function to handle "Get Items" button click
+  const handleGetItems = async (donationId) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/donation/claim-donation`,
+        {
+          donationId,
+        }
+      );
+      console.log("Claimed Donation:", response.data);
+      alert("Donation claimed successfully!");
+      // Optionally, refresh the donations list or update the UI
+    } catch (err) {
+      console.error("Error claiming donation:", err);
+      alert("Failed to claim donation. Please try again.");
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {donations.map((donation) => (
           <div
             key={donation._id}
-            className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl border border-gray-200 transition-all duration-200"
+            className="bg-white flex flex-col shadow-lg rounded-lg overflow-hidden hover:shadow-xl border border-gray-200 transition-all duration-200"
           >
             {/* Donor Information */}
             <div className="p-4">
@@ -114,6 +132,16 @@ const DonationsList = () => {
                   ? new Date(donation.createdAt).toLocaleDateString()
                   : "Unknown Date"}
               </span>
+            </div>
+
+            {/* "Get Items" Button */}
+            <div className="mt-auto p-4 border-t border-gray-300">
+              <button
+                onClick={() => handleGetItems(donation._id)}
+                className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Get Items
+              </button>
             </div>
           </div>
         ))}
