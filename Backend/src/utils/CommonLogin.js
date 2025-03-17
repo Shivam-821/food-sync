@@ -4,6 +4,7 @@ import { UpcyclingIndustry } from "../models/upcyclingIndustry.models.js";
 import { asyncHandler } from "./asyncHandler.js";
 import { ApiError } from "./ApiError.js";
 import { ApiResponse } from "./ApiResponse.js";
+import { Ngo } from "../models/ngo.models.js";
 
 const generateAccessAndRefreshToken = async (user) => {
   try {
@@ -38,7 +39,7 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   const user =
-    (await Producer.findOne({ [isEmail ? "email" : "phone"]: emailOrPhone })) ||
+    (await Producer.findOne({ [isEmail ? "email" : "phone"]: emailOrPhone })) || await Ngo.findOne({ [isEmail ? "email" : "phone"]: emailOrPhone}) || 
     (await UpcyclingIndustry.findOne({
       [isEmail ? "email" : "phone"]: emailOrPhone,
     })) ||
@@ -69,6 +70,11 @@ const loginUser = asyncHandler(async (req, res) => {
     populatedUser = await UpcyclingIndustry.findById(user._id)
       .select("-password -refreshToken")
       .populate("feedbacks donationsMade upcyclingOrders");
+  } else if(user instanceof Ngo){
+    populatedUser = await Ngo.findById(user._id)
+      .select("-password -refreshToken")
+      .populate("feedbacks donationReceived")
+      .populate("donationRequested.item")
   }
 
   if (!populatedUser) {
