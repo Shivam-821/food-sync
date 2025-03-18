@@ -1,11 +1,10 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import {Ngo} from "../models/ngo.models.js"
+import { Ngo } from "../models/ngo.models.js";
 import { Producer } from "../models/producer.models.js";
 import { UpcyclingIndustry } from "../models/upcyclingIndustry.models.js";
 import { Donation } from "../models/donation.models.js";
-
 
 const generateAccessAndRefreshToken = async (consumerId) => {
   try {
@@ -26,57 +25,62 @@ const generateAccessAndRefreshToken = async (consumerId) => {
 };
 
 const createngo = asyncHandler(async (req, res) => {
-    const {ownerName, ngoName, email, phone, address, password,
+  const { ownerName, ngoName, email, phone, address, password } = req.body;
 
-    } = req.body
+  if (!ownerName || !ngoName || !email || !address || !password) {
+    throw new ApiError(400, "Please fill all the required fields");
+  }
 
-    if(!ownerName || !ngoName || !email || !address || !password){
-        throw new ApiError(400, "Please fill all the required fields")
+  const existingNgo = await Ngo.findOne({ email });
+
+  if (existingNgo) {
+    throw new ApiError(409, "Ngo already exist with same email or phone");
+  }
+
+  try {
+    const ngo = await Ngo.create({
+      ownerName,
+      ngoName,
+      email,
+      phone,
+      address,
+      role: "ngo",
+      password,
+    });
+
+    const createdNgo = await Ngo.findById(ngo._id).select("-password");
+
+    if (!createdNgo) {
+      throw new ApiError(500, "Error creating Ngo");
     }
 
-    const existingNgo = await Ngo.findOne({email})
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+      createdNgo._id
+    );
 
-    if(existingNgo){
-        throw new ApiError(409, "Ngo already exist with same email or phone")
-    }
+    const options = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: "None",
+    };
 
-
-    try {
-        const ngo = await Ngo.create({
-            ownerName,
-            ngoName,
-            email,
-            phone,
-            address,
-            role: "ngo",
-            password,
+    return res
+      .status(201)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(201, {
+          createdNgo,
+          accessToken,
+          refreshToken,
+          message: "Ngo created successfully",
         })
-    
-        const createdNgo = await Ngo.findById(ngo._id).select("-password")
-    
-        if(!createdNgo){
-            throw new ApiError(500, "Error creating Ngo")
-        }
-    
-        const {accessToken, refreshToken} = await generateAccessAndRefreshToken(createdNgo._id)
-    
-        const options = {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production" ? true : false,
-          sameSite: "None",
-        };
-    
-        return res
-          .status(201)
-          .cookie("accessToken", accessToken, options)
-          .cookie("refreshToken", refreshToken, options)
-          .json(new ApiResponse(201, { createdNgo, accessToken, refreshToken, message: "Ngo created successfully" }));
-
-    } catch (error) {
-        console.error("Error creating consumer:  ", error)
-        throw new ApiError(500, "Something went wrong: ", error)
-    }
-})
+      );
+  } catch (error) {
+    console.error("Error creating consumer:  ", error);
+    throw new ApiError(500, "Something went wrong: ", error);
+  }
+});
 
 const logoutNgo = asyncHandler(async (req, res) => {
   const Ngo = await Ngo.findByIdAndUpdate(
@@ -104,20 +108,15 @@ const ngoProfile = asyncHandler(async (req, res) => {
     .select("-password -refreshToken")
     .populate({
       path: "feedbacks donationsMade gamification donationsReceived",
-    })
-    .populate({
-        path: "requestMade",
-        populate: {
-          path: "item",
-          model: "Donation", 
-        },
-      })
+    });
 
   if (!ngo) {
     throw new ApiError(404, "Ngo not found");
   }
 
-  return res.status(200).json(new ApiResponse(200, ngo, "Ngo profile fetched successfully"));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, ngo, "Ngo profile fetched successfully"));
 });
 
 const requestDonation = asyncHandler(async (req, res) => {
@@ -163,10 +162,4 @@ const requestDonation = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, ngo, "Donation requested successfully"));
 });
 
-
-export {
-createngo,
-ngoProfile,
-logoutNgo,
-requestDonation,
-}
+export { createngo, ngoProfile, logoutNgo, requestDonation };
