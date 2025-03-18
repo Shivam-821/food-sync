@@ -10,6 +10,8 @@ import { SlBadge } from "react-icons/sl";
 import { RiShieldFlashFill } from "react-icons/ri";
 import { GiLaurelsTrophy } from "react-icons/gi";
 import { GiLaurelCrown } from "react-icons/gi";
+import { ToastContainer, toast } from "react-toastify"; // Import toast
+import "react-toastify/dist/ReactToastify.css"; // Import toast CSS
 
 const NgoProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -42,12 +44,14 @@ const NgoProfile = () => {
     const fetchUserProfile = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        console.log(token)
+        console.log(token);
         if (!token) {
-          alert("You must be logged in to view your profile.");
-          navigate("/login");
-          return;
-        }
+            toast.error("You must be logged in to view your profile."); // Show toast
+            setTimeout(() => {
+              navigate("/login"); // Navigate after a short delay
+            }, 1000); // 1-second delay
+            return;
+          }
 
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/v1/ngo/getngoprofile`,
@@ -57,17 +61,17 @@ const NgoProfile = () => {
             },
           }
         );
-        console.log(response.data.data)
+        console.log(response.data.data);
         if (response.data && response.data.data) {
           const user = response.data.data;
           setUserData({
-            fullname: user.fullname,
+            fullname: user.ngoName,
             email: user.email,
             phone: user.phone,
             location: user.location,
             address: user.address,
             bio: user.bio || "No bio available",
-            consumerType: user.consumerType,
+            consumerType: user.role,
             avatar: user.avatar || profileImage,
             feedbacks: user.feedbacks || [],
             donationsMade: user.donationsMade || [],
@@ -78,7 +82,7 @@ const NgoProfile = () => {
         }
       } catch (error) {
         console.error("Error fetching user profile:", error);
-        alert("Failed to fetch user profile. Please try again.");
+        toast.error("Failed to fetch user profile. Please try again."); // Replace alert with toast
       }
     };
 
@@ -145,6 +149,7 @@ const NgoProfile = () => {
   const confirmLogOut = () => {
     setIsLoggingOut(true);
     localStorage.removeItem("accessToken");
+    toast.success("Logged out successfully!"); // Toast for successful logout
     setTimeout(() => {
       navigate("/");
     }, 3000);
@@ -162,10 +167,23 @@ const NgoProfile = () => {
 
   return (
     <div
-      className={`min-h-screen font-sans relative mt-9 transition-colors duration-500 ${
+      className={`min-h-screen font-sans relative mt-16 transition-colors duration-500 ${
         isDarkMode ? "bg-gray-900 text-white" : "bg-blue-50 text-gray-900"
       }`}
     >
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-center" // Set position to top-center
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+
       {/* Theme Toggle Button */}
       <motion.button
         className={`fixed top-2 right-4 z-50 p-3 rounded-full shadow-lg ${

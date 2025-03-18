@@ -114,7 +114,11 @@ function App() {
         <Route path="/maps" element={<GoogleMapsRoute />} />
         <Route path="/startUp" element={<StartUp />} />
         <Route path="/ngosignup" element={<NGOSignUp />} />
-        <Route path="/ngoprofile" element={<NgoProfile />} />
+        <Route path="/ngoprofile" element={
+          <AuthProtectWrapper>
+            <NgoProfile />
+          </AuthProtectWrapper>
+        } />
       </Routes>
       <VisionComponent />
     </div>
