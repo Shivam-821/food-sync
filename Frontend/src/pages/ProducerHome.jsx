@@ -1,103 +1,124 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import Navbar from "../Components/Navbar/Navbar";
-import Footer from "../Components/Footer/Footer";
-import axios from "axios";
-import ItemsDetail from "../Components/Block/ItemsDetail";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { motion } from "framer-motion";
+"use client"
+
+import { useState, useRef } from "react"
+import Navbar from "../Components/Navbar/Navbar"
+import Footer from "../Components/Footer/Footer"
+import axios from "axios"
+import ItemsDetail from "../Components/Block/ItemsDetail"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import { motion } from "framer-motion"
+import Webcam from "react-webcam"
 
 const ProducerHome = () => {
-  const [avatar, setAvatar] = useState(null);
-  const [itemName, setItemName] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [unit, setUnit] = useState("");
-  const [category, setCategory] = useState("");
-  const [typeitem, setTypeItem] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
-  const [manufacturingDate, setManufacturingDate] = useState("");
-  const [status, setStatus] = useState("");
-  const [upcyclingOption, setUpcyclingOption] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [addedItems, setAddedItems] = useState([]);
-  const [isAdding, setIsAdding] = useState(false); // Loading state for adding items
+  const [avatar, setAvatar] = useState(null)
+  const [itemName, setItemName] = useState("")
+  const [quantity, setQuantity] = useState("")
+  const [unit, setUnit] = useState("")
+  const [category, setCategory] = useState("")
+  const [typeitem, setTypeItem] = useState("")
+  const [expiryDate, setExpiryDate] = useState("")
+  const [manufacturingDate, setManufacturingDate] = useState("")
+  const [status, setStatus] = useState("")
+  const [upcyclingOption, setUpcyclingOption] = useState("")
+  const [description, setDescription] = useState("")
+  const [price, setPrice] = useState("")
+  const [addedItems, setAddedItems] = useState([])
+  const [isAdding, setIsAdding] = useState(false) // Loading state for adding items
+  const [showWebcam, setShowWebcam] = useState(false) // State to toggle webcam visibility
+  const webcamRef = useRef(null) // Reference for webcam
 
   const handleImageChange = (event) => {
-    const file = event.target.files[0];
+    const file = event.target.files[0]
     if (file) {
-      setAvatar(URL.createObjectURL(file));
+      setAvatar(URL.createObjectURL(file))
     }
-  };
+  }
+
+  const captureImage = () => {
+    setTimeout(() => {
+      if (webcamRef.current) {
+        const imageSrc = webcamRef.current.getScreenshot()
+        setAvatar(imageSrc)
+        setShowWebcam(false) // Hide webcam after capture
+      }
+    }, 500) // Short delay before capture
+  }
 
   const handleAddItem = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("accessToken")
 
     if (!token) {
-      toast.error("Unauthorized: No token found. Please log in again.");
-      return;
+      toast.error("Unauthorized: No token found. Please log in again.")
+      return
     }
 
-    const formData = new FormData();
-    formData.append("name", itemName);
-    formData.append("quantity", quantity);
-    formData.append("unit", unit);
-    formData.append("price", price);
-    formData.append("category", category);
-    formData.append("expiryDate", expiryDate);
-    formData.append("mfDate", manufacturingDate);
-    formData.append("typeitem", typeitem);
-    formData.append("status", status);
-    formData.append("upcyclingOptions", upcyclingOption);
-    formData.append("description", description);
+    const formData = new FormData()
+    formData.append("name", itemName)
+    formData.append("quantity", quantity)
+    formData.append("unit", unit)
+    formData.append("price", price)
+    formData.append("category", category)
+    formData.append("expiryDate", expiryDate)
+    formData.append("mfDate", manufacturingDate)
+    formData.append("typeitem", typeitem)
+    formData.append("status", status)
+    formData.append("upcyclingOptions", upcyclingOption)
+    formData.append("description", description)
 
     if (avatar) {
-      const fileInput = document.querySelector('input[type="file"]');
-      const file = fileInput.files[0];
-      formData.append("avatar", file); // ✅ Ensure correct file key
+      // Check if avatar is a data URL (from webcam) or a file object URL (from file input)
+      if (avatar.startsWith("data:image")) {
+        // Convert data URL to blob for webcam capture
+        const response = await fetch(avatar)
+        const blob = await response.blob()
+        formData.append("avatar", blob, "webcam-capture.jpg")
+      } else {
+        // Use file from input
+        const fileInput = document.querySelector('input[type="file"]')
+        if (fileInput.files[0]) {
+          formData.append("avatar", fileInput.files[0])
+        }
+      }
     }
 
-    setIsAdding(true); // Start loading
+    setIsAdding(true) // Start loading
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/items/create`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // ✅ Token sent in headers
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/items/create`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ Token sent in headers
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      })
 
-      toast.success("Item added successfully!");
-      setAddedItems([...addedItems, response.data]);
+      toast.success("Item added successfully!")
+      setAddedItems([...addedItems, response.data])
 
       // Clear form inputs
-      setItemName("");
-      setQuantity("");
-      setUnit("");
-      setPrice("");
-      setCategory("");
-      setExpiryDate("");
-      setManufacturingDate("");
-      setTypeItem("");
-      setStatus("");
-      setUpcyclingOption("");
-      setDescription("");
-      setAvatar(null);
+      setItemName("")
+      setQuantity("")
+      setUnit("")
+      setPrice("")
+      setCategory("")
+      setExpiryDate("")
+      setManufacturingDate("")
+      setTypeItem("")
+      setStatus("")
+      setUpcyclingOption("")
+      setDescription("")
+      setAvatar(null)
+      setShowWebcam(false)
     } catch (error) {
-      console.error("Error adding item:", error);
-      toast.error(error.response?.data?.message || "Failed to add item");
+      console.error("Error adding item:", error)
+      toast.error(error.response?.data?.message || "Failed to add item")
     } finally {
-      setIsAdding(false); // Stop loading
+      setIsAdding(false) // Stop loading
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans overflow-auto h-screen">
@@ -122,9 +143,7 @@ const ProducerHome = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-5xl font-extrabold text-gray-800">
-          Surplus Producer
-        </h1>
+        <h1 className="text-5xl font-extrabold text-gray-800">Surplus Producer</h1>
       </motion.div>
 
       <div className="p-10 pt-5 mb-9">
@@ -134,9 +153,7 @@ const ProducerHome = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <h3 className="text-3xl font-semibold text-gray-700 mb-6">
-            Add Items
-          </h3>
+          <h3 className="text-3xl font-semibold text-gray-700 mb-6">Add Items</h3>
 
           <motion.form
             onSubmit={handleAddItem}
@@ -147,9 +164,7 @@ const ProducerHome = () => {
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Name
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Name</label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -161,28 +176,60 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Image
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="w-full p-3 border rounded-lg bg-gray-200"
-                />
-                {avatar && (
-                  <img
-                    className="h-32 w-32 mt-2 rounded-lg shadow-md"
-                    src={avatar}
-                    alt="Preview"
+                <label className="block text-lg font-medium text-gray-700">Image</label>
+                <div className="flex flex-col gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="w-full p-3 border rounded-lg bg-gray-200"
                   />
-                )}
+
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowWebcam(!showWebcam)}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                    >
+                      {showWebcam ? "Hide Camera" : "Use Camera"}
+                    </button>
+
+                    {showWebcam && (
+                      <button
+                        type="button"
+                        onClick={captureImage}
+                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
+                      >
+                        📸 Capture
+                      </button>
+                    )}
+                  </div>
+
+                  {showWebcam && (
+                    <div className="mt-2">
+                      <Webcam
+                        audio={false}
+                        ref={webcamRef}
+                        screenshotFormat="image/jpeg"
+                        width={320}
+                        height={240}
+                        className="rounded-lg border border-gray-300"
+                      />
+                    </div>
+                  )}
+
+                  {avatar && (
+                    <img
+                      className="h-32 w-32 mt-2 rounded-lg shadow-md object-cover"
+                      src={avatar || "/placeholder.svg"}
+                      alt="Preview"
+                    />
+                  )}
+                </div>
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Quantity
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Quantity</label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -194,9 +241,7 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Unit
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Unit</label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -208,9 +253,7 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Price
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Price</label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -222,9 +265,7 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Category
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Category</label>
                 <select
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -239,9 +280,7 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Types
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Types</label>
                 <select
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -255,9 +294,7 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Manufacturing Date
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Manufacturing Date</label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -268,9 +305,7 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Description
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Description</label>
                 <textarea
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -281,9 +316,7 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Expiry Date
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Expiry Date</label>
                 <input
                   required
                   className="w-full p-3 border rounded-lg bg-gray-200"
@@ -294,9 +327,7 @@ const ProducerHome = () => {
               </div>
 
               <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Upcycling Option
-                </label>
+                <label className="block text-lg font-medium text-gray-700">Upcycling Option</label>
                 <select
                   className="w-full p-3 border rounded-lg bg-gray-200"
                   value={upcyclingOption}
@@ -358,7 +389,8 @@ const ProducerHome = () => {
 
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default ProducerHome;
+export default ProducerHome
+

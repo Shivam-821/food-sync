@@ -35,6 +35,7 @@ import UpcyclingProtectWrapper from "./pages/Wrapper/UpcyclingProtectedWrapper";
 import NGOSignUp from "./pages/NgoSignup";
 import NgoProfile from "./pages/NgoProfile";
 import { NgoOrder } from "./Components/Donation/ngoOrder";
+import LiveCam from "./pages/LiveCam";
 
 function App() {
   return (
@@ -117,6 +118,7 @@ function App() {
         <Route path="/ngosignup" element={<NGOSignUp />} />
 
         <Route path="/ngopay" element={<NgoOrder />} />
+        <Route path="/livecam" element={<LiveCam />} />
 
         <Route
           path="/ngoprofile"
