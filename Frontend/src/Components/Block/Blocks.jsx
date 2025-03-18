@@ -8,7 +8,7 @@ import "./Blocks.css";
 import { FaShoppingCart } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Blocks = () => {
   return (
@@ -90,8 +90,8 @@ function BlockList() {
 
         setFilteredProducts(filtered); // Set filteredProducts after filtering
       } catch (err) {
-        console.log("kjhgk khjg kjgh kj kjkj g")
-        navigate("/error")
+        console.log("kjhgk khjg kjgh kj kjkj g");
+        navigate("/error");
       } finally {
         setLoading(false); // Set loading to false after fetching data
       }
@@ -146,7 +146,7 @@ function BlockList() {
       setData(cartResponse.data.data);
       setCartItems(cartResponse.data.data.items || []);
     } catch (error) {
-      Navigate("/error")
+      navigate("/error");
       toast.error(error.response?.data?.message || "Failed to add to cart");
     } finally {
       setLoading(false);
@@ -191,8 +191,10 @@ function BlockList() {
       setData(cartResponse.data.data);
       setCartItems(cartResponse.data.data.items || []);
     } catch (error) {
-      Navigate("/error")
-      toast.error(error.response?.data?.message || "Failed to remove from cart");
+      navigate("/error");
+      toast.error(
+        error.response?.data?.message || "Failed to remove from cart"
+      );
     } finally {
       setLoading(false);
     }
@@ -237,8 +239,10 @@ function BlockList() {
       setData(cartResponse.data.data);
       setCartItems(cartResponse.data.data.items || []);
     } catch (error) {
-      Navigate("/error")
-      toast.error(error.response?.data?.message || "Failed to update cart quantity");
+      navigate("/error");
+      toast.error(
+        error.response?.data?.message || "Failed to update cart quantity"
+      );
     } finally {
       setLoading(false);
     }
