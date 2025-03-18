@@ -9,7 +9,7 @@ const cartSchema = new Schema(
     },
     buyerType: {
       type: String,
-      enum: ["Consumer", "UpcyclingIndustry"],
+      enum: ["Consumer", "UpcyclingIndustry", "Ngo"],
       required: true,
     },
     items: [

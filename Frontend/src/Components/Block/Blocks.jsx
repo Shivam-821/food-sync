@@ -146,7 +146,7 @@ function BlockList() {
       setData(cartResponse.data.data);
       setCartItems(cartResponse.data.data.items || []);
     } catch (error) {
-      Navigate("/error")
+      navigate("/error")
       toast.error(error.response?.data?.message || "Failed to add to cart");
     } finally {
       setLoading(false);
@@ -191,7 +191,7 @@ function BlockList() {
       setData(cartResponse.data.data);
       setCartItems(cartResponse.data.data.items || []);
     } catch (error) {
-      Navigate("/error")
+      navigate("/error")
       toast.error(error.response?.data?.message || "Failed to remove from cart");
     } finally {
       setLoading(false);
@@ -237,7 +237,7 @@ function BlockList() {
       setData(cartResponse.data.data);
       setCartItems(cartResponse.data.data.items || []);
     } catch (error) {
-      Navigate("/error")
+      navigate("/error")
       toast.error(error.response?.data?.message || "Failed to update cart quantity");
     } finally {
       setLoading(false);

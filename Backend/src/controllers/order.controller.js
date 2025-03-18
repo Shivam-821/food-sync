@@ -10,6 +10,7 @@ import { getBadge } from "../utils/gamificationUtils.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 import {ApiError} from "../utils/ApiError.js";
 import {Item } from "../models/items.models.js"
+import { Ngo } from "../models/ngo.models.js";
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
