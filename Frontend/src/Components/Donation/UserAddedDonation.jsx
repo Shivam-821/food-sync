@@ -181,6 +181,7 @@ const DonationsList = () => {
           </div>
         ))}
       </div>
-    </div>
+     </div>
   );
 };
+ 
