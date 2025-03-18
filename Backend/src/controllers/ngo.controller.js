@@ -105,13 +105,6 @@ const ngoProfile = asyncHandler(async (req, res) => {
     .populate({
       path: "feedbacks donationsMade gamification donationsReceived",
     })
-    .populate({
-        path: "requestMade",
-        populate: {
-          path: "item",
-          model: "Donation", 
-        },
-      })
 
   if (!ngo) {
     throw new ApiError(404, "Ngo not found");
