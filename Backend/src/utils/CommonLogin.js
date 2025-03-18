@@ -31,7 +31,8 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   const isEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-    emailOrPhone);
+    emailOrPhone
+  );
   const isPhone = /^[6-9]\d{9}$/.test(emailOrPhone);
 
   if (!isEmail && !isPhone) {
@@ -39,7 +40,8 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   const user =
-    (await Producer.findOne({ [isEmail ? "email" : "phone"]: emailOrPhone })) || await Ngo.findOne({ [isEmail ? "email" : "phone"]: emailOrPhone}) || 
+    (await Producer.findOne({ [isEmail ? "email" : "phone"]: emailOrPhone })) ||
+    (await Ngo.findOne({ [isEmail ? "email" : "phone"]: emailOrPhone })) ||
     (await UpcyclingIndustry.findOne({
       [isEmail ? "email" : "phone"]: emailOrPhone,
     })) ||
@@ -70,11 +72,10 @@ const loginUser = asyncHandler(async (req, res) => {
     populatedUser = await UpcyclingIndustry.findById(user._id)
       .select("-password -refreshToken")
       .populate("feedbacks donationsMade upcyclingOrders");
-  } else if(user instanceof Ngo){
+  } else if (user instanceof Ngo) {
     populatedUser = await Ngo.findById(user._id)
       .select("-password -refreshToken")
-      .populate("feedbacks donationsReceived")
-      .populate("donationRequested.item")
+      .populate("feedbacks donationsReceived");
   }
 
   if (!populatedUser) {

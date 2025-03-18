@@ -24,13 +24,6 @@ const getBuyerAndType = async (req) => {
       buyerType: "Consumer",
     };
   }
-  if (req.upcycledIndustry) {
-    return {
-      buyer: await UpcyclingIndustry.findById(req.upcycledIndustry._id),
-      buyerId: req.upcycledIndustry._id,
-      buyerType: "UpcyclingIndustry",
-    };
-  }
   if (req.ngo) {
     return {
       buyer: await Ngo.findById(req.ngo._id),
@@ -47,7 +40,8 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     const {buyer, buyerId, buyerType} = await getBuyerAndType(req)
 
     if(!buyer || !buyerId || !buyerType){
-      return ApiResponse(404, "buyer not found")
+      return res.status(404)
+      .json(new ApiResponse(404, "buyer not found"))
     }
 
     if (!address || !paymentMethod) {
@@ -56,7 +50,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     
     const cart = await Cart.findOne({
       buyer: buyerId,
-      buyerType: buyerId,
+      buyerType: buyerType,
     }).populate("items.item");
 
     if (!cart || cart.items.length === 0) {
@@ -118,6 +112,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
     const order = new Order({
       consumer: buyerId,
       items: cart.items,
+      buyer: buyerType,
       totalAmount: totalAmount,
       deliveryAddress: address,
       deliveryLocation: location,
@@ -148,6 +143,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
         order.razorpayOrderId = razorpayOrder.id;
         await order.save();
       } catch (error) {
+        await Order.deleteOne({ _id: order._id });
         console.error("Razorpay API Error:", error);
     
         if (error.error && error.error.description) {

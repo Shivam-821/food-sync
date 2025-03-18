@@ -16,7 +16,7 @@ const createItem = asyncHandler(async (req, res) => {
     price,
     category,
     mfDate,
-    type,
+    typeitem,
     expiryDate,
     upcyclingOptions,
     avatar: avatarUrl,
@@ -31,7 +31,6 @@ const createItem = asyncHandler(async (req, res) => {
     !price ||
     !category ||
     !mfDate ||
-    !type ||
     !expiryDate ||
     !description
   ) {
@@ -65,7 +64,7 @@ const createItem = asyncHandler(async (req, res) => {
       quantity,
       unit,
       price,
-      type,
+      typeitem,
       avatar: avatar?.url || "",
       category,
       mfDate,

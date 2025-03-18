@@ -49,9 +49,8 @@ const itemSchema = new Schema(
         values: ["perishable", "non-perishable", "ready-to-eat"],
         message: "{VALUE} is not a valid category",
       },
-      required: [true, "Category is required"],
     },
-    type: {
+    typeitem: {
       type: String,
       enum: ["biodegradable", "non-biodegradable"],
       required: [true, "Type is required"],
