@@ -51,6 +51,7 @@ const Navbar = () => {
     const roleEndpoints = [
       { type: "consumer", url: "/api/v1/consumer/profile" },
       { type: "producer", url: "/api/v1/producer/profile" },
+      { type: "ngo", url: "/api/v1/ngo/getngoprofile" },
     ];
 
     const fetchUserType = async () => {
@@ -80,8 +81,11 @@ const Navbar = () => {
   const handleClick = () => {
     if (isLogin === "consumer") {
       navigate("/userProfile");
-    } else {
+    } else if(isLogin==='producer'){
       navigate("/producerDetail");
+    }
+    else{
+      navigate("/ngoprofile");
     }
   };
 
