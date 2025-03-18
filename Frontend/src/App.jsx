@@ -110,7 +110,7 @@ function App() {
             </AuthProtectWrapper>
           }
         />
-        <Route path="/error" element={<Error />} />
+        <Route  path="/error" element={<Error />} />
         <Route path="/maps" element={<GoogleMapsRoute />} />
         <Route path="/startUp" element={<StartUp />} />
         <Route path="/ngosignup" element={<NGOSignUp />} />
