@@ -30,7 +30,7 @@ const upcyclingSchema = new Schema(
     },
     quantity: {
       type: Number,
-      min: [1, "Quantity must be at least 1"],
+      min: [5, "Quantity must be at least 1"],
       required: [true, "Quantity is required"],
     },
     avatar: {
@@ -67,7 +67,6 @@ upcyclingSchema.statics.addExpiredItemsToUpcycling = async function () {
       status: "expired",
     });
 
-
     if (expiredItems.length === 0) return;
 
     const upcyclingEntries = expiredItems.map((expiredItem) => ({
@@ -80,7 +79,7 @@ upcyclingSchema.statics.addExpiredItemsToUpcycling = async function () {
       unit: expiredItem.unit,
       producer: expiredItem.producer,
     }));
-    
+
     let insertedUpcyclingItems;
     try {
       insertedUpcyclingItems = await UpcyclingItem.insertMany(
@@ -92,7 +91,7 @@ upcyclingSchema.statics.addExpiredItemsToUpcycling = async function () {
       );
     } catch (error) {
       console.error("Error inserting upcycling items:", error);
-      throw error; 
+      throw error;
     }
 
     const producerUpdates = {};
@@ -121,10 +120,8 @@ upcyclingSchema.statics.addExpiredItemsToUpcycling = async function () {
     );
   } catch (error) {
     console.error("Error adding expired items to Upcycling:", error);
-    throw error; 
+    throw error;
   }
 };
-
-
 
 export const UpcyclingItem = mongoose.model("UpcyclingItem", upcyclingSchema);
