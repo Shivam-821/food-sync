@@ -116,10 +116,8 @@ function App() {
         <Route path="/maps" element={<GoogleMapsRoute />} />
         <Route path="/startUp" element={<StartUp />} />
         <Route path="/ngosignup" element={<NGOSignUp />} />
-
         <Route path="/ngopay" element={<NgoOrder />} />
         <Route path="/livecam" element={<LiveCam />} />
-
         <Route
           path="/ngoprofile"
           element={

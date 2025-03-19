@@ -49,6 +49,7 @@
     "razorpay": "^2.9.6",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
+    "twilio": "^5.5.0",
     "web-push": "^3.6.7"
   }
 }

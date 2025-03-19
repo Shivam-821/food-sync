@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
+import { notifyOnNewExpiredItem, notifyOnNewItem } from "../controllers/twilio.controller.js";
 
 const itemSchema = new Schema(
   {
@@ -127,7 +128,11 @@ itemSchema.pre("save", async function (next) {
 
 itemSchema.post("save", async function (doc, next) {
   if (doc.status === "expired") {
-    await mongoose.model("UpcyclingItem").addExpiredItemsToUpcycling();
+    await mongoose.model("UpcyclingItem").addExpiredItemsToUpcycling()
+    
+    notifyOnNewExpiredItem(doc.name, doc.quantity, doc.upcyclingOptions)
+  } else {
+    notifyOnNewItem(doc.name, doc.quantity)
   }
   next();
 });
