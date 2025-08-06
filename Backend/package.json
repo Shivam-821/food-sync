@@ -6,7 +6,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js",
+    "start": "nodemon src/index.js",
     "dev": "nodemon src/index.js"
   },
   "keywords": [
@@ -49,7 +49,7 @@
     "razorpay": "^2.9.6",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
-    "twilio": "^5.5.0",
+    "twilio": "^5.8.0",
     "web-push": "^3.6.7"
   }
 }
