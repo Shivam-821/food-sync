@@ -11,7 +11,7 @@ const connectDB = async () => {
       `MongoDb connected successfully: ${ConnectionInstance.connection.host}`
     );
   } catch (error) {
-    console.log(chalk.bgRedBright(`${ConnectionInstance.Connection.host}`));
+    console.log(chalk.bgRedBright(`MongoDB connection error: ${error.message}`));
     process.exit(1);
   }
 };
