@@ -62,7 +62,7 @@ app.use("/api/v1/donation", donationRoute)
 app.use("/api/v1/community", communityRoute)
 app.use("/api/v1/vision", visionRoute)
 app.use('/api/v1/ai',aiRoute)
-app.use("/api/v1/auth/", loginRouter)
+app.use("/api/v1/auth", loginRouter)
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/gamification", gamificationRoute)
 app.use("/api/v1/upcyclingOrder", upcyclingOrderRoute)

@@ -90,7 +90,7 @@ function BlockList() {
 
         setFilteredProducts(filtered); // Set filteredProducts after filtering
       } catch (err) {
-        console.log("kjhgk khjg kjgh kj kjkj g");
+        // console.log("kjhgk khjg kjgh kj kjkj g");
         navigate("/error");
       } finally {
         setLoading(false); // Set loading to false after fetching data
