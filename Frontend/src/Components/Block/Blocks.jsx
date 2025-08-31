@@ -43,52 +43,59 @@ function BlockList() {
   useEffect(() => {
     const fetchBlocks = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/v1/items/getallitem`
-        );
-        const data = response.data.data || [];
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+          const response = await axios.get(
+            `${import.meta.env.VITE_BASE_URL}/api/v1/items/getallitem`
+          );
+          const data = response.data.data || [];
 
-        // Transform fetched data to match the expected structure
-        const transformedData = data.map((item) => ({
-          id: item._id,
-          name: item.name,
-          price: item.price,
-          image: item.avatar, // Use 'avatar' from fetched data
-          quantity: item.quantity,
-          unit: item.unit,
-          type: item.category, // Use 'category' as 'type'
-          expiryDate: item.expiryDate,
-          description: item.description,
-          manufacturingDate: item.mfDate,
-        }));
+          // Transform fetched data to match the expected structure
+          const transformedData = data.map((item) => ({
+            id: item._id,
+            name: item.name,
+            price: item.price,
+            image: item.avatar, // Use 'avatar' from fetched data
+            quantity: item.quantity,
+            unit: item.unit,
+            type: item.category, // Use 'category' as 'type'
+            expiryDate: item.expiryDate,
+            description: item.description,
+            manufacturingDate: item.mfDate,
+          }));
 
-        setBlocks(transformedData);
-        setSampleProducts(transformedData);
-        setProducts(transformedData);
+          setBlocks(transformedData);
+          setSampleProducts(transformedData);
+          setProducts(transformedData);
 
-        // Apply filters immediately after fetching data
-        let filtered = [...transformedData];
+          // Apply filters immediately after fetching data
+          let filtered = [...transformedData];
 
-        // Filter by price
-        filtered = filtered.filter(
-          (product) =>
-            product.price >= priceRange[0] && product.price <= priceRange[1]
-        );
-
-        // Filter by type
-        if (productType !== "all") {
-          filtered = filtered.filter((product) => product.type === productType);
-        }
-
-        // Filter by expiry date
-        if (expiryDateFilter) {
+          // Filter by price
           filtered = filtered.filter(
             (product) =>
-              new Date(product.expiryDate) <= new Date(expiryDateFilter)
+              product.price >= priceRange[0] && product.price <= priceRange[1]
           );
-        }
 
-        setFilteredProducts(filtered); // Set filteredProducts after filtering
+          // Filter by type
+          if (productType !== "all") {
+            filtered = filtered.filter(
+              (product) => product.type === productType
+            );
+          }
+
+          // Filter by expiry date
+          if (expiryDateFilter) {
+            filtered = filtered.filter(
+              (product) =>
+                new Date(product.expiryDate) <= new Date(expiryDateFilter)
+            );
+          }
+
+          setFilteredProducts(filtered); // Set filteredProducts after filtering
+        } else {
+          return;
+        }
       } catch (err) {
         // console.log("kjhgk khjg kjgh kj kjkj g");
         navigate("/error");
