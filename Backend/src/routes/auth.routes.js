@@ -31,7 +31,9 @@ router.get(
       );
 
       // Redirect to frontend with token
-      res.redirect(`http://localhost:5173/auth-success?token=${token}`);
+      res.redirect(
+        `https://food-sync-sigma.vercel.app/auth-success?token=${token}`
+      );
     } catch (error) {
       console.error("Error during Google OAuth callback:", error);
       res.redirect("/"); // Redirect to home page on error

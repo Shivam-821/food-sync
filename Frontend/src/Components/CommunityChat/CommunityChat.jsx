@@ -4,7 +4,7 @@ import axios from "axios";
 import { IoMdSend } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 
-const socket = io("http://localhost:8004");
+const socket = io("https://food-sync.onrender.com");
 
 function CommunityChat() {
   const [name, setName] = useState("");
