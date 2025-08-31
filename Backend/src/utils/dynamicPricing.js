@@ -32,7 +32,7 @@ const changePrice = async () => {
       },
     }));
 
-    console.log("Price Changed successfully");
+    // console.log("Price Changed successfully");
   } catch (error) {
     console.error("Error in price change:", error);
   }

@@ -25,7 +25,7 @@ const moveExpiredItems = async () => {
       _id: { $in: expiredItems.map((item) => item._id) },
     });
 
-    console.log(`Moved ${expiredItems.length} expired items to UpcyclingItem.`);
+    // console.log(`Moved ${expiredItems.length} expired items to UpcyclingItem.`);
   } catch (error) {
     console.error("Error moving expired items:", error);
   }
