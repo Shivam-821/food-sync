@@ -12,9 +12,9 @@ const verifyNgo = asyncHandler(async (req, res, next) => {
  
   try {
     const decodedToken = jwt.verify(gettoken, process.env.ACCESS_TOKEN_SECRET);
-    console.log(decodedToken)
+    // console.log(decodedToken)
     const ngo = await Ngo.findById(decodedToken?._id)
-  console.log(ngo)
+  // console.log(ngo)
     if (!ngo) {
       throw new ApiError(401, "Unauthorized");
     }

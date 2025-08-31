@@ -4,14 +4,14 @@ import chalk from "chalk";
 let io;
 const initializeSocket = (server) => {
    io = new Server(server, {
-    cors: {
-      origin: "*", 
-      methods: ["GET", "POST"],
-    },
-  });
+     cors: {
+       origin: process.env.CORS_ORIGIN,
+       methods: ["GET", "POST"],
+     },
+   });
 
   io.on("connection", (socket) => {
-    console.log(chalk.blue(`User connected: ${socket.id}`));
+    // console.log(chalk.blue(`User connected: ${socket.id}`));
 
    
     socket.on("message", (data) => {
@@ -24,7 +24,7 @@ const initializeSocket = (server) => {
 
 
     socket.on("disconnect", () => {
-      console.log(chalk.red(`User disconnected: ${socket.id}`));
+      // console.log(chalk.red(`User disconnected: ${socket.id}`));
     });
   });
 

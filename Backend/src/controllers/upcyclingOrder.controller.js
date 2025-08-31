@@ -52,8 +52,8 @@ const placeUpcyclingOrderFromCart = asyncHandler(async (req, res) => {
           }
           gamification.points += newCredit;
           gamification.discountPoints += newCredit;
-          console.log(gamification.discountPoints)
-          console.log("gamifiactionDis: ", gamification.discountPoints)
+          // console.log(gamification.discountPoints)
+          // console.log("gamifiactionDis: ", gamification.discountPoints)
           gamification.badges = getBadge(gamification.points);
           await gamification.save();
         } else {
@@ -159,28 +159,28 @@ const verifyUpcyclingPayment = asyncHandler(async (req, res) => {
   
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
       req.body;
-console.log("1")
+// console.log("1")
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return res.status(400).json(new ApiError(400, "Missing payment details"));
     }
   try {
-    console.log("2")
+    // console.log("2")
     const upcyclingorder = await UpcyclingOrder.findOne({
       razorpayOrderId: razorpay_order_id,
     });
-    console.log(razorpay_order_id)
-    console.log(upcyclingorder)
+    // console.log(razorpay_order_id)
+    // console.log(upcyclingorder)
     if (!upcyclingorder) {
       return res
         .status(404)
         .json(new ApiError(404, "Upcycling order not found"));
     }
-    console.log("4")
+    // console.log("4")
     // Check if the order is already paid
     if (upcyclingorder.paymentStatus === "paid") {
       return res.status(400).json(new ApiError(400, "Payment already verified"));
     }
-    console.log("5")
+    // console.log("5")
     const generated_signature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
@@ -212,7 +212,7 @@ console.log("1")
         )
       );
   } catch (error) {
-    console.error("Error verifying payment:", error.message);
+    // console.error("Error verifying payment:", error.message);
     return res
       .status(500)
       .json(new ApiError(500, error.message || "Internal Server Error"));
@@ -222,9 +222,9 @@ console.log("1")
 const markOrderAsCompleted = asyncHandler(async (req, res) => {
   try {
     const { orderId } = req.params;
-    console.log("Order ID from params:", orderId);
+    // console.log("Order ID from params:", orderId);
     const order = await UpcyclingOrder.findById(orderId);
-    console.log(order)
+    // console.log(order)
     if (!order) {
       return res.status(404).json(new ApiError(404, "Order not found"));
     }
@@ -233,7 +233,7 @@ const markOrderAsCompleted = asyncHandler(async (req, res) => {
         .status(400)
         .json(new ApiError(400, "Order cannot be completed"));
     }
-console.log(order.status)
+// console.log(order.status)
     order.status = "confirmed";
     await order.save();
     await updateInventoryOnOrderCompletion(orderId);
@@ -242,7 +242,7 @@ console.log(order.status)
       .status(200)
       .json(new ApiResponse(200, order, "Order completed successfully"));
   } catch (error) {
-    console.error("Error completing order:", error.message);
+    // console.error("Error completing order:", error.message);
     return res
       .status(500)
       .json(new ApiError(500, error.message || "Internal Server Error"));
@@ -265,7 +265,7 @@ const updateInventoryOnOrderCompletion = async (orderId) => {
 }
 
   } catch (error) {
-    console.error("Error updating inventory:", error.message);
+    // console.error("Error updating inventory:", error.message);
     throw error; // Re-throw the error to handle it in the calling function
   }
 };

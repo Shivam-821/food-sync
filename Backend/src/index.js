@@ -18,7 +18,7 @@ setTimeout(async () => {
     await moveExpiredItems();
     await changePrice();
   } catch (error) {
-    console.error(chalk.redBright("Error in initial task execution: ", error));
+    // console.error(chalk.redBright("Error in initial task execution: ", error));
   }
 }, 60 * 1000);
 
@@ -27,7 +27,7 @@ cron.schedule("0 * * * *", async () => {
     await moveExpiredItems();
     await changePrice();
   } catch (error) {
-    console.error(chalk.redBright("Error in cron job: ", error));
+    // console.error(chalk.redBright("Error in cron job: ", error));
   }
 });
 

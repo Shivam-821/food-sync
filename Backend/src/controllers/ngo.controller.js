@@ -77,7 +77,7 @@ const createngo = asyncHandler(async (req, res) => {
         })
       );
   } catch (error) {
-    console.error("Error creating consumer:  ", error);
+    // console.error("Error creating consumer:  ", error);
     throw new ApiError(500, "Something went wrong: ", error);
   }
 });
@@ -94,7 +94,7 @@ const logoutNgo = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production" ? true : false,
   };
-  console.log("reached here");
+  // console.log("reached here");
 
   return res
     .status(200)

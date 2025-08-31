@@ -80,7 +80,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
 
     let gamification = await Gamification.findOne({ user: buyerId });
     const newCredit =  parseFloat(extraPoints);
-    console.log('newCredit: ', newCredit)
+    // console.log('newCredit: ', newCredit)
 
     if (gamification) {
       if(gamification.discountPoints > cart.totalAmount){
@@ -90,7 +90,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
       }
       gamification.points += newCredit;
       gamification.discountPoints += newCredit
-      console.log("gamification: ", gamification.discountPoints)
+      // console.log("gamification: ", gamification.discountPoints)
       gamification.badges = getBadge(gamification.points);
       await gamification.save();
     } else {
@@ -106,9 +106,9 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
 
     buyer.gamification = gamification._id;
     await buyer.save();
-    console.log('finalAmount: ', cart.finalAmount)
+    // console.log('finalAmount: ', cart.finalAmount)
     let totalAmount = parseFloat((parseFloat(cart.finalAmount)).toFixed(2));
-    console.log('totalA: ', totalAmount )
+    // console.log('totalA: ', totalAmount )
 
     const order = new Order({
       consumer: buyerId,
@@ -135,7 +135,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
         receipt: `receipt_${order._id}`,
         payment_capture: 1, // auto-capture
       };
-      console.log("total: ", totalAmount)
+      // console.log("total: ", totalAmount)
      
       let razorpayOrder;
       try {
@@ -145,7 +145,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
         await order.save();
       } catch (error) {
         await Order.deleteOne({ _id: order._id });
-        console.error("Razorpay API Error:", error);
+        // console.error("Razorpay API Error:", error);
     
         if (error.error && error.error.description) {
           throw new ApiError(500, `Razorpay API Error: ${error.error.description}`);
@@ -181,7 +181,7 @@ const placeOrderFromCart = asyncHandler(async (req, res) => {
       .json(new ApiResponse(201, order, "Order placed successfully"));
   }
   } catch (err) {
-    console.error("Error placing order:", err.message);
+    // console.error("Error placing order:", err.message);
     return res
       .status(500)
       .json(new ApiError(500, err.message || "Internal Server Error"));
@@ -232,7 +232,7 @@ const verifyPayment = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, order, "Payment verified successfully"));
   } catch (error) {
-    console.error("Error verifying payment:", error);
+    // console.error("Error verifying payment:", error);
     res
       .status(500)
       .json(new ApiError(500, error.message || "Internal Server Error"));
@@ -242,7 +242,7 @@ const verifyPayment = asyncHandler(async (req, res) => {
 const markOrderAsCompleted = asyncHandler(async (req, res) => {
   try {
     const { orderId } = req.params;
-    console.log("Order ID from params:", orderId);
+    // console.log("Order ID from params:", orderId);
     const order = await Order.findById(orderId);
     if (!order) {
       return res.status(404).json(new ApiError(404, "Order not found"));
@@ -262,7 +262,7 @@ const markOrderAsCompleted = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, order, "Order completed successfully"));
   } catch (error) {
-    console.error("Error completing order:", error.message);
+    // console.error("Error completing order:", error.message);
     return res
       .status(500)
       .json(new ApiError(500, error.message || "Internal Server Error"));
@@ -283,7 +283,7 @@ const updateInventoryOnOrderCompletion = async (orderId) => {
       await item.save();
     }
   } catch (error) {
-    console.error("Error updating inventory:", error.message);
+    // console.error("Error updating inventory:", error.message);
     throw error; // Re-throw the error to handle it in the calling function
   }
 };
@@ -306,7 +306,7 @@ const getOrderDetails = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, order, "Order details fetched successfully"));
   } catch (error) {
-    console.error("Error fetching order details:", error.message);
+    // console.error("Error fetching order details:", error.message);
     return res
       .status(500)
       .json(new ApiError(500, error.message || "Internal Server Error"));

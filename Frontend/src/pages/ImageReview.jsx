@@ -1,7 +1,7 @@
 import React from "react";
 import Navbar from "../Components/Navbar/Navbar";
 import Footer from "../Components/Footer/Footer";
-import Main from "../Components/ImageReview/main";
+import Main from "../Components/ImageReview/Main";
 
 const ImageReview = () => {
   return (

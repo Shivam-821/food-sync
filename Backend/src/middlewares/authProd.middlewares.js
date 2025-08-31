@@ -12,9 +12,9 @@ const verifyToken = asyncHandler(async (req, res, next) => {
  
   try {
     const decodedToken = jwt.verify(gettoken, process.env.ACCESS_TOKEN_SECRET);
-    console.log(decodedToken)
+    // console.log(decodedToken)
     const producer = await Producer.findById(decodedToken?._id)
-  console.log(producer)
+  // console.log(producer)
     if (!producer) {
       throw new ApiError(401, "Unauthorized");
     }

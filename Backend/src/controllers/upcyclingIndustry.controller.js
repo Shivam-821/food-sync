@@ -103,7 +103,7 @@ const registerUpcyclingIndustry = asyncHandler(async (req, res) => {
       );
   } catch (error) {
     if (avatar?.public_id) await deleteFromCloudinary(avatar.public_id);
-    console.error("Error creating upcycling industry:", error);
+    // console.error("Error creating upcycling industry:", error);
     throw new ApiError(500, `Something went wrong: ${error.message}`);
   }
 });
