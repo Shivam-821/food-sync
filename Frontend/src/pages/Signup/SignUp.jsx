@@ -44,6 +44,7 @@ const SignUp = () => {
   const [buttonPosition, setButtonPosition] = useState({ x: 0, y: 0 });
   const [isButtonMoving, setIsButtonMoving] = useState(false);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  const BACKEND_URL = import.meta.env.VITE_BASE_URL;
 
   // Track cursor position for effects
   useEffect(() => {
@@ -210,11 +211,11 @@ const SignUp = () => {
 
   // Social login handlers
   const handleGoogleSignup = () => {
-    window.location.href = "http://localhost:5000/auth/google";
+    window.location.href = `${BACKEND_URL}/auth/google`;
   };
 
   const handleFacebookSignup = () => {
-    window.location.href = "http://localhost:5000/auth/facebook";
+    window.location.href = `${BACKEND_URL}/auth/facebook`;
   };
 
   // Password strength indicator
