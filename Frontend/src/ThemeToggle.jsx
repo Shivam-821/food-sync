@@ -18,7 +18,7 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="-ml-9 p-2 rounded-full transition"
+      className="-ml-9 p-2 rounded-full transition hidden sm:block"
     >
       {theme === "dark" ? (
         <Sun className="text-yellow-500" />

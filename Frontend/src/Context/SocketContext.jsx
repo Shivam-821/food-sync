@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-const socket = io(`${import.meta.env.VITE_BASE_URL}`); // Replace with your backend URL
+const socket = io(`${import.meta.env.VITE_BASE_URL}`); 
 
 function App() {
   const [message, setMessage] = useState("");
@@ -13,7 +13,7 @@ function App() {
     });
 
     return () => {
-      socket.off("message"); // Clean up the event listener
+      socket.off("message"); 
     };
   }, []);
 
