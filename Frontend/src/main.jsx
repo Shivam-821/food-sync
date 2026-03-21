@@ -4,25 +4,17 @@ import "./index.css";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import "./i18n"; // Import i18n configuration
-import ConsumerContext from "./Context/ConsumerContext.jsx";
-import ProducerContext from "./Context/ProducerContext.jsx";
-import UpcyclingIContext from "./Context/UpcyclingIContext.jsx";
+import { Provider } from "react-redux";
+import { store } from "./redux/store.js";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import NgoContext from "./Context/NgoContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-        <NgoContext>
-          <UpcyclingIContext>
-            <ProducerContext>
-              <ConsumerContext>
-                <App />
-              </ConsumerContext>
-            </ProducerContext>
-          </UpcyclingIContext>
-      </NgoContext>
+        <Provider store={store}>
+          <App />
+        </Provider>
       </GoogleOAuthProvider>
     </BrowserRouter>
   </StrictMode>

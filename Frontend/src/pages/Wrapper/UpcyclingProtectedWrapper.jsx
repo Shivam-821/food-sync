@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { UpcyclingIDataContext } from '../../Context/UpcyclingIContext';
+import { useDispatch } from 'react-redux';
+import { setUpcyclingI } from '../../redux/slices/upcyclingISlice';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import LoadingPage from '../../Components/Loading';
@@ -7,7 +8,7 @@ import LoadingPage from '../../Components/Loading';
 const UpcyclingProtectWrapper = ({ children }) => {
     const token = localStorage.getItem('accessToken');
     const navigate = useNavigate();
-    const { setUpcyclingIndustry } = useContext(UpcyclingIDataContext);
+    const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -22,7 +23,7 @@ const UpcyclingProtectWrapper = ({ children }) => {
         })
         .then(response => {
             if (response.status === 200) {
-                setUpcyclingIndustry(response.data);
+                dispatch(setUpcyclingI(response.data));
                 setIsLoading(false);
             }
         })
@@ -30,7 +31,7 @@ const UpcyclingProtectWrapper = ({ children }) => {
             console.log("Upcycling Industry auth failed:", err);
             navigate('/signup');
         });
-    }, [token, navigate, setUpcyclingIndustry]);
+    }, [token, navigate, dispatch]);
 
     if (isLoading) return <LoadingPage />;
 

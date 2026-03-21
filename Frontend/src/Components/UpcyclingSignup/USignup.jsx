@@ -12,12 +12,13 @@ import {
   FaSignInAlt,
   FaArrowRight,
 } from "react-icons/fa";
-import { UpcyclingIDataContext } from "../../Context/UpcyclingIContext";
+import { useDispatch } from "react-redux";
+import { setUpcyclingI } from "../../redux/slices/upcyclingISlice";
 import "./upcycle.css";
 
 const USignup = () => {
   const navigate = useNavigate();
-  const { upcyclingI, setUpcyclingI } = useContext(UpcyclingIDataContext);
+  const dispatch = useDispatch();
   const formRef = useRef(null);
   const [cursorX, setCursorX] = useState(0);
   const [cursorY, setCursorY] = useState(0);
@@ -126,7 +127,7 @@ const USignup = () => {
       console.log(response.data);
       if (response.status === 200) {
         const data = response.data.data;
-        setUpcyclingI(data.upcyclingI);
+        dispatch(setUpcyclingI(data.upcyclingI));
         console.log(data);
         const userId = response.data.data.user._id;
         if (userId) {

@@ -36,22 +36,20 @@ function BlockList() {
   const [productType, setProductType] = useState("all");
   const [expiryDateFilter, setExpiryDateFilter] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const [data, setData] = useState({});
 
   // Fetch data from the backend
   useEffect(() => {
     const fetchBlocks = async () => {
       try {
-        const token = localStorage.getItem("accessToken");
-        if (token) {
-          const response = await axios.get(
-            `${import.meta.env.VITE_BASE_URL}/api/v1/items/getallitem`
-          );
-          const data = response.data.data || [];
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/v1/items/getallitem`
+        );
 
-          // Transform fetched data to match the expected structure
-          const transformedData = data.map((item) => ({
+        const data = response.data.data || [];
+
+        // Transform fetched data to match the expected structure
+        const transformedData = data.map((item) => ({
             id: item._id,
             name: item.name,
             price: item.price,
@@ -92,10 +90,7 @@ function BlockList() {
             );
           }
 
-          setFilteredProducts(filtered); // Set filteredProducts after filtering
-        } else {
-          return;
-        }
+          setFilteredProducts(filtered); // Set filteredProducts after filtering       
       } catch (err) {
         // console.log("kjhgk khjg kjgh kj kjkj g");
         navigate("/error");

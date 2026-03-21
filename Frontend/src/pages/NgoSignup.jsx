@@ -13,14 +13,15 @@ import { useNavigate } from "react-router-dom";
 // import "./signup.css";
 // import Navbar from "../Components/Navbar/Navbar";
 import axios from "axios";
-import { NgoDataContext } from "../Context/NgoContext";
+import { useDispatch } from "react-redux";
+import { setNgo } from "../redux/slices/ngoSlice";
 import { motion } from "framer-motion";
 // import { GoogleOAuthProvider } from "@react-oauth/google";
 // import GoogleLogin from "../../Components/GoogleLogin/GoogleLogin";
 
 const NGOSignUp = () => {
   const navigate = useNavigate();
-  const { ngo, setNgo } = useContext(NgoDataContext);
+  const dispatch = useDispatch();
   const formRef = useRef(null);
   const buttonRef = useRef(null);
   const containerRef = useRef(null);
@@ -186,7 +187,7 @@ const NGOSignUp = () => {
 
         const data = response.data;
         console.log(data)
-        setNgo(data.data);
+        dispatch(setNgo(data.data));
 
         setIsLoading(false);
 

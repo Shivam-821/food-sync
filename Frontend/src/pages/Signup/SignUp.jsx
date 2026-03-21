@@ -13,14 +13,15 @@ import { useNavigate } from "react-router-dom";
 import "./signup.css";
 import Navbar from "../../Components/Navbar/Navbar";
 import axios from "axios";
-import { ConsumerDataContext } from "../../Context/ConsumerContext";
+import { useDispatch } from "react-redux";
+import { setConsumer } from "../../redux/slices/consumerSlice";
 import { motion } from "framer-motion";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import GoogleLogin from "../../Components/GooglrLogin/GoogleLogin";
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const { consumer, setConsumer } = useContext(ConsumerDataContext);
+  const dispatch = useDispatch();
   const formRef = useRef(null);
   const buttonRef = useRef(null);
   const containerRef = useRef(null);
@@ -189,7 +190,7 @@ const SignUp = () => {
         }
 
         const data = response.data;
-        setConsumer(data.user);
+        dispatch(setConsumer(data.user));
         localStorage.setItem("token", data.refreshToken);
 
         setIsLoading(false);

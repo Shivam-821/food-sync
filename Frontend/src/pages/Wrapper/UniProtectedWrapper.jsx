@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ConsumerDataContext } from "../../Context/ConsumerContext";
-import { ProducerDataContext } from "../../Context/ProducerContext";
-import { UpcyclingIDataContext } from "../../Context/UpcyclingIContext";
-import { NgoDataContext } from "../../Context/NgoContext";
+import { useDispatch } from "react-redux";
+import { setConsumer } from "../../redux/slices/consumerSlice";
+import { setProducer } from "../../redux/slices/producerSlice";
+import { updateUpcyclingI } from "../../redux/slices/upcyclingISlice";
+import { setNgo } from "../../redux/slices/ngoSlice";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoadingPage from "../../Components/Loading";
@@ -11,11 +12,7 @@ const AuthProtectWrapper = ({ children }) => {
   const token = localStorage.getItem("accessToken");
   const navigate = useNavigate();
 
-  // Contexts for different user rolesm
-  const { setConsumer } = useContext(ConsumerDataContext);
-  const { setProducer } = useContext(ProducerDataContext);
-  const { updateUpcyclingI } = useContext(UpcyclingIDataContext);
-  const { setNgo } = useContext(NgoDataContext);
+  const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -30,19 +27,19 @@ const AuthProtectWrapper = ({ children }) => {
       {
         type: "consumer",
         url: "/api/v1/consumer/profile",
-        setter: setConsumer,
+        setter: (data) => dispatch(setConsumer(data)),
       },
       {
         type: "producer",
         url: "/api/v1/producer/profile",
-        setter: setProducer,
+        setter: (data) => dispatch(setProducer(data)),
       },
       {
         type: "upcyclingIndustry",
         url: "/api/v1/upcyclingIndustry/profile",
-        setter: updateUpcyclingI,
+        setter: (data) => dispatch(updateUpcyclingI(data)),
       },
-      { type: "ngo", url: "/api/v1/ngo/getngoprofile", setter: setNgo },
+      { type: "ngo", url: "/api/v1/ngo/getngoprofile", setter: (data) => dispatch(setNgo(data)) },
     ];
 
     const checkAuthentication = async () => {
@@ -74,7 +71,7 @@ const AuthProtectWrapper = ({ children }) => {
     };
 
     checkAuthentication();
-  }, [token, navigate, setConsumer, setProducer, updateUpcyclingI, setNgo]);
+  }, [token, navigate, dispatch]);
 
   if (isLoading) {
     return <LoadingPage />;

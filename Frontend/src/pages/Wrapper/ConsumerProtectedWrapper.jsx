@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { ConsumerDataContext } from '../../Context/ConsumerContext'
+import { useDispatch } from 'react-redux';
+import { setConsumer } from '../../redux/slices/consumerSlice';
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import LoadingPage from '../../Components/Loading'
@@ -16,7 +17,7 @@ const ConsumerProtectWrapper = ({
 }) => {
     const token = localStorage.getItem('accessToken')
     const navigate = useNavigate()
-    const { consumer, setConsumer } = useContext(ConsumerDataContext)
+    const dispatch = useDispatch()
     const [ isLoading, setIsLoading ] = useState(true)
 
     useEffect(() => {
@@ -30,7 +31,7 @@ const ConsumerProtectWrapper = ({
             withCredentials: true 
         }).then(response => {
             if (response.status === 200) {
-                setConsumer(response.data)
+                dispatch(setConsumer(response.data))
                 setIsLoading(false)
             }
         })

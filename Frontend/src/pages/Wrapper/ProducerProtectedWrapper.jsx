@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { ProducerDataContext } from '../../Context/ProducerContext';
+import { useDispatch } from 'react-redux';
+import { setProducer } from '../../redux/slices/producerSlice';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import LoadingPage from '../../Components/Loading';
@@ -7,7 +8,7 @@ import LoadingPage from '../../Components/Loading';
 const ProducerProtectWrapper = ({ children }) => {
     const token = localStorage.getItem('accessToken');
     const navigate = useNavigate();
-    const { setProducer } = useContext(ProducerDataContext);
+    const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -22,7 +23,7 @@ const ProducerProtectWrapper = ({ children }) => {
         })
         .then(response => {
             if (response.status === 200) {
-                setProducer(response.data);
+                dispatch(setProducer(response.data));
                 setIsLoading(false);
             }
         })
@@ -30,7 +31,7 @@ const ProducerProtectWrapper = ({ children }) => {
             console.log("Producer auth failed:", err);
             navigate('/login');
         });
-    }, [token, navigate, setProducer]);
+    }, [token, navigate, dispatch]);
 
     if (isLoading) return <LoadingPage />;
 

@@ -9,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 import Webcam from "react-webcam";
-import Quagga from "quagga";
+import Quagga from "@ericblade/quagga2";
 
 const ProducerHome = () => {
   const [avatar, setAvatar] = useState(null);

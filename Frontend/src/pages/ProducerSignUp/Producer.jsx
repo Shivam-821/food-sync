@@ -12,13 +12,14 @@ import {
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Navbar/Navbar";
 import "./producer.css";
-import { ProducerDataContext } from "../../Context/ProducerContext";
+import { useDispatch } from "react-redux";
+import { setProducer } from "../../redux/slices/producerSlice";
 import axios from "axios";
 import { motion } from "framer-motion";
 
 const ProducerSignUp = () => {
   const navigate = useNavigate();
-  const { producer, setProducer } = useContext(ProducerDataContext);
+  const dispatch = useDispatch();
   const formRef = useRef(null);
   const buttonRef = useRef(null);
   const containerRef = useRef(null);
@@ -213,7 +214,7 @@ const ProducerSignUp = () => {
       console.log(response.data);
       if (response.status === 200) {
         const data = response.data.data;
-        setProducer(data.producer);
+        dispatch(setProducer(data.producer));
         console.log(data);
         const userId = response.data.data.user._id;
         if (userId) {
